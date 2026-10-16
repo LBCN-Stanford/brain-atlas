@@ -1,0 +1,48 @@
+# Builds the synthetic demonstration site from main and publishes it to the gh-pages branch,
+# which GitHub Pages serves at https://lbcn-stanford.github.io/brain-atlas/.
+name: pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    env:
+      SITE_BASE: /brain-atlas/
+      SITE_URL: https://lbcn-stanford.github.io/brain-atlas/
+      SITE_INDEX: 'no'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci
+      - name: synthetic data only
+        run: node -e "const m=require('./public/data/manifest.json'); if(m.synthetic!==true){process.exit(1)}"
+      - run: npm run build
+      - run: test -z "$(find dist -type d -name 'data-real*')"
+      - name: the built site in a browser
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: app/dist
+          force_orphan: true
+          enable_jekyll: false
+          commit_message: 'Site built from ${{ github.sha }} (synthetic data)'
+          user_name: 'Aryan Kumar'
+          user_email: '113646426+arynku@users.noreply.github.com'

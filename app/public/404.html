@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Intracranial Stimulation Atlas</title>
+    <script>
+      // Every address on this site is the atlas. An unknown path (an old /v2.html, a typo, a deep
+      // link from the earlier app) goes to the root, keeping its query and hash so a view link
+      // still opens the view it names.
+      location.replace('__SITE_BASE__' + location.search + location.hash)
+    </script>
+  </head>
+  <body style="font: 15px/22px system-ui, sans-serif; margin: 48px">
+    <p>This page has moved. <a href="__SITE_BASE__">Open the atlas</a>.</p>
+  </body>
+</html>

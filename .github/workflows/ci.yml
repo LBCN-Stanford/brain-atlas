@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  app:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci
+      - name: typecheck
+        run: npx tsc -b
+      - name: tests
+        run: npm test
+      - name: build
+        run: npm run build
+      - name: no controlled data in the bundle
+        run: test -z "$(find dist -type d -name 'data-real*')"
+      - name: the built site in a browser
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+
+  assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install --quiet "numpy>=1.24"
+      - run: python3 scripts/tests/test_v2_assets.py

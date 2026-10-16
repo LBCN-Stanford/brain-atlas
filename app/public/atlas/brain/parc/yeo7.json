@@ -1,0 +1,170 @@
+{
+ "id": "yeo7",
+ "title": "Yeo 7 networks",
+ "citation": "7 networks; Yeo et al. 2011, J Neurophysiol",
+ "annotation": "Yeo2011_7Networks_N1000",
+ "labels": [
+  {
+   "index": 0,
+   "key": null,
+   "name": "No parcel",
+   "hemisphere": null,
+   "color": null,
+   "group": null
+  },
+  {
+   "index": 1,
+   "key": "lh.7Networks_1",
+   "annot_name": "7Networks_1",
+   "hemisphere": "lh",
+   "color": "#781286",
+   "vertices": 21632,
+   "name": "Visual",
+   "short": "7Networks_1",
+   "group": null
+  },
+  {
+   "index": 2,
+   "key": "lh.7Networks_2",
+   "annot_name": "7Networks_2",
+   "hemisphere": "lh",
+   "color": "#4682b4",
+   "vertices": 29778,
+   "name": "Somatomotor",
+   "short": "7Networks_2",
+   "group": null
+  },
+  {
+   "index": 3,
+   "key": "lh.7Networks_3",
+   "annot_name": "7Networks_3",
+   "hemisphere": "lh",
+   "color": "#00760e",
+   "vertices": 17511,
+   "name": "Dorsal attention",
+   "short": "7Networks_3",
+   "group": null
+  },
+  {
+   "index": 4,
+   "key": "lh.7Networks_4",
+   "annot_name": "7Networks_4",
+   "hemisphere": "lh",
+   "color": "#c43afa",
+   "vertices": 17392,
+   "name": "Ventral attention",
+   "short": "7Networks_4",
+   "group": null
+  },
+  {
+   "index": 5,
+   "key": "lh.7Networks_5",
+   "annot_name": "7Networks_5",
+   "hemisphere": "lh",
+   "color": "#dcf8a4",
+   "vertices": 11380,
+   "name": "Limbic",
+   "short": "7Networks_5",
+   "group": null
+  },
+  {
+   "index": 6,
+   "key": "lh.7Networks_6",
+   "annot_name": "7Networks_6",
+   "hemisphere": "lh",
+   "color": "#e69422",
+   "vertices": 16635,
+   "name": "Frontoparietal control",
+   "short": "7Networks_6",
+   "group": null
+  },
+  {
+   "index": 7,
+   "key": "lh.7Networks_7",
+   "annot_name": "7Networks_7",
+   "hemisphere": "lh",
+   "color": "#cd3e4e",
+   "vertices": 35314,
+   "name": "Default",
+   "short": "7Networks_7",
+   "group": null
+  },
+  {
+   "index": 8,
+   "key": "rh.7Networks_1",
+   "annot_name": "7Networks_1",
+   "hemisphere": "rh",
+   "color": "#781286",
+   "vertices": 22519,
+   "name": "Visual",
+   "short": "7Networks_1",
+   "group": null
+  },
+  {
+   "index": 9,
+   "key": "rh.7Networks_2",
+   "annot_name": "7Networks_2",
+   "hemisphere": "rh",
+   "color": "#4682b4",
+   "vertices": 30207,
+   "name": "Somatomotor",
+   "short": "7Networks_2",
+   "group": null
+  },
+  {
+   "index": 10,
+   "key": "rh.7Networks_3",
+   "annot_name": "7Networks_3",
+   "hemisphere": "rh",
+   "color": "#00760e",
+   "vertices": 17604,
+   "name": "Dorsal attention",
+   "short": "7Networks_3",
+   "group": null
+  },
+  {
+   "index": 11,
+   "key": "rh.7Networks_4",
+   "annot_name": "7Networks_4",
+   "hemisphere": "rh",
+   "color": "#c43afa",
+   "vertices": 19402,
+   "name": "Ventral attention",
+   "short": "7Networks_4",
+   "group": null
+  },
+  {
+   "index": 12,
+   "key": "rh.7Networks_5",
+   "annot_name": "7Networks_5",
+   "hemisphere": "rh",
+   "color": "#dcf8a4",
+   "vertices": 11614,
+   "name": "Limbic",
+   "short": "7Networks_5",
+   "group": null
+  },
+  {
+   "index": 13,
+   "key": "rh.7Networks_6",
+   "annot_name": "7Networks_6",
+   "hemisphere": "rh",
+   "color": "#e69422",
+   "vertices": 22330,
+   "name": "Frontoparietal control",
+   "short": "7Networks_6",
+   "group": null
+  },
+  {
+   "index": 14,
+   "key": "rh.7Networks_7",
+   "annot_name": "7Networks_7",
+   "hemisphere": "rh",
+   "color": "#cd3e4e",
+   "vertices": 26056,
+   "name": "Default",
+   "short": "7Networks_7",
+   "group": null
+  }
+ ]
+}

@@ -1,0 +1,3 @@
+User-agent: *
+__ROBOTS_RULE__
+Sitemap: __SITE_URL__sitemap.xml

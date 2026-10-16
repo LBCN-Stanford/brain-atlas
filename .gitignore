@@ -1,0 +1,9 @@
+node_modules/
+app/dist/
+# controlled, patient-derived data never enters this repository
+app/public/data-real*/
+app/public/atlas/data-real*/
+lab_data/
+build_staging/
+__pycache__/
+.DS_Store

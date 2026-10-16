@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+title: Intracranial Stimulation Atlas
+message: If you use this software, please cite it as below, and cite the data release you used.
+type: software
+authors:
+  - given-names: Ameya
+    family-names: Choudhary
+    affiliation: Laboratory of Behavioral and Cognitive Neuroscience, Stanford University
+  - given-names: Aryan
+    family-names: Kumar
+    affiliation: Laboratory of Behavioral and Cognitive Neuroscience, Stanford University
+repository-code: https://github.com/LBCN-Stanford/brain-atlas
+url: https://lbcn-stanford.github.io/brain-atlas/
+abstract: >-
+  A web atlas of what people reported when small areas of their brain were electrically
+  stimulated during clinical monitoring for epilepsy, organised by the areas of published brain
+  atlases. This repository holds the web application, its build and test scripts, the builders of
+  its brain and area assets, and a synthetic demonstration dataset. Patient-derived data are not
+  distributed here.
+keywords:
+  - intracranial electrical stimulation
+  - direct cortical stimulation
+  - stereo-EEG
+  - electrocorticography
+  - brain atlas
+license: BSD-3-Clause
