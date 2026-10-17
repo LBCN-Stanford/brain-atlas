@@ -1,0 +1,18 @@
+{
+  "name": "Intracranial Stimulation Atlas: synthetic demonstration data",
+  "version": "0.1.0-synthetic",
+  "synthetic": true,
+  "counts": {
+    "patients": 48,
+    "sessions": 201,
+    "electrodes": 3899,
+    "sites": 2389,
+    "stimulation_events": 7537,
+    "reports": 7537,
+    "effect_labels": 7537,
+    "qc_flags": 7537,
+    "atlas_labels": 21501,
+    "ccep_availability": 2389
+  },
+  "note": "All data are synthetic. Coordinates are illustrative, not measured."
+}

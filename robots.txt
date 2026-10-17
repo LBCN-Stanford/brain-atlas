@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /
+Sitemap: https://lbcn-stanford.github.io/brain-atlas/sitemap.xml

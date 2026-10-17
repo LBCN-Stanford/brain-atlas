@@ -1,0 +1,368 @@
+{
+ "structures": [
+  {
+   "key": "Left-Thalamus",
+   "aseg_label": 10,
+   "aseg_name": "Left-Thalamus-Proper",
+   "name": "Thalamus",
+   "hemisphere": "lh",
+   "color": "#00760e",
+   "positions": {
+    "byteOffset": 0,
+    "count": 3692
+   },
+   "indices": {
+    "byteOffset": 44304,
+    "count": 22140
+   },
+   "checks": {
+    "voxels": 8610,
+    "voxel_volume_mm3": 8610.0,
+    "marching_cubes_volume_mm3": 8579.2,
+    "smoothed_volume_mm3": 8595.0,
+    "volume_error_fraction": 0.0017,
+    "mean_vertex_shift_mm": 0.251,
+    "mean_distance_to_unsmoothed_mm": 0.251,
+    "max_distance_to_unsmoothed_mm": 0.554
+   }
+  },
+  {
+   "key": "Right-Thalamus",
+   "aseg_label": 49,
+   "aseg_name": "Right-Thalamus-Proper",
+   "name": "Thalamus",
+   "hemisphere": "rh",
+   "color": "#00760e",
+   "positions": {
+    "byteOffset": 132864,
+    "count": 3652
+   },
+   "indices": {
+    "byteOffset": 176688,
+    "count": 21924
+   },
+   "checks": {
+    "voxels": 8589,
+    "voxel_volume_mm3": 8589.0,
+    "marching_cubes_volume_mm3": 8559.7,
+    "smoothed_volume_mm3": 8575.2,
+    "volume_error_fraction": 0.0016,
+    "mean_vertex_shift_mm": 0.246,
+    "mean_distance_to_unsmoothed_mm": 0.246,
+    "max_distance_to_unsmoothed_mm": 0.539
+   }
+  },
+  {
+   "key": "Left-Caudate",
+   "aseg_label": 11,
+   "aseg_name": "Left-Caudate",
+   "name": "Caudate",
+   "hemisphere": "lh",
+   "color": "#7abadc",
+   "positions": {
+    "byteOffset": 264384,
+    "count": 3072
+   },
+   "indices": {
+    "byteOffset": 301248,
+    "count": 18480
+   },
+   "checks": {
+    "voxels": 3627,
+    "voxel_volume_mm3": 3627.0,
+    "marching_cubes_volume_mm3": 3588.0,
+    "smoothed_volume_mm3": 3590.8,
+    "volume_error_fraction": 0.01,
+    "mean_vertex_shift_mm": 0.256,
+    "mean_distance_to_unsmoothed_mm": 0.255,
+    "max_distance_to_unsmoothed_mm": 0.514
+   }
+  },
+  {
+   "key": "Right-Caudate",
+   "aseg_label": 50,
+   "aseg_name": "Right-Caudate",
+   "name": "Caudate",
+   "hemisphere": "rh",
+   "color": "#7abadc",
+   "positions": {
+    "byteOffset": 375168,
+    "count": 3157
+   },
+   "indices": {
+    "byteOffset": 413052,
+    "count": 19062
+   },
+   "checks": {
+    "voxels": 3852,
+    "voxel_volume_mm3": 3852.0,
+    "marching_cubes_volume_mm3": 3807.2,
+    "smoothed_volume_mm3": 3809.6,
+    "volume_error_fraction": 0.011,
+    "mean_vertex_shift_mm": 0.252,
+    "mean_distance_to_unsmoothed_mm": 0.251,
+    "max_distance_to_unsmoothed_mm": 0.547
+   }
+  },
+  {
+   "key": "Left-Putamen",
+   "aseg_label": 12,
+   "aseg_name": "Left-Putamen",
+   "name": "Putamen",
+   "hemisphere": "lh",
+   "color": "#ec0db0",
+   "positions": {
+    "byteOffset": 489300,
+    "count": 3986
+   },
+   "indices": {
+    "byteOffset": 537132,
+    "count": 23928
+   },
+   "checks": {
+    "voxels": 7242,
+    "voxel_volume_mm3": 7242.0,
+    "marching_cubes_volume_mm3": 7208.1,
+    "smoothed_volume_mm3": 7222.3,
+    "volume_error_fraction": 0.0027,
+    "mean_vertex_shift_mm": 0.256,
+    "mean_distance_to_unsmoothed_mm": 0.256,
+    "max_distance_to_unsmoothed_mm": 0.542
+   }
+  },
+  {
+   "key": "Right-Putamen",
+   "aseg_label": 51,
+   "aseg_name": "Right-Putamen",
+   "name": "Putamen",
+   "hemisphere": "rh",
+   "color": "#ec0db0",
+   "positions": {
+    "byteOffset": 632844,
+    "count": 3824
+   },
+   "indices": {
+    "byteOffset": 678732,
+    "count": 22944
+   },
+   "checks": {
+    "voxels": 6872,
+    "voxel_volume_mm3": 6872.0,
+    "marching_cubes_volume_mm3": 6841.3,
+    "smoothed_volume_mm3": 6856.5,
+    "volume_error_fraction": 0.0023,
+    "mean_vertex_shift_mm": 0.246,
+    "mean_distance_to_unsmoothed_mm": 0.246,
+    "max_distance_to_unsmoothed_mm": 0.56
+   }
+  },
+  {
+   "key": "Left-Pallidum",
+   "aseg_label": 13,
+   "aseg_name": "Left-Pallidum",
+   "name": "Globus pallidus",
+   "hemisphere": "lh",
+   "color": "#0c30ff",
+   "positions": {
+    "byteOffset": 770508,
+    "count": 1390
+   },
+   "indices": {
+    "byteOffset": 787188,
+    "count": 8328
+   },
+   "checks": {
+    "voxels": 1765,
+    "voxel_volume_mm3": 1765.0,
+    "marching_cubes_volume_mm3": 1744.8,
+    "smoothed_volume_mm3": 1752.5,
+    "volume_error_fraction": 0.0071,
+    "mean_vertex_shift_mm": 0.246,
+    "mean_distance_to_unsmoothed_mm": 0.245,
+    "max_distance_to_unsmoothed_mm": 0.543
+   }
+  },
+  {
+   "key": "Right-Pallidum",
+   "aseg_label": 52,
+   "aseg_name": "Right-Pallidum",
+   "name": "Globus pallidus",
+   "hemisphere": "rh",
+   "color": "#0d30ff",
+   "positions": {
+    "byteOffset": 820500,
+    "count": 1398
+   },
+   "indices": {
+    "byteOffset": 837276,
+    "count": 8376
+   },
+   "checks": {
+    "voxels": 1804,
+    "voxel_volume_mm3": 1804.0,
+    "marching_cubes_volume_mm3": 1783.8,
+    "smoothed_volume_mm3": 1791.1,
+    "volume_error_fraction": 0.0072,
+    "mean_vertex_shift_mm": 0.253,
+    "mean_distance_to_unsmoothed_mm": 0.253,
+    "max_distance_to_unsmoothed_mm": 0.524
+   }
+  },
+  {
+   "key": "Left-Hippocampus",
+   "aseg_label": 17,
+   "aseg_name": "Left-Hippocampus",
+   "name": "Hippocampus",
+   "hemisphere": "lh",
+   "color": "#dcd814",
+   "positions": {
+    "byteOffset": 870780,
+    "count": 3729
+   },
+   "indices": {
+    "byteOffset": 915528,
+    "count": 22374
+   },
+   "checks": {
+    "voxels": 5165,
+    "voxel_volume_mm3": 5165.0,
+    "marching_cubes_volume_mm3": 5128.2,
+    "smoothed_volume_mm3": 5141.5,
+    "volume_error_fraction": 0.0046,
+    "mean_vertex_shift_mm": 0.256,
+    "mean_distance_to_unsmoothed_mm": 0.255,
+    "max_distance_to_unsmoothed_mm": 0.551
+   }
+  },
+  {
+   "key": "Right-Hippocampus",
+   "aseg_label": 53,
+   "aseg_name": "Right-Hippocampus",
+   "name": "Hippocampus",
+   "hemisphere": "rh",
+   "color": "#dcd814",
+   "positions": {
+    "byteOffset": 1005024,
+    "count": 3749
+   },
+   "indices": {
+    "byteOffset": 1050012,
+    "count": 22542
+   },
+   "checks": {
+    "voxels": 5387,
+    "voxel_volume_mm3": 5387.0,
+    "marching_cubes_volume_mm3": 5348.2,
+    "smoothed_volume_mm3": 5359.2,
+    "volume_error_fraction": 0.0052,
+    "mean_vertex_shift_mm": 0.252,
+    "mean_distance_to_unsmoothed_mm": 0.252,
+    "max_distance_to_unsmoothed_mm": 0.53
+   }
+  },
+  {
+   "key": "Left-Amygdala",
+   "aseg_label": 18,
+   "aseg_name": "Left-Amygdala",
+   "name": "Amygdala",
+   "hemisphere": "lh",
+   "color": "#67ffff",
+   "positions": {
+    "byteOffset": 1140180,
+    "count": 1433
+   },
+   "indices": {
+    "byteOffset": 1157376,
+    "count": 8622
+   },
+   "checks": {
+    "voxels": 1941,
+    "voxel_volume_mm3": 1941.0,
+    "marching_cubes_volume_mm3": 1922.8,
+    "smoothed_volume_mm3": 1930.0,
+    "volume_error_fraction": 0.0056,
+    "mean_vertex_shift_mm": 0.247,
+    "mean_distance_to_unsmoothed_mm": 0.247,
+    "max_distance_to_unsmoothed_mm": 0.498
+   }
+  },
+  {
+   "key": "Right-Amygdala",
+   "aseg_label": 54,
+   "aseg_name": "Right-Amygdala",
+   "name": "Amygdala",
+   "hemisphere": "rh",
+   "color": "#67ffff",
+   "positions": {
+    "byteOffset": 1191864,
+    "count": 1569
+   },
+   "indices": {
+    "byteOffset": 1210692,
+    "count": 9414
+   },
+   "checks": {
+    "voxels": 2228,
+    "voxel_volume_mm3": 2228.0,
+    "marching_cubes_volume_mm3": 2209.6,
+    "smoothed_volume_mm3": 2218.6,
+    "volume_error_fraction": 0.0042,
+    "mean_vertex_shift_mm": 0.241,
+    "mean_distance_to_unsmoothed_mm": 0.241,
+    "max_distance_to_unsmoothed_mm": 0.532
+   }
+  },
+  {
+   "key": "Left-Accumbens-area",
+   "aseg_label": 26,
+   "aseg_name": "Left-Accumbens-area",
+   "name": "Nucleus accumbens",
+   "hemisphere": "lh",
+   "color": "#ffa500",
+   "positions": {
+    "byteOffset": 1248348,
+    "count": 859
+   },
+   "indices": {
+    "byteOffset": 1258656,
+    "count": 5154
+   },
+   "checks": {
+    "voxels": 778,
+    "voxel_volume_mm3": 778.0,
+    "marching_cubes_volume_mm3": 762.7,
+    "smoothed_volume_mm3": 766.5,
+    "volume_error_fraction": 0.0147,
+    "mean_vertex_shift_mm": 0.255,
+    "mean_distance_to_unsmoothed_mm": 0.254,
+    "max_distance_to_unsmoothed_mm": 0.533
+   }
+  },
+  {
+   "key": "Right-Accumbens-area",
+   "aseg_label": 58,
+   "aseg_name": "Right-Accumbens-area",
+   "name": "Nucleus accumbens",
+   "hemisphere": "rh",
+   "color": "#ffa500",
+   "positions": {
+    "byteOffset": 1279272,
+    "count": 845
+   },
+   "indices": {
+    "byteOffset": 1289412,
+    "count": 5082
+   },
+   "checks": {
+    "voxels": 757,
+    "voxel_volume_mm3": 757.0,
+    "marching_cubes_volume_mm3": 740.9,
+    "smoothed_volume_mm3": 743.7,
+    "volume_error_fraction": 0.0176,
+    "mean_vertex_shift_mm": 0.255,
+    "mean_distance_to_unsmoothed_mm": 0.254,
+    "max_distance_to_unsmoothed_mm": 0.544
+   }
+  }
+ ]
+}
