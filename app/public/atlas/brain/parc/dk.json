@@ -19,7 +19,8 @@
    "hemisphere": "lh",
    "color": "#196428",
    "vertices": 2137,
-   "name": "Banks of the superior temporal sulcus",
+   "name": "Banks of the posterior superior temporal sulcus",
+   "long": "Banks of the superior temporal sulcus",
    "short": "bankssts",
    "group": null
   },
@@ -31,6 +32,7 @@
    "color": "#7d64a0",
    "vertices": 1439,
    "name": "Caudal anterior cingulate",
+   "long": "Caudal anterior cingulate",
    "short": "caudalanteriorcingulate",
    "group": null
   },
@@ -41,7 +43,8 @@
    "hemisphere": "lh",
    "color": "#641900",
    "vertices": 3736,
-   "name": "Caudal middle frontal",
+   "name": "Caudal middle frontal gyrus",
+   "long": "Caudal middle frontal",
    "short": "caudalmiddlefrontal",
    "group": null
   },
@@ -53,6 +56,7 @@
    "color": "#dc1464",
    "vertices": 1630,
    "name": "Cuneus",
+   "long": "Cuneus",
    "short": "cuneus",
    "group": null
   },
@@ -63,7 +67,8 @@
    "hemisphere": "lh",
    "color": "#dc140a",
    "vertices": 1102,
-   "name": "Entorhinal",
+   "name": "Entorhinal cortex",
+   "long": "Entorhinal",
    "short": "entorhinal",
    "group": null
   },
@@ -74,7 +79,8 @@
    "hemisphere": "lh",
    "color": "#b4dc8c",
    "vertices": 4714,
-   "name": "Fusiform",
+   "name": "Fusiform gyrus",
+   "long": "Fusiform",
    "short": "fusiform",
    "group": null
   },
@@ -85,7 +91,8 @@
    "hemisphere": "lh",
    "color": "#dc3cdc",
    "vertices": 7871,
-   "name": "Angular gyrus (inferior parietal)",
+   "name": "Inferior parietal cortex (with angular gyrus)",
+   "long": "Inferior parietal",
    "short": "inferiorparietal",
    "group": null
   },
@@ -96,7 +103,8 @@
    "hemisphere": "lh",
    "color": "#b42878",
    "vertices": 4415,
-   "name": "Inferior temporal",
+   "name": "Inferior temporal gyrus",
+   "long": "Inferior temporal",
    "short": "inferiortemporal",
    "group": null
   },
@@ -107,7 +115,8 @@
    "hemisphere": "lh",
    "color": "#8c148c",
    "vertices": 2531,
-   "name": "Isthmus of the cingulate",
+   "name": "Cingulate isthmus",
+   "long": "Isthmus of the cingulate",
    "short": "isthmuscingulate",
    "group": null
   },
@@ -118,7 +127,8 @@
    "hemisphere": "lh",
    "color": "#141e8c",
    "vertices": 6379,
-   "name": "Lateral occipital",
+   "name": "Lateral occipital cortex",
+   "long": "Lateral occipital",
    "short": "lateraloccipital",
    "group": null
   },
@@ -129,7 +139,8 @@
    "hemisphere": "lh",
    "color": "#234b32",
    "vertices": 4188,
-   "name": "Lateral orbitofrontal",
+   "name": "Lateral orbitofrontal cortex",
+   "long": "Lateral orbitofrontal",
    "short": "lateralorbitofrontal",
    "group": null
   },
@@ -140,7 +151,8 @@
    "hemisphere": "lh",
    "color": "#e18c8c",
    "vertices": 4205,
-   "name": "Lingual",
+   "name": "Lingual gyrus",
+   "long": "Lingual",
    "short": "lingual",
    "group": null
   },
@@ -151,7 +163,8 @@
    "hemisphere": "lh",
    "color": "#c8234b",
    "vertices": 2653,
-   "name": "Medial orbitofrontal",
+   "name": "Medial orbitofrontal cortex",
+   "long": "Medial orbitofrontal",
    "short": "medialorbitofrontal",
    "group": null
   },
@@ -162,7 +175,8 @@
    "hemisphere": "lh",
    "color": "#a06432",
    "vertices": 4452,
-   "name": "Middle temporal",
+   "name": "Middle temporal gyrus",
+   "long": "Middle temporal",
    "short": "middletemporal",
    "group": null
   },
@@ -173,7 +187,8 @@
    "hemisphere": "lh",
    "color": "#14dc3c",
    "vertices": 1838,
-   "name": "Parahippocampal",
+   "name": "Parahippocampal gyrus",
+   "long": "Parahippocampal",
    "short": "parahippocampal",
    "group": null
   },
@@ -184,7 +199,8 @@
    "hemisphere": "lh",
    "color": "#3cdc3c",
    "vertices": 3294,
-   "name": "Paracentral",
+   "name": "Paracentral lobule",
+   "long": "Paracentral",
    "short": "paracentral",
    "group": null
   },
@@ -196,6 +212,7 @@
    "color": "#dcb48c",
    "vertices": 3119,
    "name": "Pars opercularis",
+   "long": "Pars opercularis",
    "short": "parsopercularis",
    "group": null
   },
@@ -207,6 +224,7 @@
    "color": "#146432",
    "vertices": 956,
    "name": "Pars orbitalis",
+   "long": "Pars orbitalis",
    "short": "parsorbitalis",
    "group": null
   },
@@ -218,6 +236,7 @@
    "color": "#dc3c14",
    "vertices": 2046,
    "name": "Pars triangularis",
+   "long": "Pars triangularis",
    "short": "parstriangularis",
    "group": null
   },
@@ -228,7 +247,8 @@
    "hemisphere": "lh",
    "color": "#78643c",
    "vertices": 1912,
-   "name": "Pericalcarine",
+   "name": "Pericalcarine cortex",
+   "long": "Pericalcarine",
    "short": "pericalcarine",
    "group": null
   },
@@ -239,7 +259,8 @@
    "hemisphere": "lh",
    "color": "#dc1414",
    "vertices": 9519,
-   "name": "Postcentral",
+   "name": "Postcentral gyrus",
+   "long": "Postcentral",
    "short": "postcentral",
    "group": null
   },
@@ -251,6 +272,7 @@
    "color": "#dcb4dc",
    "vertices": 3266,
    "name": "Posterior cingulate",
+   "long": "Posterior cingulate",
    "short": "posteriorcingulate",
    "group": null
   },
@@ -261,7 +283,8 @@
    "hemisphere": "lh",
    "color": "#3c14dc",
    "vertices": 10740,
-   "name": "Precentral",
+   "name": "Precentral gyrus",
+   "long": "Precentral",
    "short": "precentral",
    "group": null
   },
@@ -273,6 +296,7 @@
    "color": "#a08cb4",
    "vertices": 7308,
    "name": "Precuneus",
+   "long": "Precuneus",
    "short": "precuneus",
    "group": null
   },
@@ -284,6 +308,7 @@
    "color": "#50148c",
    "vertices": 1350,
    "name": "Rostral anterior cingulate",
+   "long": "Rostral anterior cingulate",
    "short": "rostralanteriorcingulate",
    "group": null
   },
@@ -294,7 +319,8 @@
    "hemisphere": "lh",
    "color": "#4b327d",
    "vertices": 7243,
-   "name": "Rostral middle frontal",
+   "name": "Rostral middle frontal gyrus",
+   "long": "Rostral middle frontal",
    "short": "rostralmiddlefrontal",
    "group": null
   },
@@ -305,7 +331,8 @@
    "hemisphere": "lh",
    "color": "#14dca0",
    "vertices": 12179,
-   "name": "Superior frontal",
+   "name": "Superior frontal gyrus",
+   "long": "Superior frontal",
    "short": "superiorfrontal",
    "group": null
   },
@@ -316,7 +343,8 @@
    "hemisphere": "lh",
    "color": "#14b48c",
    "vertices": 10456,
-   "name": "Superior parietal",
+   "name": "Superior parietal lobule",
+   "long": "Superior parietal",
    "short": "superiorparietal",
    "group": null
   },
@@ -327,7 +355,8 @@
    "hemisphere": "lh",
    "color": "#8cdcdc",
    "vertices": 7271,
-   "name": "Superior temporal",
+   "name": "Superior temporal gyrus",
+   "long": "Superior temporal",
    "short": "superiortemporal",
    "group": null
   },
@@ -338,7 +367,8 @@
    "hemisphere": "lh",
    "color": "#50a014",
    "vertices": 8600,
-   "name": "Supramarginal",
+   "name": "Supramarginal gyrus",
+   "long": "Supramarginal",
    "short": "supramarginal",
    "group": null
   },
@@ -350,6 +380,7 @@
    "color": "#640064",
    "vertices": 272,
    "name": "Frontal pole",
+   "long": "Frontal pole",
    "short": "frontalpole",
    "group": null
   },
@@ -361,6 +392,7 @@
    "color": "#4614aa",
    "vertices": 839,
    "name": "Temporal pole",
+   "long": "Temporal pole",
    "short": "temporalpole",
    "group": null
   },
@@ -371,7 +403,8 @@
    "hemisphere": "lh",
    "color": "#9696c8",
    "vertices": 1064,
-   "name": "Transverse temporal",
+   "name": "Transverse temporal gyrus (Heschl's)",
+   "long": "Transverse temporal",
    "short": "transversetemporal",
    "group": null
   },
@@ -383,6 +416,7 @@
    "color": "#ffc020",
    "vertices": 5229,
    "name": "Insula",
+   "long": "Insula",
    "short": "insula",
    "group": null
   },
@@ -393,7 +427,8 @@
    "hemisphere": "rh",
    "color": "#196428",
    "vertices": 2196,
-   "name": "Banks of the superior temporal sulcus",
+   "name": "Banks of the posterior superior temporal sulcus",
+   "long": "Banks of the superior temporal sulcus",
    "short": "bankssts",
    "group": null
   },
@@ -405,6 +440,7 @@
    "color": "#7d64a0",
    "vertices": 1608,
    "name": "Caudal anterior cingulate",
+   "long": "Caudal anterior cingulate",
    "short": "caudalanteriorcingulate",
    "group": null
   },
@@ -415,7 +451,8 @@
    "hemisphere": "rh",
    "color": "#641900",
    "vertices": 3494,
-   "name": "Caudal middle frontal",
+   "name": "Caudal middle frontal gyrus",
+   "long": "Caudal middle frontal",
    "short": "caudalmiddlefrontal",
    "group": null
   },
@@ -427,6 +464,7 @@
    "color": "#dc1464",
    "vertices": 1638,
    "name": "Cuneus",
+   "long": "Cuneus",
    "short": "cuneus",
    "group": null
   },
@@ -437,7 +475,8 @@
    "hemisphere": "rh",
    "color": "#dc140a",
    "vertices": 902,
-   "name": "Entorhinal",
+   "name": "Entorhinal cortex",
+   "long": "Entorhinal",
    "short": "entorhinal",
    "group": null
   },
@@ -448,7 +487,8 @@
    "hemisphere": "rh",
    "color": "#b4dc8c",
    "vertices": 4661,
-   "name": "Fusiform",
+   "name": "Fusiform gyrus",
+   "long": "Fusiform",
    "short": "fusiform",
    "group": null
   },
@@ -459,7 +499,8 @@
    "hemisphere": "rh",
    "color": "#dc3cdc",
    "vertices": 9676,
-   "name": "Angular gyrus (inferior parietal)",
+   "name": "Inferior parietal cortex (with angular gyrus)",
+   "long": "Inferior parietal",
    "short": "inferiorparietal",
    "group": null
   },
@@ -470,7 +511,8 @@
    "hemisphere": "rh",
    "color": "#b42878",
    "vertices": 4198,
-   "name": "Inferior temporal",
+   "name": "Inferior temporal gyrus",
+   "long": "Inferior temporal",
    "short": "inferiortemporal",
    "group": null
   },
@@ -481,7 +523,8 @@
    "hemisphere": "rh",
    "color": "#8c148c",
    "vertices": 2388,
-   "name": "Isthmus of the cingulate",
+   "name": "Cingulate isthmus",
+   "long": "Isthmus of the cingulate",
    "short": "isthmuscingulate",
    "group": null
   },
@@ -492,7 +535,8 @@
    "hemisphere": "rh",
    "color": "#141e8c",
    "vertices": 5963,
-   "name": "Lateral occipital",
+   "name": "Lateral occipital cortex",
+   "long": "Lateral occipital",
    "short": "lateraloccipital",
    "group": null
   },
@@ -503,7 +547,8 @@
    "hemisphere": "rh",
    "color": "#234b32",
    "vertices": 4354,
-   "name": "Lateral orbitofrontal",
+   "name": "Lateral orbitofrontal cortex",
+   "long": "Lateral orbitofrontal",
    "short": "lateralorbitofrontal",
    "group": null
   },
@@ -514,7 +559,8 @@
    "hemisphere": "rh",
    "color": "#e18c8c",
    "vertices": 3894,
-   "name": "Lingual",
+   "name": "Lingual gyrus",
+   "long": "Lingual",
    "short": "lingual",
    "group": null
   },
@@ -525,7 +571,8 @@
    "hemisphere": "rh",
    "color": "#c8234b",
    "vertices": 2801,
-   "name": "Medial orbitofrontal",
+   "name": "Medial orbitofrontal cortex",
+   "long": "Medial orbitofrontal",
    "short": "medialorbitofrontal",
    "group": null
   },
@@ -536,7 +583,8 @@
    "hemisphere": "rh",
    "color": "#a06432",
    "vertices": 5057,
-   "name": "Middle temporal",
+   "name": "Middle temporal gyrus",
+   "long": "Middle temporal",
    "short": "middletemporal",
    "group": null
   },
@@ -547,7 +595,8 @@
    "hemisphere": "rh",
    "color": "#14dc3c",
    "vertices": 1742,
-   "name": "Parahippocampal",
+   "name": "Parahippocampal gyrus",
+   "long": "Parahippocampal",
    "short": "parahippocampal",
    "group": null
   },
@@ -558,7 +607,8 @@
    "hemisphere": "rh",
    "color": "#3cdc3c",
    "vertices": 3831,
-   "name": "Paracentral",
+   "name": "Paracentral lobule",
+   "long": "Paracentral",
    "short": "paracentral",
    "group": null
   },
@@ -570,6 +620,7 @@
    "color": "#dcb48c",
    "vertices": 2472,
    "name": "Pars opercularis",
+   "long": "Pars opercularis",
    "short": "parsopercularis",
    "group": null
   },
@@ -581,6 +632,7 @@
    "color": "#146432",
    "vertices": 946,
    "name": "Pars orbitalis",
+   "long": "Pars orbitalis",
    "short": "parsorbitalis",
    "group": null
   },
@@ -592,6 +644,7 @@
    "color": "#dc3c14",
    "vertices": 2380,
    "name": "Pars triangularis",
+   "long": "Pars triangularis",
    "short": "parstriangularis",
    "group": null
   },
@@ -602,7 +655,8 @@
    "hemisphere": "rh",
    "color": "#78643c",
    "vertices": 1823,
-   "name": "Pericalcarine",
+   "name": "Pericalcarine cortex",
+   "long": "Pericalcarine",
    "short": "pericalcarine",
    "group": null
   },
@@ -613,7 +667,8 @@
    "hemisphere": "rh",
    "color": "#dc1414",
    "vertices": 9138,
-   "name": "Postcentral",
+   "name": "Postcentral gyrus",
+   "long": "Postcentral",
    "short": "postcentral",
    "group": null
   },
@@ -625,6 +680,7 @@
    "color": "#dcb4dc",
    "vertices": 2994,
    "name": "Posterior cingulate",
+   "long": "Posterior cingulate",
    "short": "posteriorcingulate",
    "group": null
   },
@@ -635,7 +691,8 @@
    "hemisphere": "rh",
    "color": "#3c14dc",
    "vertices": 10705,
-   "name": "Precentral",
+   "name": "Precentral gyrus",
+   "long": "Precentral",
    "short": "precentral",
    "group": null
   },
@@ -647,6 +704,7 @@
    "color": "#a08cb4",
    "vertices": 7975,
    "name": "Precuneus",
+   "long": "Precuneus",
    "short": "precuneus",
    "group": null
   },
@@ -658,6 +716,7 @@
    "color": "#50148c",
    "vertices": 1051,
    "name": "Rostral anterior cingulate",
+   "long": "Rostral anterior cingulate",
    "short": "rostralanteriorcingulate",
    "group": null
   },
@@ -668,7 +727,8 @@
    "hemisphere": "rh",
    "color": "#4b327d",
    "vertices": 7864,
-   "name": "Rostral middle frontal",
+   "name": "Rostral middle frontal gyrus",
+   "long": "Rostral middle frontal",
    "short": "rostralmiddlefrontal",
    "group": null
   },
@@ -679,7 +739,8 @@
    "hemisphere": "rh",
    "color": "#14dca0",
    "vertices": 11878,
-   "name": "Superior frontal",
+   "name": "Superior frontal gyrus",
+   "long": "Superior frontal",
    "short": "superiorfrontal",
    "group": null
   },
@@ -690,7 +751,8 @@
    "hemisphere": "rh",
    "color": "#14b48c",
    "vertices": 10222,
-   "name": "Superior parietal",
+   "name": "Superior parietal lobule",
+   "long": "Superior parietal",
    "short": "superiorparietal",
    "group": null
   },
@@ -701,7 +763,8 @@
    "hemisphere": "rh",
    "color": "#8cdcdc",
    "vertices": 6868,
-   "name": "Superior temporal",
+   "name": "Superior temporal gyrus",
+   "long": "Superior temporal",
    "short": "superiortemporal",
    "group": null
   },
@@ -712,7 +775,8 @@
    "hemisphere": "rh",
    "color": "#50a014",
    "vertices": 8150,
-   "name": "Supramarginal",
+   "name": "Supramarginal gyrus",
+   "long": "Supramarginal",
    "short": "supramarginal",
    "group": null
   },
@@ -724,6 +788,7 @@
    "color": "#640064",
    "vertices": 369,
    "name": "Frontal pole",
+   "long": "Frontal pole",
    "short": "frontalpole",
    "group": null
   },
@@ -735,6 +800,7 @@
    "color": "#4614aa",
    "vertices": 817,
    "name": "Temporal pole",
+   "long": "Temporal pole",
    "short": "temporalpole",
    "group": null
   },
@@ -745,7 +811,8 @@
    "hemisphere": "rh",
    "color": "#9696c8",
    "vertices": 781,
-   "name": "Transverse temporal",
+   "name": "Transverse temporal gyrus (Heschl's)",
+   "long": "Transverse temporal",
    "short": "transversetemporal",
    "group": null
   },
@@ -757,6 +824,7 @@
    "color": "#ffc020",
    "vertices": 5090,
    "name": "Insula",
+   "long": "Insula",
    "short": "insula",
    "group": null
   }

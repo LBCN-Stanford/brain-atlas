@@ -282,7 +282,7 @@ function HelpBody({ examples, onExample }: { examples: { id: string; label: stri
       <h3>Using the atlas</h3>
       <ol className="atlas-steps">
         <li>Click an area of the brain, find one by name, or open <strong>Areas</strong> for the full list. The view moves in on it and the rest of the brain steps back.</li>
-        <li>The panel lists every stimulation in that area and what the person said. Where a finer atlas divides the area, its subregions are listed too: click one, on the brain or in the list, to read only its reports.</li>
+        <li>The panel lists every stimulation in that area and what the person said. Where a finer atlas divides the area, its parts are drawn inside it: click one on the brain to read only its reports, and click it again to see the whole area.</li>
         <li>Turn on <strong>Compare areas</strong> to read several areas together. <strong>Download</strong> gives the reports as a table, or a map figure of what is on screen.</li>
       </ol>
       {examples.length > 0 && (
@@ -411,7 +411,7 @@ export function AreaListSheet({ onClose, all, counts, selected, onToggle, atlasT
           return (
             <li key={a.id}>
               <button aria-pressed={chosen.has(a.id)} className={chosen.has(a.id) ? 'on' : ''} onClick={() => onToggle(a.id)} disabled={!c?.stim && !chosen.has(a.id)}>
-                <span className="name">{a.name}<span className="sub">{[hemiWord(a.hemisphere), a.kind === 'deep' ? 'deep structure' : ''].filter(Boolean).join(' · ')}</span></span>
+                <span className="name" title={a.long ?? undefined}>{a.name}<span className="sub">{[hemiWord(a.hemisphere), a.kind === 'deep' ? 'deep structure' : ''].filter(Boolean).join(' · ')}</span></span>
                 <span className="nums">{c?.stim ? `${c.stim.toLocaleString()} stimulations · ${c.people} ${c.people === 1 ? 'person' : 'people'}` : 'No stimulation'}{thin && <span className="atlas-tag" title={`Fewer than ${MIN_PEOPLE} people`}>few people</span>}</span>
                 {chosen.has(a.id) && <Check size={15} aria-hidden />}
               </button>

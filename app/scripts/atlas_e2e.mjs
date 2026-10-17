@@ -78,7 +78,7 @@ try {
   check(new URL(page.url()).searchParams.get('sel')?.includes('insula') ?? false, 'the selection is in the address')
 
   /* ---- one area at a time; compare is opt-in; subregions ------------------------------------- */
-  check(/subregions of the Destrieux atlas/.test((await page.textContent('.atlas-panel')) ?? ''), 'the insula says its subregions can be picked on the brain')
+  check(/Divided into \d+ parts \(Destrieux\)/.test((await page.textContent('.atlas-panel')) ?? ''), 'the insula says its subregions can be picked on the brain')
   // a person is one block; selecting it narrows the panel to them
   const firstPerson = page.locator('.atlas-personhead').first()
   await firstPerson.click()

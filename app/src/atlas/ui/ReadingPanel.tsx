@@ -244,11 +244,11 @@ export function ReadingPanel(p: Props) {
         return act ? (
           <div className="atlas-subsel">
             <i style={{ background: act.color }} aria-hidden />
-            <span className="name">{act.name}<span className="sub">{p.subregions.title} subregion · {act.stim} stimulations · {act.people} {act.people === 1 ? 'person' : 'people'}</span></span>
+            <span className="name">{act.name}<span className="sub">Part of {areas[0]?.name} · {act.stim} stimulations · {act.people} {act.people === 1 ? 'person' : 'people'}</span></span>
             <button aria-label={`Show all of ${areas[0]?.name ?? 'the area'}`} onClick={p.subregions.onClear}><X size={14} /></button>
           </div>
         ) : (
-          <p className="muted small atlas-subhint">{p.subregions.list.length} subregions of the {p.subregions.title} atlas lie in this area. Click one on the brain to read only its reports.</p>
+          <p className="muted small atlas-subhint">Divided into {p.subregions.list.length} parts ({p.subregions.title}). Click one on the brain to read only its reports.</p>
         )
       })()}
 

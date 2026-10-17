@@ -106,56 +106,8 @@ SUBCORTICAL = [
     (26, "Left-Accumbens-area", "Nucleus accumbens", "lh"), (58, "Right-Accumbens-area", "Nucleus accumbens", "rh"),
 ]
 
-# Desikan-Killiany long names (Desikan et al. 2006, Table 1 wording, sentence case).
-DK_NAMES = {
-    "bankssts": "Banks of the superior temporal sulcus",
-    "caudalanteriorcingulate": "Caudal anterior cingulate",
-    "caudalmiddlefrontal": "Caudal middle frontal",
-    "cuneus": "Cuneus",
-    "entorhinal": "Entorhinal",
-    "fusiform": "Fusiform",
-    # Desikan-Killiany's "inferiorparietal" is the angular gyrus region, posterior to supramarginal
-    # (on fsaverage its centroid is 28 mm behind supramarginal's); named for what it is
-    "inferiorparietal": "Angular gyrus (inferior parietal)",
-    "inferiortemporal": "Inferior temporal",
-    "isthmuscingulate": "Isthmus of the cingulate",
-    "lateraloccipital": "Lateral occipital",
-    "lateralorbitofrontal": "Lateral orbitofrontal",
-    "lingual": "Lingual",
-    "medialorbitofrontal": "Medial orbitofrontal",
-    "middletemporal": "Middle temporal",
-    "parahippocampal": "Parahippocampal",
-    "paracentral": "Paracentral",
-    "parsopercularis": "Pars opercularis",
-    "parsorbitalis": "Pars orbitalis",
-    "parstriangularis": "Pars triangularis",
-    "pericalcarine": "Pericalcarine",
-    "postcentral": "Postcentral",
-    "posteriorcingulate": "Posterior cingulate",
-    "precentral": "Precentral",
-    "precuneus": "Precuneus",
-    "rostralanteriorcingulate": "Rostral anterior cingulate",
-    "rostralmiddlefrontal": "Rostral middle frontal",
-    "superiorfrontal": "Superior frontal",
-    "superiorparietal": "Superior parietal",
-    "superiortemporal": "Superior temporal",
-    "supramarginal": "Supramarginal",
-    "frontalpole": "Frontal pole",
-    "temporalpole": "Temporal pole",
-    "transversetemporal": "Transverse temporal",
-    "insula": "Insula",
-}
 
 # Yeo et al. 2011, 7-network solution: network numbers as distributed, names as the paper uses them.
-YEO7_NAMES = {
-    "7Networks_1": "Visual",
-    "7Networks_2": "Somatomotor",
-    "7Networks_3": "Dorsal attention",
-    "7Networks_4": "Ventral attention",
-    "7Networks_5": "Limbic",
-    "7Networks_6": "Frontoparietal control",
-    "7Networks_7": "Default",
-}
 
 # Glasser areas whose section the two machine-readable mappings disagree on. Both are faithful to
 # Glasser et al. 2016's Supplementary Neuroanatomical Results, which itself places these six areas
@@ -172,6 +124,10 @@ SECTION_OVERRIDES: dict[str, str] = {
     "TF": "Lateral Temporal",
     "POFC": "Orbital and Polar Frontal",
 }
+
+# display names (short) and Desikan's long names: one table, also read by the tests
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from area_names import DK_LONG, NAMES  # noqa: E402
 
 DESTRIEUX_NAMES = ROOT / "scripts/v2/reference/destrieux_labels_canlab.csv"
 # Destrieux et al. 2010 Table 1 long names, as distributed by the CANlab Neuroimaging_Pattern_Masks
@@ -402,15 +358,15 @@ def build(fs: Path, glasser: bool = False) -> dict[str, bytes]:
                         raise SystemExit(f"glasser area {nm} missing from the region list")
                     entry.update(name=m["long"], short=m["short"], group=m["section"])
                 elif atlas_id == "dk":
-                    if nm not in DK_NAMES:
+                    if nm not in NAMES["dk"] or nm not in DK_LONG:
                         raise SystemExit(f"DK label {nm} has no display name")
-                    entry.update(name=DK_NAMES[nm], short=nm, group=None)
+                    entry.update(name=NAMES["dk"][nm], long=DK_LONG[nm], short=nm, group=None)
                 elif atlas_id == "yeo7":
-                    entry.update(name=YEO7_NAMES[nm], short=nm, group=None)
+                    entry.update(name=NAMES["yeo7"][nm], long=NAMES["yeo7"][nm], short=nm, group=None)
                 elif atlas_id == "destrieux":
-                    if nm not in destrieux:
-                        raise SystemExit(f"Destrieux label {nm} has no long name")
-                    entry.update(name=destrieux[nm], short=nm, group=None)
+                    if nm not in destrieux or nm not in NAMES["destrieux"]:
+                        raise SystemExit(f"Destrieux label {nm} has no name")
+                    entry.update(name=NAMES["destrieux"][nm], long=destrieux[nm], short=nm, group=None)
                 else:
                     raise SystemExit(f"no naming rule for atlas {atlas_id}")
                 labels.append(entry)

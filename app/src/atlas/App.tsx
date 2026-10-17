@@ -261,8 +261,8 @@ export function App() {
   const areaSub = useCallback((id: string) => {
     const s = byId.get(id)
     if (!s) return ''
+    // the side, and what kind of thing it is; the atlas's own full label is in the area's tooltip
     const bits = [hemiWord(s.hemisphere)]
-    if (s.short && s.short !== s.name && s.kind === 'cortex') bits.push(s.short)
     if (s.kind === 'deep') bits.push('deep structure')
     return bits.filter(Boolean).join(' · ')
   }, [byId, state.atlas])
@@ -752,7 +752,7 @@ export function App() {
             return x ? (
               <div className="atlas-tip" style={{ left: hover.x + 14, top: hover.y + 14 }}>
                 <strong>{x.name}</strong>
-                <span>{sub?.title} subregion</span>
+                <span>Part of {areaName(focusArea ?? '')} · {sub?.title}</span>
                 <span>{x.stim ? `${x.stim.toLocaleString()} stimulations · ${x.people} ${x.people === 1 ? 'person' : 'people'}` : 'No stimulation here'}</span>
                 <span>{subFilter === x.key ? 'Click to deselect' : 'Click to select'}</span>
               </div>

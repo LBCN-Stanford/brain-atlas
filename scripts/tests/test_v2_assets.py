@@ -47,6 +47,24 @@ class Brain(unittest.TestCase):
             # left hemisphere is left in MNI305, and vice versa
             self.assertLess(np.median(pial[:, 0]), 0) if h == "lh" else self.assertGreater(np.median(pial[:, 0]), 0)
 
+    def test_display_names_match_the_name_table(self):
+        """Every served area carries the name in scripts/v2/area_names.py and its atlas's own full
+        label, and no two areas on one side share a display name."""
+        import sys
+        sys.path.insert(0, str(ROOT / "scripts/v2"))
+        from area_names import DK_LONG, NAMES
+        for atlas, names in NAMES.items():
+            self.assertEqual(set(names), {l["annot_name"] for l in json.loads((BRAIN / f"parc/{atlas}.json").read_text())["labels"] if l.get("annot_name")}, atlas)
+            labels = [l for l in json.loads((BRAIN / f"parc/{atlas}.json").read_text())["labels"] if l.get("annot_name")]
+            for l in labels:
+                self.assertEqual(l["name"], names[l["annot_name"]], (atlas, l["annot_name"]))
+                self.assertTrue(l.get("long"), (atlas, l["annot_name"], "no long name"))
+                if atlas == "dk":
+                    self.assertEqual(l["long"], DK_LONG[l["annot_name"]])
+            for h in ("lh", "rh"):
+                shown = [l["name"] for l in labels if l["hemisphere"] == h]
+                self.assertEqual(len(shown), len(set(shown)), (atlas, h, "two areas share a name"))
+
     def test_parcellations(self):
         for atlas, n in EXPECTED.items():
             table = json.loads((BRAIN / f"parc/{atlas}.json").read_text())

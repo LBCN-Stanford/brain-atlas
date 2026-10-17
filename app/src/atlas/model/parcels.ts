@@ -7,7 +7,10 @@ export const ATLAS_IDS: readonly AtlasId[] = ['dk', 'destrieux', 'yeo7']
 export interface ParcelLabel {
   index: number
   key: string | null
+  /** the display name (scripts/v2/area_names.py) */
   name: string
+  /** the atlas's own full label (Destrieux's long name, Desikan's region name) */
+  long?: string
   short?: string
   hemisphere: 'lh' | 'rh' | null
   color: string | null
@@ -104,6 +107,8 @@ export interface Selectable {
   key: string
   name: string
   short: string
+  /** the atlas's full label, when it differs from the name */
+  long: string | null
   hemisphere: 'lh' | 'rh' | null
   group: string | null
 }
@@ -138,10 +143,10 @@ export function selectablesFor(table: ParcelTable, deep: DeepStructure[]): Selec
   const out: Selectable[] = []
   for (const l of table.labels) {
     if (!l.key) continue
-    out.push({ id: cortexId(l.key), kind: 'cortex', key: l.key, name: l.name, short: l.short ?? l.name, hemisphere: l.hemisphere, group: l.group })
+    out.push({ id: cortexId(l.key), kind: 'cortex', key: l.key, name: l.name, short: l.short ?? l.name, long: l.long && l.long !== l.name ? l.long : null, hemisphere: l.hemisphere, group: l.group })
   }
   for (const d of deep) {
-    out.push({ id: deepId(d.key), kind: 'deep', key: d.key, name: d.name, short: d.name, hemisphere: d.hemisphere, group: 'Deep structures' })
+    out.push({ id: deepId(d.key), kind: 'deep', key: d.key, name: d.name, short: d.name, long: null, hemisphere: d.hemisphere, group: 'Deep structures' })
   }
   return out
 }

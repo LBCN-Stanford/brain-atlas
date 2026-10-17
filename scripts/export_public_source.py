@@ -44,6 +44,7 @@ FILES = [
     # the brain-asset builder works from the public fsaverage template only; the site and report
     # builders read controlled data on the lab machine and name held people, so they stay private
     "scripts/v2/build_brain_assets.py", "scripts/v2/README.md",
+    "scripts/v2/area_names.py", "scripts/v2/apply_area_names.py",
 ]
 # whole directories
 DIRS = ["app/src/atlas", "app/public/atlas/brain", "app/licenses", "scripts/v2/reference"]

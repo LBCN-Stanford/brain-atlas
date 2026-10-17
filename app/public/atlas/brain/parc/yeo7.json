@@ -20,6 +20,7 @@
    "color": "#781286",
    "vertices": 21632,
    "name": "Visual",
+   "long": "Visual",
    "short": "7Networks_1",
    "group": null
   },
@@ -31,6 +32,7 @@
    "color": "#4682b4",
    "vertices": 29778,
    "name": "Somatomotor",
+   "long": "Somatomotor",
    "short": "7Networks_2",
    "group": null
   },
@@ -42,6 +44,7 @@
    "color": "#00760e",
    "vertices": 17511,
    "name": "Dorsal attention",
+   "long": "Dorsal attention",
    "short": "7Networks_3",
    "group": null
   },
@@ -53,6 +56,7 @@
    "color": "#c43afa",
    "vertices": 17392,
    "name": "Ventral attention",
+   "long": "Ventral attention",
    "short": "7Networks_4",
    "group": null
   },
@@ -64,6 +68,7 @@
    "color": "#dcf8a4",
    "vertices": 11380,
    "name": "Limbic",
+   "long": "Limbic",
    "short": "7Networks_5",
    "group": null
   },
@@ -75,6 +80,7 @@
    "color": "#e69422",
    "vertices": 16635,
    "name": "Frontoparietal control",
+   "long": "Frontoparietal control",
    "short": "7Networks_6",
    "group": null
   },
@@ -86,6 +92,7 @@
    "color": "#cd3e4e",
    "vertices": 35314,
    "name": "Default",
+   "long": "Default",
    "short": "7Networks_7",
    "group": null
   },
@@ -97,6 +104,7 @@
    "color": "#781286",
    "vertices": 22519,
    "name": "Visual",
+   "long": "Visual",
    "short": "7Networks_1",
    "group": null
   },
@@ -108,6 +116,7 @@
    "color": "#4682b4",
    "vertices": 30207,
    "name": "Somatomotor",
+   "long": "Somatomotor",
    "short": "7Networks_2",
    "group": null
   },
@@ -119,6 +128,7 @@
    "color": "#00760e",
    "vertices": 17604,
    "name": "Dorsal attention",
+   "long": "Dorsal attention",
    "short": "7Networks_3",
    "group": null
   },
@@ -130,6 +140,7 @@
    "color": "#c43afa",
    "vertices": 19402,
    "name": "Ventral attention",
+   "long": "Ventral attention",
    "short": "7Networks_4",
    "group": null
   },
@@ -141,6 +152,7 @@
    "color": "#dcf8a4",
    "vertices": 11614,
    "name": "Limbic",
+   "long": "Limbic",
    "short": "7Networks_5",
    "group": null
   },
@@ -152,6 +164,7 @@
    "color": "#e69422",
    "vertices": 22330,
    "name": "Frontoparietal control",
+   "long": "Frontoparietal control",
    "short": "7Networks_6",
    "group": null
   },
@@ -163,6 +176,7 @@
    "color": "#cd3e4e",
    "vertices": 26056,
    "name": "Default",
+   "long": "Default",
    "short": "7Networks_7",
    "group": null
   }

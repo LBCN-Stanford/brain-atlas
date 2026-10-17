@@ -24,7 +24,7 @@ export function searchSelectables(all: readonly Selectable[], q: string, limit =
   const terms = [s, ...(SYNONYMS[s] ?? [])]
   const scored: { x: Selectable; score: number }[] = []
   for (const x of all) {
-    const hay = `${x.name} ${x.short} ${x.group ?? ''} ${hemiWord(x.hemisphere)}`.toLowerCase()
+    const hay = `${x.name} ${x.short} ${x.long ?? ''} ${x.group ?? ''} ${hemiWord(x.hemisphere)}`.toLowerCase()
     let score = 0
     for (const t of terms) {
       if (x.short.toLowerCase() === t) score = Math.max(score, 100)
