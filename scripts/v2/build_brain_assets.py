@@ -13,8 +13,8 @@ are defined on. That is FreeSurfer's fsaverage:
     HCP-MMP1.0 (Glasser 2016) is distributed on fsaverage by the projection MNE ships
     (fetch_hcp_mmp_parcellation). Every vertex label below is read from those files, not
     resampled, re-projected or re-drawn.
-  * fsaverage surface RAS IS MNI305 (its talairach.xfm is the identity; verified here: the T1's
-    vox2ras equals its vox2ras-tkr). Our site coordinates are MNI305, and the 60 pure-ECoG
+  * fsaverage surface RAS IS MNI305 (verified here: its talairach.xfm is parsed and asserted to be
+    the identity, and the T1's vox2ras equals its vox2ras-tkr). Our site coordinates are MNI305, and the 60 pure-ECoG
     subjects' coordinates are fsaverage vertex positions outright (app/src/lib/space/
     coordinateSpace.ts). So sites, surfaces and subcortical meshes share one frame, with no
     transform anywhere in this script.
@@ -23,7 +23,9 @@ NO DECIMATION
 
 Every vertex and every triangle of fsaverage's pial and inflated surfaces is written as FreeSurfer
 distributes it (163,842 vertices and 327,680 triangles per hemisphere; the two hemispheres share
-one triangle list, which is asserted). Each vertex carries the published label of that same vertex
+one triangle list, which is asserted). The pial surface is written unchanged; the inflated one is
+translated sideways for display, one constant per hemisphere (INFLATED_GAP_MM, below), and never
+used to place or measure anything. Each vertex carries the published label of that same vertex
 in each annotation, so a parcel on screen is the parcel in the file, at the file's resolution (mean
 edge 0.78 mm) -- what freeview or MNE's Brain would show. (The 9 Oct build kept fsaverage's first
 40,962 vertices -- the fsaverage6 subset -- which halves the boundary resolution; it was exact at
@@ -43,11 +45,13 @@ more than the tolerances below FAILS the build rather than shipping.
 
 OUTPUTS (app/public/atlas/brain/)
 
-  {lh,rh}.pial.f32 / .inflated.f32   float32 xyz, 163,842 vertices (fsaverage, as distributed)
+  {lh,rh}.pial.f32 / .inflated.f32   float32 xyz, 163,842 vertices (pial as distributed; inflated
+                                      translated sideways for display)
   tris.u32                            uint32 triangle indices, 327,680 faces (shared by both hemispheres)
   {lh,rh}.sulc.f32                    FreeSurfer sulc (shading only)
   parc/{atlas}.{lh,rh}.u16            per-vertex index into parc/{atlas}.json labels (0 = none)
-  parc/{atlas}.json                   label table: key, display name, hemisphere, colour, group
+  parc/{atlas}.json                   label table: key, display name, hemisphere, colour, group, and
+                                      how much of the area an outside view can see (BURIED, below)
   subcortical.bin / subcortical.json  concatenated float32 positions + uint32 indices, per structure
   manifest.json                       inputs + sha256, outputs + sha256, frame, checks measured
 
@@ -92,6 +96,22 @@ MAX_MEAN_DISPLACEMENT_MM = 0.5
 # balloons do not interpenetrate at the midline. Inflated coordinates are never used to place or
 # measure anything.
 INFLATED_GAP_MM = 6.0
+
+# BURIED: an area the folded brain hides, which the app shows on the smoothed surface when it is
+# picked. Measured, not listed: a vertex of the pial surface is EXPOSED when it is the nearest
+# surface (within EXPOSURE_TOL_MM) along at least one of EXPOSURE_DIRECTIONS view directions spread
+# evenly over the sphere (one hemisphere at a time, as the app's views show it), by an orthographic
+# z-buffer at EXPOSURE_PIXEL_MM. An area is buried when, averaged over its two hemispheres, under
+# BURIED_BELOW of its vertices are exposed: one verdict per structure, so left and right agree.
+# Measured 17 Oct 2026: insula 0.21 and transverse temporal 0.22 (Desikan-Killiany); Heschl's gyrus
+# 0.24, planum polare 0.34, the circular insular sulci 0.04-0.29, central sulcus 0.12 (Destrieux);
+# no Yeo network (lowest 0.57). Planum temporale is 0.74 exposed on fsaverage and is not buried.
+# The rule this replaces (sulc > 0 on over 75% of an area's vertices) missed Heschl's gyrus and
+# the plana and split left from right (validation of 16 Oct, M10).
+EXPOSURE_DIRECTIONS = 42
+EXPOSURE_PIXEL_MM = 0.5
+EXPOSURE_TOL_MM = 1.0
+BURIED_BELOW = 0.4
 
 # FreeSurfer aseg structures offered as clickable deep structures. Ventral DC and brainstem are
 # segmented but left out: neither is a target anyone reads stimulation reports for, and both
@@ -185,6 +205,12 @@ def mmp_table() -> dict[str, dict]:
     return out
 
 
+# CANlab's copy of Destrieux et al. 2010 Table 1 is lightly edited: it drops the gyral numbering
+# (F1-F3, T1-T3, O1-O3) and carries one typo of its own. The pinned file stays as published; the
+# typo is corrected here, where it is visible.
+DESTRIEUX_FIXES = {"ligual part": "lingual part"}
+
+
 def destrieux_table() -> dict[str, str]:
     if sha256(DESTRIEUX_NAMES) != DESTRIEUX_NAMES_SHA256:
         raise SystemExit(f"{DESTRIEUX_NAMES} does not match its pinned sha256")
@@ -192,8 +218,52 @@ def destrieux_table() -> dict[str, str]:
     with open(DESTRIEUX_NAMES, encoding="utf-8") as f:
         for r in csv.DictReader(f):
             if r["labels"].startswith("L_"):
-                out[r["labels"][2:].replace("&", "_and_")] = r["label_descriptions"].rsplit(" (left)", 1)[0]
+                # the source separates 60 names' words with non-breaking spaces (U+00A0), so a
+                # reader typing the name found nothing and a join on the name failed (M13)
+                desc = " ".join(r["label_descriptions"].rsplit(" (left)", 1)[0].split())
+                for bad, good in DESTRIEUX_FIXES.items():
+                    desc = desc.replace(bad, good)
+                out[r["labels"][2:].replace("&", "_and_")] = desc
     return out
+
+
+def talairach_is_identity(fs: Path) -> bool:
+    """fsaverage's talairach.xfm, parsed: its 3x4 linear transform must be the identity."""
+    text = (fs / "mri/transforms/talairach.xfm").read_text()
+    body = text.split("Linear_Transform", 1)[1].split("=", 1)[1].replace(";", " ")
+    m = np.array([float(x) for x in body.split()[:12]]).reshape(3, 4)
+    return bool(np.allclose(m, np.eye(3, 4)))
+
+
+def exposure(P: np.ndarray, F: np.ndarray) -> np.ndarray:
+    """Per vertex: is it the nearest surface along at least one of EXPOSURE_DIRECTIONS directions?
+    (BURIED, above.) Triangle centroids are rasterised with the vertices so the z-buffer has no
+    holes at the 0.5 mm pixel; each pixel's depth is the minimum over its 3x3 neighbourhood."""
+    k = np.arange(EXPOSURE_DIRECTIONS) + 0.5
+    phi = np.arccos(1 - 2 * k / EXPOSURE_DIRECTIONS)
+    th = np.pi * (1 + 5 ** 0.5) * k
+    dirs = np.c_[np.cos(th) * np.sin(phi), np.sin(th) * np.sin(phi), np.cos(phi)]
+    S = np.vstack([P, P[F].mean(axis=1)])
+    seen = np.zeros(len(P), bool)
+    for d in dirs:
+        a = np.array([1.0, 0, 0]) if abs(d[0]) < 0.9 else np.array([0, 1.0, 0])
+        u = np.cross(d, a)
+        u /= np.linalg.norm(u)
+        w = np.cross(d, u)
+        x, y, z = S @ u, S @ w, -(S @ d)
+        ix = np.floor((x - x.min()) / EXPOSURE_PIXEL_MM).astype(np.int64)
+        iy = np.floor((y - y.min()) / EXPOSURE_PIXEL_MM).astype(np.int64)
+        width = int(ix.max()) + 3
+        key = (iy + 1) * width + (ix + 1)
+        zb = np.full((int(iy.max()) + 3) * width, np.inf)
+        np.minimum.at(zb, key, z)
+        Z = zb.reshape(-1, width)
+        Zm = Z.copy()
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                Zm = np.minimum(Zm, np.roll(np.roll(Z, dy, 0), dx, 1))
+        seen |= z[: len(P)] <= Zm.ravel()[key[: len(P)]] + EXPOSURE_TOL_MM
+    return seen
 
 
 def taubin(V: np.ndarray, F: np.ndarray, passes: int) -> np.ndarray:
@@ -288,6 +358,8 @@ def build(fs: Path, glasser: bool = False) -> dict[str, bytes]:
     t1 = nib.load(str(fs / "mri/T1.mgz"))
     if not np.allclose(t1.header.get_vox2ras(), t1.header.get_vox2ras_tkr()):
         raise SystemExit("fsaverage scanner RAS != tkr RAS; the surfaces would not be MNI305")
+    if not talairach_is_identity(fs):
+        raise SystemExit("fsaverage talairach.xfm is not the identity; its surface RAS would not be MNI305")
     files: dict[str, bytes] = {}
     surf_stats = {}
 
@@ -327,6 +399,7 @@ def build(fs: Path, glasser: bool = False) -> dict[str, bytes]:
 
     mmp = mmp_table() if glasser else {}
     destrieux = destrieux_table()
+    exposed = {h: exposure(pial[h], faces[h]) for h in ("lh", "rh")}
     parc_meta = []
     # Glasser was removed from the v2 app on 10 Oct ("for now"); --glasser builds it again
     atlases = [a for a in ATLASES if glasser or a[0] != "glasser"]
@@ -369,6 +442,7 @@ def build(fs: Path, glasser: bool = False) -> dict[str, bytes]:
                     entry.update(name=NAMES["destrieux"][nm], long=destrieux[nm], short=nm, group=None)
                 else:
                     raise SystemExit(f"no naming rule for atlas {atlas_id}")
+                entry["exposed"] = round(float(exposed[h][lab == k].mean()), 3)
                 labels.append(entry)
                 out[lab == k] = index
             per_hemi[h] = out
@@ -376,6 +450,12 @@ def build(fs: Path, glasser: bool = False) -> dict[str, bytes]:
         expected = {"glasser": 360, "dk": 68, "destrieux": 148, "yeo7": 14}[atlas_id]
         if len(labels) - 1 != expected:
             raise SystemExit(f"{atlas_id}: {len(labels) - 1} parcels, expected {expected}")
+        # one verdict per structure: the mean of its two hemispheres' exposure (BURIED, above)
+        sides: dict[str, list[float]] = {}
+        for e in labels[1:]:
+            sides.setdefault(e["annot_name"], []).append(e["exposed"])
+        for e in labels[1:]:
+            e["buried"] = bool(np.mean(sides[e["annot_name"]]) < BURIED_BELOW)
         files[f"parc/{atlas_id}.json"] = json.dumps(
             {"id": atlas_id, "title": title, "citation": cite, "annotation": stem, "labels": labels},
             indent=1).encode()
@@ -419,6 +499,14 @@ def build(fs: Path, glasser: bool = False) -> dict[str, bytes]:
         },
         **({"hcpmmp1_md5": HCPMMP1_MD5} if glasser else {}),
         "inflated_display_gap_mm": INFLATED_GAP_MM,
+        "buried": {
+            "method": f"a pial vertex is exposed when it is the nearest surface (within {EXPOSURE_TOL_MM} mm) along at least one of "
+                      f"{EXPOSURE_DIRECTIONS} evenly spread view directions, one hemisphere at a time (orthographic z-buffer, "
+                      f"{EXPOSURE_PIXEL_MM} mm pixels); an area is buried when under {BURIED_BELOW} of its vertices are exposed, "
+                      "averaged over its two hemispheres",
+            "areas": {a: sorted({e["annot_name"] for e in json.loads(files[f"parc/{a}.json"])["labels"][1:] if e["buried"]})
+                      for a, *_ in atlases},
+        },
         "parcellations": parc_meta,
         **({"glasser_section_purity": purity} if glasser else {}),
         "subcortical": {
@@ -479,14 +567,72 @@ def _norm(s: str) -> str:
     return " ".join(s.split())
 
 
+FINGERPRINT = ROOT / "scripts/v2/reference/fsaverage_fingerprint.json"
+
+
+def fingerprint(fs: Path) -> dict:
+    """A small record of fsaverage read straight from FreeSurfer's files, by a path that shares no
+    code with build(): per-hemisphere pial centroid and extent, inflated extent, sulc moments; per
+    parcel (by FreeSurfer's own annotation name) its vertex count, pial centroid and colour; per
+    deep structure its voxel count and centroid in MNI305. scripts/tests/test_v2_assets.py checks
+    the SERVED assets against it on CI, where fsaverage is absent, so a wrong frame, a mirrored or
+    swapped hemisphere, or a parcel under another's name fails there (validation of 16 Oct, M18:
+    the asset test passed 9 of 9 such mutations)."""
+    import nibabel as nib  # noqa: PLC0415
+
+    r3 = lambda a: [round(float(x), 3) for x in a]  # noqa: E731
+    out: dict = {"source": "FreeSurfer fsaverage as distributed by MNE-Python (fetch_fsaverage)",
+                 "written_by": "scripts/v2/build_brain_assets.py --fingerprint", "surfaces": {}, "parcels": {}, "deep": {}}
+    pial = {}
+    for h in ("lh", "rh"):
+        p, _ = nib.freesurfer.read_geometry(str(fs / f"surf/{h}.pial"))
+        i, _ = nib.freesurfer.read_geometry(str(fs / f"surf/{h}.inflated"))
+        s = nib.freesurfer.read_morph_data(str(fs / f"surf/{h}.sulc"))
+        pial[h] = p
+        out["surfaces"][h] = {"pial_centroid": r3(p.mean(0)), "pial_min": r3(p.min(0)), "pial_max": r3(p.max(0)),
+                              "inflated_extent": r3(i.max(0) - i.min(0)),
+                              "sulc_mean": round(float(s.mean()), 5), "sulc_std": round(float(s.std()), 5)}
+    for atlas_id, stem, *_ in ATLASES:
+        if atlas_id == "glasser":
+            continue
+        rows = {}
+        for h in ("lh", "rh"):
+            lab, ctab, names = nib.freesurfer.read_annot(str(fs / f"label/{h}.{stem}.annot"))
+            for k, nm in enumerate(n.decode() for n in names):
+                sel = lab == k
+                if nm in NON_PARCEL or not sel.any():
+                    continue
+                rows[f"{h}.{nm}"] = {"vertices": int(sel.sum()), "centroid": r3(pial[h][sel].mean(0)),
+                                     "color": "#%02x%02x%02x" % tuple(int(x) for x in ctab[k, :3])}
+        out["parcels"][atlas_id] = rows
+    img = nib.load(str(fs / "mri/aseg.mgz"))
+    aseg = np.asarray(img.dataobj).astype(np.int32)
+    for label, key, _name, hemi in SUBCORTICAL:
+        ijk = np.argwhere(aseg == label)
+        out["deep"][key] = {"aseg_label": label, "hemisphere": hemi, "voxels": int(len(ijk)),
+                            "centroid": r3(nib.affines.apply_affine(img.affine, ijk).mean(0))}
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--fsaverage", help="fsaverage subject dir (default: MNE's download)")
     ap.add_argument("--out", default=str(OUT))
     ap.add_argument("--check", action="store_true", help="rebuild in memory and compare with the files on disk")
     ap.add_argument("--glasser", action="store_true", help="also build Glasser (HCP-MMP1.0), removed from the app on 10 Oct")
+    ap.add_argument("--fingerprint", action="store_true", help=f"write {FINGERPRINT.relative_to(ROOT)} from fsaverage (with --check: compare it)")
     a = ap.parse_args()
-    files = build(fsaverage_dir(a.fsaverage), glasser=a.glasser)
+    fs = fsaverage_dir(a.fsaverage)
+    if a.fingerprint:
+        text = json.dumps(fingerprint(fs), indent=1) + "\n"
+        if a.check:
+            ok = FINGERPRINT.exists() and FINGERPRINT.read_text() == text
+            print("fingerprint matches fsaverage" if ok else f"STALE: {FINGERPRINT.relative_to(ROOT)}")
+            return 0 if ok else 1
+        FINGERPRINT.write_text(text)
+        print(f"wrote {FINGERPRINT.relative_to(ROOT)}")
+        return 0
+    files = build(fs, glasser=a.glasser)
     out = Path(a.out)
     if a.check:
         bad = [k for k, v in files.items() if not (out / k).exists() or (out / k).read_bytes() != v]

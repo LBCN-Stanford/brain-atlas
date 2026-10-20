@@ -15,6 +15,10 @@ export interface ParcelLabel {
   hemisphere: 'lh' | 'rh' | null
   color: string | null
   group: string | null
+  /** share of the area's vertices an outside view can see on the folded brain (build_brain_assets.py, BURIED) */
+  exposed?: number
+  /** the folded brain hides this area, on both sides: it is shown on the smoothed surface when picked */
+  buried?: boolean
 }
 
 export interface ParcelTable {
@@ -147,6 +151,48 @@ export function selectablesFor(table: ParcelTable, deep: DeepStructure[]): Selec
   }
   for (const d of deep) {
     out.push({ id: deepId(d.key), kind: 'deep', key: d.key, name: d.name, short: d.name, long: null, hemisphere: d.hemisphere, group: 'Deep structures' })
+  }
+  return out
+}
+
+/** The parts of one area: the finer atlas's areas that share its vertices (Destrieux inside
+    Desikan-Killiany, Desikan-Killiany inside a Yeo network), largest first. A finer area covering
+    under `minShare` of the area is a sliver: not listed, and counted in `sliverShare`, so the panel
+    can say the listed parts do not cover the whole area (M1). */
+export function areaParts(
+  coarse: Uint16Array, fine: Uint16Array, areaIndex: number, fineLabels: readonly ParcelLabel[], minShare = 0.03,
+): { parts: { index: number; key: string; name: string; share: number }[]; sliverShare: number } {
+  const count = new Map<number, number>()
+  let total = 0
+  for (let v = 0; v < coarse.length; v++) if (coarse[v] === areaIndex) { total++; count.set(fine[v], (count.get(fine[v]) ?? 0) + 1) }
+  const parts: { index: number; key: string; name: string; share: number }[] = []
+  let listed = 0
+  for (const [i, n] of [...count].sort((a, b) => b[1] - a[1])) {
+    const l = fineLabels[i]
+    if (i > 0 && l?.key && n / total >= minShare) { parts.push({ index: i, key: l.key, name: l.name, share: n / total }); listed += n }
+  }
+  return { parts, sliverShare: total ? 1 - listed / total : 0 }
+}
+
+/** Electrode dots: every stimulated SURFACE contact at the fsaverage vertex it was registered to
+    (spherical registration), coloured by the selected area that contact itself lies in. Depth
+    contacts are not drawn: their only template position is an affine estimate, which put 21% of
+    them outside the brain and 61% of the coloured ones outside the area they were coloured for
+    (validation of 16 Oct, M3; the 10 Oct measured-positions rule, restored by the user 17 Oct). */
+export function surfaceDots(
+  file: SiteParcelsFile, stimulated: (siteId: string) => boolean, atlas: AtlasId, colorOf: (id: string) => string | null,
+): { hemi: 'lh' | 'rh'; v: number; areaColor: string | null }[] {
+  const out: { hemi: 'lh' | 'rh'; v: number; areaColor: string | null }[] = []
+  const seen = new Set<string>()
+  for (const [sid, rec] of Object.entries(file.sites)) {
+    if (!stimulated(sid)) continue
+    for (const cid of rec.c ?? []) {
+      const c = file.contacts[cid]
+      if (!c || c.k !== 's' || c.v == null || c.h == null || c.held || seen.has(cid)) continue
+      seen.add(cid)
+      const k = c[atlas]
+      out.push({ hemi: c.h, v: c.v, areaColor: (k && colorOf(cortexId(k))) || (c.deep && colorOf(deepId(c.deep))) || null })
+    }
   }
   return out
 }

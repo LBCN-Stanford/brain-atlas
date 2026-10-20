@@ -19,6 +19,28 @@ jobs:
           cache: npm
           cache-dependency-path: app/package-lock.json
       - run: npm ci
+      - name: synthetic data only
+        run: node -e "const m=require('./public/data/manifest.json'); if(m.synthetic!==true){console.error('public/data is not synthetic'); process.exit(1)}"
+      - name: no invented report over five words (none can share a six-word phrase with a real one)
+        run: |
+          node -e "
+          const r = require('./public/data/reports.json')
+          const long = r.map((x) => x.raw_report_redacted ?? '').filter((t) => (t.toLowerCase().match(/[a-z']+/g) ?? []).length > 5)
+          if (long.length) { console.error(long.length + ' reports over five words'); process.exit(1) }"
+      - name: no patient-initials token
+        working-directory: .
+        run: |
+          python3 - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, 'scripts')
+          from export_public_source import has_initials
+          bad = [str(p) for p in Path('.').rglob('*') if p.is_file() and '.git' not in p.parts and 'node_modules' not in p.parts
+                 and p.suffix in {'.ts', '.tsx', '.mjs', '.js', '.json', '.md', '.py', '.html', '.txt', '.cff', '.yml', '.css', '.csv'}
+                 and has_initials(p.read_text(errors='ignore'))]
+          if bad:
+              sys.exit('patient-initials token in: ' + ', '.join(bad))
+          PY
       - name: typecheck
         run: npx tsc -b
       - name: tests

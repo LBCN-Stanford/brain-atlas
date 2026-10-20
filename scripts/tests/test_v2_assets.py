@@ -89,6 +89,94 @@ class Brain(unittest.TestCase):
         manifest = json.loads((BRAIN / "manifest.json").read_text())
         self.assertEqual({p["id"] for p in manifest["parcellations"]}, set(EXPECTED))
 
+    def test_matches_the_fsaverage_fingerprint(self):
+        """The served assets against a record read straight from FreeSurfer's files
+        (scripts/v2/reference/fsaverage_fingerprint.json, written by build_brain_assets.py
+        --fingerprint). The checks above are internal consistency only: on 16 Oct a pial surface
+        shifted 10 mm, swapped hemispheres and a mirrored hippocampus all passed them (M18)."""
+        fp = json.loads((ROOT / "scripts/v2/reference/fsaverage_fingerprint.json").read_text())
+        pial = {}
+        for h in ("lh", "rh"):
+            f = fp["surfaces"][h]
+            p = np.fromfile(BRAIN / f"{h}.pial.f32", np.float32).reshape(-1, 3).astype(np.float64)
+            infl = np.fromfile(BRAIN / f"{h}.inflated.f32", np.float32).reshape(-1, 3).astype(np.float64)
+            sulc = np.fromfile(BRAIN / f"{h}.sulc.f32", np.float32).astype(np.float64)
+            pial[h] = p
+            np.testing.assert_allclose(p.mean(0), f["pial_centroid"], atol=0.01, err_msg=f"{h} pial is not fsaverage's {h} pial")
+            np.testing.assert_allclose(p.min(0), f["pial_min"], atol=0.01, err_msg=h)
+            np.testing.assert_allclose(p.max(0), f["pial_max"], atol=0.01, err_msg=h)
+            # the inflated surface is translated for display, never resized or swapped: its extent is
+            # FreeSurfer's, and its inner edge sits INFLATED_GAP_MM / 2 = 3 mm off the midline on its own side
+            np.testing.assert_allclose(infl.max(0) - infl.min(0), f["inflated_extent"], atol=0.01, err_msg=f"{h} inflated")
+            inner = infl[:, 0].max() if h == "lh" else infl[:, 0].min()
+            self.assertAlmostEqual(abs(inner), 3.0, places=2, msg=f"{h} inflated is not beside its own midline")
+            self.assertEqual(np.sign(inner), -1 if h == "lh" else 1, f"{h} inflated sits on the other side")
+            self.assertAlmostEqual(sulc.mean(), f["sulc_mean"], places=4, msg=f"{h} sulc")
+            self.assertAlmostEqual(sulc.std(), f["sulc_std"], places=4, msg=f"{h} sulc")
+        for atlas in EXPECTED:
+            labels = json.loads((BRAIN / f"parc/{atlas}.json").read_text())["labels"]
+            want = fp["parcels"][atlas]
+            self.assertEqual({l["key"] for l in labels[1:]}, set(want), atlas)
+            for h in ("lh", "rh"):
+                idx = np.fromfile(BRAIN / f"parc/{atlas}.{h}.u16", np.uint16)
+                for l in labels[1:]:
+                    if l["hemisphere"] != h:
+                        continue
+                    sel = idx == l["index"]
+                    w = want[l["key"]]
+                    self.assertEqual(int(sel.sum()), w["vertices"], (atlas, l["key"], "vertex count"))
+                    np.testing.assert_allclose(pial[h][sel].mean(0), w["centroid"], atol=0.01, err_msg=f"{atlas} {l['key']} is not where FreeSurfer puts it")
+                    self.assertEqual(l["color"], w["color"], (atlas, l["key"], "colour"))
+        meta = json.loads((BRAIN / "subcortical.json").read_text())["structures"]
+        blob = (BRAIN / "subcortical.bin").read_bytes()
+        self.assertEqual({s["key"] for s in meta}, set(fp["deep"]))
+        for s in meta:
+            w = fp["deep"][s["key"]]
+            self.assertEqual((s["aseg_label"], s["hemisphere"]), (w["aseg_label"], w["hemisphere"]), s["key"])
+            self.assertEqual(s["checks"]["voxels"], w["voxels"], s["key"])
+            pos = np.frombuffer(blob, np.float32, 3 * s["positions"]["count"], s["positions"]["byteOffset"]).reshape(-1, 3).astype(np.float64)
+            tri = pos[np.frombuffer(blob, np.uint32, s["indices"]["count"], s["indices"]["byteOffset"]).reshape(-1, 3)]
+            # the enclosed volume's centroid (signed tetrahedra from the origin), not the vertex
+            # mean, which follows where marching cubes put vertices. Measured 16 Oct within
+            # 0.13 mm of the voxel centroid; a mirrored or relabelled structure moves centimetres
+            vol = np.einsum("ij,ij->i", tri[:, 0], np.cross(tri[:, 1], tri[:, 2])) / 6
+            centroid = (vol[:, None] * tri.sum(axis=1) / 4).sum(0) / vol.sum()
+            np.testing.assert_allclose(centroid, w["centroid"], atol=0.5, err_msg=f"{s['key']} mesh is not at its aseg voxels")
+            self.assertEqual(np.sign(w["centroid"][0]), -1 if s["hemisphere"] == "lh" else 1, s["key"])
+
+    def test_buried_areas(self):
+        """One verdict per structure, measured at build time (build_brain_assets.py, BURIED): the
+        areas the folded brain hides are buried on both sides, and gyral crowns are not."""
+        must = {"dk": {"insula", "transversetemporal"},
+                "destrieux": {"G_temp_sup-G_T_transv", "G_temp_sup-Plan_polar", "S_temporal_transverse",
+                              "G_Ins_lg_and_S_cent_ins", "S_circular_insula_sup", "S_circular_insula_inf", "S_central"}}
+        never = {"dk": {"superiortemporal", "precentral", "superiorfrontal", "lateraloccipital"},
+                 "destrieux": {"G_front_middle", "G_precentral", "G_temp_sup-Lateral", "G_pariet_inf-Angular"},
+                 "yeo7": {"7Networks_1", "7Networks_7"}}
+        for atlas in EXPECTED:
+            labels = json.loads((BRAIN / f"parc/{atlas}.json").read_text())["labels"][1:]
+            by = {}
+            for l in labels:
+                self.assertIn("buried", l, (atlas, l["key"]))
+                self.assertTrue(0 <= l["exposed"] <= 1, (atlas, l["key"]))
+                by.setdefault(l["annot_name"], set()).add(l["buried"])
+            for nm, v in by.items():
+                self.assertEqual(len(v), 1, f"{atlas} {nm}: left and right disagree on buried")
+            for nm in must.get(atlas, set()):
+                self.assertEqual(by[nm], {True}, f"{atlas} {nm} should be buried")
+            for nm in never.get(atlas, set()):
+                self.assertEqual(by[nm], {False}, f"{atlas} {nm} should not be buried")
+
+    def test_names_are_plain_text(self):
+        """No non-breaking space or other odd whitespace in a served name: a reader typing a name
+        must find it, and a join on it must match (M13: 60 Destrieux names carried U+00A0)."""
+        for atlas in EXPECTED:
+            for l in json.loads((BRAIN / f"parc/{atlas}.json").read_text())["labels"][1:]:
+                for field in ("name", "long", "short"):
+                    v = l.get(field) or ""
+                    self.assertEqual(v, " ".join(v.split()), (atlas, l["key"], field, "irregular whitespace"))
+                self.assertNotIn("ligual", (l.get("long") or ""), (atlas, l["key"]))
+
     def test_subcortical(self):
         meta = json.loads((BRAIN / "subcortical.json").read_text())["structures"]
         manifest = json.loads((BRAIN / "manifest.json").read_text())

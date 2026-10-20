@@ -23,6 +23,7 @@ export const DOWNLOAD_COLUMNS = [
   'hemisphere',
   'stimulation_protocol',
   'event_group',
+  'qc_exclude_reason',
   'seizure_related',
   'protocol_source',
   'current_mA',
@@ -73,6 +74,8 @@ export function downloadRows(
       hemisphere: row.site.hemisphere,
       stimulation_protocol: row.event.stimulation_protocol,
       event_group: GROUP_WORDS[eventGroup(row) === 'stimulation' && held(row.site.site_id) ? 'held' : eventGroup(row)],
+      // a sham trial the release's QC excludes keeps its reason too (it was written for stimulations only)
+      qc_exclude_reason: row.qc?.exclude_flag ? row.qc?.exclude_reason ?? '' : '',
       seizure_related: row.qc?.seizure_related_flag ? 'yes' : 'no',
       protocol_source: row.event.protocol_source ?? '',
       current_mA: row.event.current_mA,
@@ -108,12 +111,18 @@ export interface ReadmeInput {
   atlasTitle: string
   atlasCitation: string
   areas: string[]
+  /** what the selection is narrowed to on screen (a part of the area, one person), if anything */
+  narrowed?: string | null
+  /** how many of the rows record a pulse width */
+  pulseWidthRecorded?: number
   /** the pair rule the selection was counted with */
   pairs?: 'either' | 'both'
   stimulations: number
   sham: number
   zeroCurrent: number
   excluded: number
+  /** QC-excluded events at the selected sites, left out of an area download (T3) */
+  excludedElsewhere?: number
   /** stimulations from people held for an open question about their electrode positions */
   held?: number
   patients: number
@@ -131,8 +140,10 @@ export function readme(r: ReadmeInput): string {
     `Generated: ${r.generated.toISOString()}`,
     `Parcellation: ${r.atlasTitle} (${r.atlasCitation})`,
     `Areas: ${r.areas.length ? r.areas.join('; ') : 'none selected, so every stimulation in the release'}`,
-    ...(r.areas.length ? [`Pair rule: ${r.pairs === 'both' ? 'only pairs with BOTH contacts inside the selected areas' : 'pairs with EITHER contact inside the selected areas (both_contacts_inside says which also meet the strict rule)'}`] : []),
+    ...(r.narrowed ? [`Narrowed to: ${r.narrowed}. These rows are what the screen showed, not the whole area.`] : []),
+    ...(r.areas.length ? [`Pair rule: ${r.pairs === 'both' ? 'only stimulations whose stimulating contacts ALL lie inside the selected areas (both of a pair; the one contact of a monopolar site)' : 'pairs with EITHER contact inside the selected areas (both_contacts_inside says which also meet the strict rule)'}`] : []),
     `Rows: ${r.stimulations} stimulation events from ${r.patients} patients, plus ${r.sham} sham trials, ${r.zeroCurrent} events recorded at 0 mA, ${r.excluded} events the release's QC excludes${r.held ? ` and ${r.held} stimulations from people held for an open question about their electrode positions` : ''}`,
+    ...(r.excludedElsewhere ? [`${r.excludedElsewhere} events at these sites that the release's QC excludes are not in this file; they are in the download of everything.`] : []),
     '',
     'WHAT EACH ROW IS',
     '  One bedside stimulation event. event_group says how to count it:',
@@ -140,8 +151,8 @@ export function readme(r: ReadmeInput): string {
     '    sham                 no current; the negative control. Never pool with stimulation rows.',
     '    recorded_0_mA        labelled iES but recorded at 0 mA: whether current was delivered is',
     '                         unknown, so it is not counted as a stimulation',
-    '    release_qc_excluded  excluded by the release\'s own quality check (a left/right',
-    '                         contradiction); placed in no area',
+    '    release_qc_excluded  excluded by the release\'s own quality check; qc_exclude_reason says',
+    '                         why. Never counted in an area',
     '    held_localisation    a stimulation from a person whose electrode positions have an open',
     '                         question on record (the lab\'s own note, conflicting localisation',
     '                         sheets, unverified contact identity, or no native coordinates);',
@@ -149,10 +160,10 @@ export function readme(r: ReadmeInput): string {
     '  seizure_related = yes means the release marks the event as seizure-related.',
     '',
     'HOW A STIMULATION WAS PLACED IN AN AREA',
-    '  A site is a pair of electrode contacts. It is listed in every area one of its two contacts',
+    '  A site is a pair of electrode contacts (one contact, for a monopolar site). It is listed in every area one of its contacts',
     '  lies in, so a pair that straddles a boundary appears in both areas (site_areas_in_atlas',
     '  lists them; selected_areas lists the ones you chose). Each stimulation appears once here.',
-    '  Only MEASURED labels are used. area_assignment says how:',
+    ...(r.synthetic ? ['  area_assignment says how:', '    synthetic           placed on the template brain for this demonstration; no one\'s own scan'] : ['  Only MEASURED labels are used. area_assignment says how:']),
     '    native              the lab\'s iELVis readout of the patient\'s own FreeSurfer reconstruction',
     '                        (Desikan-Killiany, Destrieux, Yeo-7, deep structures)',
     '    none                in no area; site_areas_in_atlas then says why (white_matter, deep,',
@@ -162,7 +173,10 @@ export function readme(r: ReadmeInput): string {
     '',
     'STIMULATION PARAMETERS',
     '  current_mA, frequency_hz, train_duration_s, pulse_width_us and polarity are as recorded at the',
-    '  bedside. An empty cell means the value was not recorded (pulse width is rarely recorded).',
+    '  bedside. An empty cell means the value was not recorded.',
+    ...(r.pulseWidthRecorded == null ? [] : r.pulseWidthRecorded === 0
+      ? ['  Pulse width is not recorded for these rows, so no dose or charge-density claim can be made from them.']
+      : [`  Pulse width is recorded for ${r.pulseWidthRecorded.toLocaleString('en-US')} of these rows.`]),
     '',
     'COORDINATES',
     '  pair_midpoint_mni305_* is the stored site midpoint in MNI305 (= FreeSurfer fsaverage space). It is',
@@ -192,7 +206,7 @@ export function readme(r: ReadmeInput): string {
     'FILES',
     '  reports.csv               the rows described above',
     '  CITATION.bib              how to cite this release (BibTeX)',
-    '  dataset_description.json  name, release, licence, ethics and how to acknowledge (BIDS style)',
+    `  dataset_description.json  name, release, licence, ${r.synthetic ? '' : 'ethics '}and how to acknowledge (BIDS style)`,
     '  SHA256SUMS                checksums: sha256sum -c SHA256SUMS',
     '',
     ...(r.cite ? ['HOW TO CITE', `  ${r.cite}`, '  Cite the parcellation as well (above).', ''] : []),
@@ -232,7 +246,8 @@ export function datasetDescription(d: DescriptionInput): string {
     Authors: [d.authors],
     HowToAcknowledge: `Cite the atlas and data release: ${d.url}${d.doi ? ` (doi:${d.doi})` : ''}, and the parcellation used.`,
     Funding: [...d.funding],
-    EthicsApprovals: [d.irb],
+    // invented data were approved by no one: the protocol is named only for the real release (L12)
+    EthicsApprovals: d.synthetic ? undefined : [d.irb],
     ReferencesAndLinks: [d.url, ...d.references],
     DatasetDOI: d.doi ?? undefined,
     GeneratedBy: [{ Name: d.name, CodeURL: 'https://github.com/LBCN-Stanford/brain-atlas', Description: `Exported from the web atlas at ${d.institution}` }],

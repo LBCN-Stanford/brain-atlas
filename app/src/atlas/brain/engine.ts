@@ -10,7 +10,8 @@
    estimate -- see build_site_parcels.py).
 
    Visual rules (design brief C1/C9): matte pale cortex, sulci darkened from FreeSurfer's sulc,
-   colour ONLY for areas the user picked, hover is an outline never a fill, no auto-rotation. */
+   colour ONLY for areas the user picked, hover is an outline never a fill (one exception: a deep
+   structure has no outline to draw, so hovering darkens its fill), no auto-rotation. */
 
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
@@ -30,6 +31,10 @@ export interface SelectedArea {
 export interface EngineCallbacks {
   onHover: (id: string | null, x: number, y: number) => void
   onClick: (id: string | null) => void
+  /** the hemisphere the engine hides changed on its own (a focus on a medial area hides the other
+      one; a focus on an area of a hidden hemisphere shows it again), so the app's view, buttons,
+      link and label can follow (M12) */
+  onHidden?: (hidden: Hemi | null) => void
 }
 
 /** Per-area colours for the coverage map: cortical label index -> colour, deep key -> colour.
@@ -48,13 +53,9 @@ export interface CapturedView {
   sides: { hemi: Hemi; x: number; y: number }[]
 }
 
-/** One stimulated surface contact, drawn at the fsaverage vertex it was registered to. */
-/** A stimulated contact: a surface contact at its fsaverage vertex (it follows the surface when it
-    is smoothed), or a depth contact at a fixed MNI305 point inside the brain (approximate: an
-    affine estimate; hidden on the smoothed surface, which it does not belong to). */
-export type Dot =
-  | { hemi: Hemi; v: number; areaColor: string | null }
-  | { hemi: Hemi; p: [number, number, number]; areaColor: string | null }
+/** One stimulated surface contact, drawn at the fsaverage vertex it was registered to (it follows
+    the surface when it is smoothed). Depth contacts are not drawn (model/parcels.ts, surfaceDots). */
+export type Dot = { hemi: Hemi; v: number; areaColor: string | null }
 
 /** Subdivisions of the selected area, from a finer atlas: per-vertex labels and a colour each. */
 export interface Subregions {
@@ -69,12 +70,23 @@ const MEDIAL = new THREE.Color('#D9D5CF')
 const INK = new THREE.Color('#1B1E22')
 const WHITE = new THREE.Color('#FFFFFF')
 const DEEP_BASE = new THREE.Color('#DDD8D1')
+/** an area with no stimulation on the coverage map: one light neutral, lighter than the first bin,
+    so "darker = more" holds from zero up (L5; it was the sulc-shaded brain, L* 78-92, darker than
+    the 1-4 bin's 95) */
+const COVERAGE_ZERO = new THREE.Color('#F4F3F1')
+/** slivers of a selected area (finer parcels under 3% of it, in no listed part): a neutral shade,
+    so they never read as part 1 (M1) */
+const SLIVER = new THREE.Color('#B9B4AC')
 const ELECTRODE = new THREE.Color('#4B4F57')
 const TARGET = new THREE.Vector3(0, -18, 12)
 const DISTANCE = 480
 /** the stage aspect (width / height) below which the camera zooms out to keep the brain's width in view */
 const WIDE = 1.35
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
+/** the test hook (window.__atlasEngine, for debugPick) in development, or on a built site opened
+    with ?test=1, read once at load before the app rewrites the address: the browser check clicks
+    the canvas of the BUILT site (M21) */
+const TEST_HOOK = import.meta.env.DEV || new URLSearchParams(window.location.search).has('test')
 
 interface HemiState {
   hemi: Hemi
@@ -154,11 +166,15 @@ export class BrainEngine {
   private selected = new Map<string, SelectedArea>()
   private selectedByIndex = new Map<number, THREE.Color>()
   private coverage: { cortex: Map<number, THREE.Color>; deep: Map<string, THREE.Color> } | null = null
+  private coverageInput: CoverageColors | null = null
   private hoverIndex = -1
   private hoverId: string | null = null
   private smooth = 0
   private drawnInflated = false
   private seeThrough = 0
+  /** the reader lowered Opacity themselves (not the automatic fade for a deep selection): only then
+      can a click reach a deep structure inside the cortex (H1) */
+  private seeManual = false
   private hidden: Hemi | null = null
   /** the hemisphere the chosen view hides (a focus on a medial area may hide one too) */
   private viewHidden: Hemi | null = null
@@ -244,7 +260,7 @@ export class BrainEngine {
       this.camera.aspect = w / h
       // the brain is wider than tall: on a narrow (portrait) stage, zoom out so it fits the width
       this.camera.zoom = Math.min(1, (w / h) / WIDE)
-      this.camera.updateProjectionMatrix()
+      this.applyInset()
       this.needsRender = true
     }
     this.ro = new ResizeObserver(resize)
@@ -255,10 +271,11 @@ export class BrainEngine {
     el.addEventListener('pointermove', this.onMove)
     el.addEventListener('pointerdown', this.onDown)
     el.addEventListener('pointerup', this.onUp)
+    el.addEventListener('click', this.onClick)
     el.addEventListener('pointerleave', this.onLeave)
     this.updateColors()
     this.loop()
-    if (import.meta.env.DEV) (window as unknown as { __atlasEngine?: BrainEngine }).__atlasEngine = this
+    if (TEST_HOOK) (window as unknown as { __atlasEngine?: BrainEngine }).__atlasEngine = this
   }
 
   /** test hook: what a click at client (x, y) would select */
@@ -352,6 +369,7 @@ export class BrainEngine {
   }
 
   setCoverage(c: CoverageColors | null) {
+    this.coverageInput = c
     this.coverage = c && {
       cortex: new Map([...c.cortex].map(([k, v]) => [k, new THREE.Color(v)])),
       deep: new Map([...c.deep].map(([k, v]) => [k, new THREE.Color(v)])),
@@ -377,12 +395,24 @@ export class BrainEngine {
     this.applyVisibility()
   }
 
-  /** a deep structure takes its selection colour, else its coverage colour, else the plain base */
+  /** a deep structure takes its selection colour, else its coverage colour, else the plain base. A
+      selected one keeps its selection colour under Coverage too: it has no outline to carry the
+      selection, and a bin colour gave no sign it was picked (L6) */
   private paintDeep(hoverId: string | null = this.hoverId) {
+    // while a deep structure is selected the others are see-through: the pallidum sits inside the
+    // putamen and the accumbens under the caudate, invisible from any side otherwise (U2)
+    const deepPicked = !this.coverage && [...this.selected.keys()].some((id) => id.startsWith('deep:'))
     for (const [key, d] of this.deep) {
       const a = this.selected.get(deepId(key))
+      const veil = deepPicked && !a
+      if (d.material.transparent !== veil) {
+        d.material.transparent = veil
+        d.material.opacity = veil ? 0.3 : 1
+        d.material.depthWrite = !veil
+        d.material.needsUpdate = true
+      }
       const cov = this.coverage?.deep.get(key)
-      if (a && !this.coverage) d.material.color.set(a.color)
+      if (a) d.material.color.set(a.color)
       else if (cov) d.material.color.copy(cov)
       else d.material.color.copy(hoverId === deepId(key) ? DEEP_BASE.clone().lerp(INK, 0.25) : DEEP_BASE)
     }
@@ -416,10 +446,20 @@ export class BrainEngine {
       return
     }
     // the inflated surface is larger than the pial: step the camera back with it so the brain
-    // keeps its place on the page
-    const d0 = this.camera.position.distanceTo(this.controls.target)
-    const d1 = d0 * (1 + 0.32 * (target - this.smooth)) / (1 + 0.32 * 0)
-    if (Math.abs(target - this.smooth) > 0.01) this.dolly(d0, d1, 600)
+    // keeps its place on the page. A focused area is framed again on the surface it is heading
+    // for, so pick-then-Smooth and Smooth-then-pick show the same view (M11). The distance scales
+    // by the ratio of the two surfaces' factors: (1 + 0.32 t) / (1 + 0.32 s); the old form moved
+    // the camera 10% closer on every on/off cycle (L1)
+    if (Math.abs(target - this.smooth) > 0.01) {
+      if (this.focusId) {
+        const id = this.focusId
+        this.focusId = null
+        this.focusOn(id)
+      } else {
+        const d0 = this.camera.position.distanceTo(this.controls.target)
+        this.dolly(d0, d0 * (1 + 0.32 * target) / (1 + 0.32 * this.smooth), 600)
+      }
+    }
     const from = this.smooth
     const t0 = performance.now()
     const dur = 600 * Math.abs(target - from)
@@ -467,8 +507,9 @@ export class BrainEngine {
     this.needsRender = true
   }
 
-  setSeeThrough(t: number) {
+  setSeeThrough(t: number, manual = false) {
     this.seeThrough = t
+    this.seeManual = manual
     this.applyVisibility()
   }
 
@@ -507,6 +548,7 @@ export class BrainEngine {
     const anySel = this.selected.size > 0
     const cov = this.coverage
     const c = new THREE.Color()
+    const sliver = new THREE.Color()
     for (const s of Object.values(this.hemis)) {
       const col = s.col.array as Float32Array
       const n = s.base.length / 3
@@ -517,15 +559,20 @@ export class BrainEngine {
         if (idx === 0 && s.labels) c.lerp(MEDIAL, 0.6)
         if (cov) {
           // coverage: every area takes its colour, shaded by the folds; selected areas are outlined
-          const cc = idx ? cov.cortex.get(idx) : undefined
+          const cc = idx ? cov.cortex.get(idx) ?? COVERAGE_ZERO : undefined
           if (cc) c.copy(cc).multiplyScalar(0.78 + 0.22 * (s.base[v * 3] / GYRUS.r))
-          if (idx && s.boundary[v]) c.lerp(INK, sel ? 0.75 : idx === this.hoverIndex ? 0.6 : 0.14)
+          // a selected area is outlined in its own selection colour, darkened: the plain ink
+          // outline (0.75) was barely stronger than hover's (0.6) on a coloured map (L6)
+          if (idx && s.boundary[v]) {
+            if (sel) c.copy(sel).lerp(INK, 0.25)
+            else c.lerp(INK, idx === this.hoverIndex ? 0.6 : 0.14)
+          }
         } else if (sel) {
           const sl = this.sub ? this.sub.s.labels[s.hemi][v] : -1
           const sc = this.sub ? this.sub.colors.get(sl) : undefined
-          c.lerp(sc ?? sel, 0.85)
-          // a selected subregion stands out; the rest of its area steps back, like areas do
-          if (sc && this.subActive >= 0 && sl !== this.subActive) c.lerp(WHITE, 0.55)
+          c.lerp(sc ?? (this.sub ? sliver.copy(sel).lerp(SLIVER, 0.7) : sel), 0.85)
+          // a selected part stands out; the rest of its area, slivers included, steps back
+          if (this.sub && this.subActive >= 0 && sl !== this.subActive) c.lerp(WHITE, 0.55)
           if (s.boundary[v]) c.lerp(INK, 0.3)
           else if (sc && this.sub!.boundary[s.hemi][v]) c.lerp(INK, sl === this.subHover || sl === this.subActive ? 0.7 : 0.28)
         } else {
@@ -585,16 +632,9 @@ export class BrainEngine {
   private placeDots() {
     if (!this.dots) return
     const m = new THREE.Matrix4()
-    const off = new THREE.Matrix4().makeScale(0, 0, 0)
     this.dotShown.forEach((d, i) => {
-      if ('p' in d) {
-        // a depth point belongs to the folded brain only
-        if (this.smooth > 0.5) { this.dots!.setMatrixAt(i, off); return }
-        m.makeTranslation(d.p[0], d.p[1], d.p[2])
-      } else {
-        const p = this.hemis[d.hemi].pos.array as Float32Array
-        m.makeTranslation(p[d.v * 3], p[d.v * 3 + 1], p[d.v * 3 + 2])
-      }
+      const p = this.hemis[d.hemi].pos.array as Float32Array
+      m.makeTranslation(p[d.v * 3], p[d.v * 3 + 1], p[d.v * 3 + 2])
       this.dots!.setMatrixAt(i, m)
     })
     this.dots.instanceMatrix.needsUpdate = true
@@ -715,6 +755,49 @@ export class BrainEngine {
 
   private focusId: string | null = null
 
+  /** pixels at the bottom of the stage covered by something (the phone's reading sheet): the
+      view's centre moves up to the middle of what is left, so the area in focus is not under it */
+  private inset = 0
+  setInset(px: number) {
+    if (px === this.inset) return
+    this.inset = px
+    this.applyInset()
+    this.needsRender = true
+  }
+  private applyInset() {
+    const w = this.renderer.domElement.clientWidth || 1, h = this.renderer.domElement.clientHeight || 1
+    if (this.inset > 0) this.camera.setViewOffset(w, h, 0, this.inset / 2, w, h)
+    else this.camera.clearViewOffset()
+    this.camera.updateProjectionMatrix()
+  }
+
+  /** The share of an area's vertices (up to 60 sampled) a camera at `at + dir * dist` sees
+      first, with `hide` hidden. */
+  private visibleShare(s: HemiState, index: number, at: THREE.Vector3, dir: THREE.Vector3, dist: number, hide: Hemi | null): number {
+    if (!s.labels) return 1
+    const pos = s.pos.array as Float32Array
+    const verts: number[] = []
+    for (let v = 0; v < s.labels.length; v++) if (s.labels[v] === index) verts.push(v)
+    if (!verts.length) return 1
+    const step = Math.max(1, Math.floor(verts.length / 60))
+    const eye = at.clone().addScaledVector(dir, dist)
+    const meshes = Object.values(this.hemis).filter((h) => h.hemi !== hide).map((h) => h.mesh)
+    const ray = new THREE.Raycaster()
+    const q = new THREE.Vector3()
+    let seen = 0, n = 0
+    for (let i = 0; i < verts.length; i += step) {
+      const v = verts[i]
+      q.set(pos[v * 3], pos[v * 3 + 1], pos[v * 3 + 2]).sub(eye)
+      const len = q.length()
+      ray.set(eye, q.divideScalar(len))
+      ray.far = len + 1
+      const hit = ray.intersectObjects(meshes, false)[0]
+      n++
+      if (hit && hit.object === s.mesh && hit.distance > len - 1.5) seen++
+    }
+    return seen / n
+  }
+
   /** Turn to an area and move in on it, so it fills the view; null goes back to the whole brain.
       A medial area is seen from inside: the other hemisphere is hidden while it is in focus. */
   focusOn(id: string | null) {
@@ -722,14 +805,26 @@ export class BrainEngine {
     this.focusId = id
     let target = TARGET.clone()
     let dir = this.camera.position.clone().sub(this.controls.target).normalize()
-    let dist = DISTANCE * (1 + 0.32 * this.smooth)
+    let dist = DISTANCE * (1 + 0.32 * this.smoothTarget)
+    const wasHidden = this.hidden
     this.hidden = this.viewHidden
     if (id?.startsWith('deep:')) {
       const d = this.deep.get(id.slice(5))
-      if (d) { target = d.centroid.clone(); dist = DISTANCE * 0.62 }
+      if (d) {
+        target = d.centroid.clone()
+        dist = DISTANCE * 0.62
+        // from the structure's own side, where nothing deep stands in front of it: the kept
+        // direction left a right-side structure behind the left ones, invisible (U2)
+        const side = d.data.hemisphere === 'lh' ? -1 : 1
+        dir = new THREE.Vector3(side, 0, 0.3).normalize()
+        if (this.viewHidden === d.data.hemisphere) { this.viewHidden = null; this.hidden = null }
+      }
     } else if (id && this.atlas) {
       const lab = this.atlas.table.labels.find((l) => l.key && cortexId(l.key) === id)
       const s = lab?.hemisphere ? this.hemis[lab.hemisphere as Hemi] : null
+      // an area on the hemisphere the chosen view hides: show it, or the camera flies to an
+      // invisible area (M12)
+      if (s && this.viewHidden === s.hemi) { this.viewHidden = null; this.hidden = null }
       if (lab && s?.labels) {
         const toInflated = this.smoothTarget > 0.5 && !!s.inflated && !!s.inflN
         const p = toInflated ? s.inflated! : s.pial
@@ -757,11 +852,32 @@ export class BrainEngine {
           // a little above the area's own normal, so a sulcal area is not seen edge-on
           dir.add(new THREE.Vector3(0, 0, 0.25)).normalize()
           dist = Math.min(DISTANCE * 0.85, Math.max(DISTANCE * 0.38, Math.sqrt(r2) * 4.2))
+          // the mean normal can look from a side where other cortex hides the area (U4: the
+          // right temporal pole framed with none of it in view). If under a tenth of the area is
+          // in sight, try outside, inside, below and in front, and keep the one that shows most
+          if (!this.anim) {
+            const other: Hemi = s.hemi === 'lh' ? 'rh' : 'lh'
+            const out = s.hemi === 'lh' ? -1 : 1
+            let best = this.visibleShare(s, lab.index, c, dir, dist, this.hidden)
+            if (best < 0.1) {
+              const tries: [THREE.Vector3, Hemi | null][] = [
+                [new THREE.Vector3(out, 0, 0.25).normalize(), this.viewHidden],
+                [new THREE.Vector3(-out, 0, 0.25).normalize(), other],
+                [new THREE.Vector3(out * 0.3, 0, -1).normalize(), this.viewHidden],
+                [new THREE.Vector3(out * 0.3, 1, 0).normalize(), this.viewHidden],
+              ]
+              for (const [d, h] of tries) {
+                const v = this.visibleShare(s, lab.index, c, d, dist, h)
+                if (v > best + 0.05) { best = v; dir = d; this.hidden = h }
+              }
+            }
+          }
         }
       }
     }
     this.applyVisibility()
     this.updateDots()
+    if (this.hidden !== wasHidden) this.cb.onHidden?.(this.hidden)
     const fromTarget = this.controls.target.clone()
     const fromDir = this.camera.position.clone().sub(fromTarget).normalize()
     const fromDist = this.camera.position.distanceTo(fromTarget)
@@ -843,35 +959,52 @@ export class BrainEngine {
 
   private onDown = (e: PointerEvent) => {
     this.down = { x: e.clientX, y: e.clientY }
+    this.clickFrom = this.down
   }
 
   private onUp = (e: PointerEvent) => {
-    if (this.down && Math.hypot(e.clientX - this.down.x, e.clientY - this.down.y) < 5) {
-      this.cb.onClick(this.pick(e.clientX, e.clientY))
-    }
     this.down = null
+    this.upAt = { x: e.clientX, y: e.clientY }
   }
+
+  /** A selection is made on the canvas's own click, the last event of a tap. Selecting on
+      pointerup opened the phone's full-screen panel before the browser sent the tap's
+      compatibility click, which then landed on whatever the panel put under the finger (U1). */
+  private onClick = (e: MouseEvent) => {
+    const from = this.clickFrom
+    // the pointer's own position: a click's coordinates are rounded to whole pixels
+    const at = this.upAt ?? { x: e.clientX, y: e.clientY }
+    this.clickFrom = null
+    this.upAt = null
+    if (from && Math.hypot(at.x - from.x, at.y - from.y) < 5) this.cb.onClick(this.pick(at.x, at.y))
+  }
+  private clickFrom: { x: number; y: number } | null = null
+  private upAt: { x: number; y: number } | null = null
 
   private onLeave = () => {
     this.pickPending = null
     this.setHover(null, 0, 0)
   }
 
+  /** What a click selects. The visible cortex is always tested and the nearest hit wins: an
+      automatic fade (a deep structure selected) leaves the cortex as clickable as it looks. Only
+      when the reader lowered Opacity themselves can a deep structure inside win, and only one on
+      the side the ray entered first (H1: with the cortex faded, clicks went through it to a deep
+      structure behind, once to the right caudate from a left precentral point). */
   private pick(cx: number, cy: number): string | null {
     if (this.anim) return null // the surface is moving; its BVH is refitted when it settles
     const r = this.renderer.domElement.getBoundingClientRect()
     this.pointer.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1)
     this.raycaster.setFromCamera(this.pointer, this.camera)
-    const ghost = this.seeThrough >= 0.5
-    const targets: THREE.Object3D[] = []
-    for (const d of this.deep.values()) if (d.mesh.visible) targets.push(d.mesh)
-    for (const s of Object.values(this.hemis)) {
-      if (!s.mesh.visible) continue
-      if (ghost) {
-        if (s.sub.visible) targets.push(s.sub)
-      } else targets.push(s.mesh)
+    const cortex = Object.values(this.hemis).filter((s) => s.mesh.visible).map((s) => s.mesh)
+    const deep = [...this.deep.values()].filter((d) => d.mesh.visible).map((d) => d.mesh)
+    const cHit = this.raycaster.intersectObjects(cortex, false)[0]
+    if (this.seeManual && this.seeThrough >= 0.5) {
+      const dHit = this.raycaster.intersectObjects(deep, false)
+        .find((h) => !cHit || this.deep.get(h.object.userData.deep as string)?.data.hemisphere === cHit.object.userData.hemi)
+      if (dHit) return deepId(dHit.object.userData.deep as string)
     }
-    const hit = this.raycaster.intersectObjects(targets, false)[0]
+    const hit = cHit ?? this.raycaster.intersectObjects(deep, false)[0]
     if (!hit) return null
     if (hit.object.userData.deep) return deepId(hit.object.userData.deep as string)
     const s = this.hemis[hit.object.userData.hemi as Hemi]
@@ -885,8 +1018,11 @@ export class BrainEngine {
     }
     const idx = s.labels[best]
     if (this.sub && this.selectedByIndex.has(idx)) {
-      const sk = this.sub.s.keys.get(this.sub.s.labels[s.hemi][best])
-      if (sk && this.sub.colors.has(this.sub.s.labels[s.hemi][best])) return `sub:${sk}`
+      // inside the selected area a click is about its parts: a listed part, or 'sub:' for a sliver
+      // (in no listed part), which clears the part and never deselects the area (M1)
+      const fl = this.sub.s.labels[s.hemi][best]
+      const sk = this.sub.colors.has(fl) ? this.sub.s.keys.get(fl) : undefined
+      return sk ? `sub:${sk}` : 'sub:'
     }
     const key = idx ? this.atlas.table.labels[idx]?.key : null
     return key ? cortexId(key) : null
@@ -931,7 +1067,7 @@ export class BrainEngine {
   /** Render the given views off-screen at w x h pixels, exactly as currently coloured, and restore
       the on-screen view. Each view is rendered from a fixed camera so a figure is reproducible
       whatever the user last did with the mouse. */
-  captureViews(views: { view: ViewPreset; w: number; h: number; scale?: number }[], opts: { inflated: boolean }): CapturedView[] {
+  captureViews(views: { view: ViewPreset; w: number; h: number; scale?: number }[], opts: { inflated: boolean; coverage?: CoverageColors | null }): CapturedView[] {
     const dirs: Record<ViewPreset, [number, number, number]> = {
       left: [-1, 0, 0], right: [1, 0, 0], top: [0, -0.04, 1], bottom: [0, 0.04, -1],
       front: [0, 1, 0], back: [0, -1, 0], insideL: [1, 0, 0], insideR: [-1, 0, 0],
@@ -947,13 +1083,21 @@ export class BrainEngine {
       see: this.seeThrough,
       zoom: this.camera.zoom,
       fade: this.fade,
+      coverage: this.coverageInput,
     }
-    // a figure shows the selected areas against the plain brain, not faded
-    if (this.fade) { this.fade = false; this.updateColors() }
+    // a figure's coverage colours are its legend's (the screen fades them while areas are selected)
+    if (opts.coverage !== undefined) this.setCoverage(opts.coverage)
+    // a figure shows the selected areas against the plain brain, not faded, and in the legend's
+    // colour: a selected part's shading is not in the legend (U6)
+    const savedSub = { sub: this.sub, active: this.subActive, hover: this.subHover }
+    this.sub = null; this.subActive = -1; this.subHover = -1
+    if (this.fade) this.fade = false
+    this.updateColors()
     const out: CapturedView[] = []
     try {
       this.renderer.setPixelRatio(1)
       // a figure is framed the same whatever the screen it was made on
+      this.camera.clearViewOffset()
       this.camera.zoom = 1
       // a figure is opaque: faded cortex would no longer match the legend's colours
       this.seeThrough = 0
@@ -1002,12 +1146,15 @@ export class BrainEngine {
       this.renderer.setSize(saved.size.x, saved.size.y, false)
       this.camera.aspect = saved.aspect
       this.camera.zoom = saved.zoom
-      this.camera.updateProjectionMatrix()
+      this.applyInset()
       this.camera.position.copy(saved.pos)
       this.camera.quaternion.copy(saved.quat)
       this.hidden = saved.hidden
       this.seeThrough = saved.see
-      if (saved.fade) { this.fade = true; this.updateColors() }
+      if (opts.coverage !== undefined) this.setCoverage(saved.coverage)
+      this.sub = savedSub.sub; this.subActive = savedSub.active; this.subHover = savedSub.hover
+      if (saved.fade) this.fade = true
+      this.updateColors()
       this.applyVisibility()
       this.updateDots()
       this.renderer.render(this.scene, this.camera)
@@ -1028,6 +1175,7 @@ export class BrainEngine {
     el.removeEventListener('pointermove', this.onMove)
     el.removeEventListener('pointerdown', this.onDown)
     el.removeEventListener('pointerup', this.onUp)
+    el.removeEventListener('click', this.onClick)
     el.removeEventListener('pointerleave', this.onLeave)
     this.controls.dispose()
     for (const s of Object.values(this.hemis)) {

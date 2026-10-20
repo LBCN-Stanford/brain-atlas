@@ -22,7 +22,9 @@
    "name": "Visual",
    "long": "Visual",
    "short": "7Networks_1",
-   "group": null
+   "group": null,
+   "exposed": 0.788,
+   "buried": false
   },
   {
    "index": 2,
@@ -34,7 +36,9 @@
    "name": "Somatomotor",
    "long": "Somatomotor",
    "short": "7Networks_2",
-   "group": null
+   "group": null,
+   "exposed": 0.574,
+   "buried": false
   },
   {
    "index": 3,
@@ -46,7 +50,9 @@
    "name": "Dorsal attention",
    "long": "Dorsal attention",
    "short": "7Networks_3",
-   "group": null
+   "group": null,
+   "exposed": 0.871,
+   "buried": false
   },
   {
    "index": 4,
@@ -58,7 +64,9 @@
    "name": "Ventral attention",
    "long": "Ventral attention",
    "short": "7Networks_4",
-   "group": null
+   "group": null,
+   "exposed": 0.582,
+   "buried": false
   },
   {
    "index": 5,
@@ -70,7 +78,9 @@
    "name": "Limbic",
    "long": "Limbic",
    "short": "7Networks_5",
-   "group": null
+   "group": null,
+   "exposed": 0.875,
+   "buried": false
   },
   {
    "index": 6,
@@ -82,7 +92,9 @@
    "name": "Frontoparietal control",
    "long": "Frontoparietal control",
    "short": "7Networks_6",
-   "group": null
+   "group": null,
+   "exposed": 0.871,
+   "buried": false
   },
   {
    "index": 7,
@@ -94,7 +106,9 @@
    "name": "Default",
    "long": "Default",
    "short": "7Networks_7",
-   "group": null
+   "group": null,
+   "exposed": 0.851,
+   "buried": false
   },
   {
    "index": 8,
@@ -106,7 +120,9 @@
    "name": "Visual",
    "long": "Visual",
    "short": "7Networks_1",
-   "group": null
+   "group": null,
+   "exposed": 0.772,
+   "buried": false
   },
   {
    "index": 9,
@@ -118,7 +134,9 @@
    "name": "Somatomotor",
    "long": "Somatomotor",
    "short": "7Networks_2",
-   "group": null
+   "group": null,
+   "exposed": 0.576,
+   "buried": false
   },
   {
    "index": 10,
@@ -130,7 +148,9 @@
    "name": "Dorsal attention",
    "long": "Dorsal attention",
    "short": "7Networks_3",
-   "group": null
+   "group": null,
+   "exposed": 0.887,
+   "buried": false
   },
   {
    "index": 11,
@@ -142,7 +162,9 @@
    "name": "Ventral attention",
    "long": "Ventral attention",
    "short": "7Networks_4",
-   "group": null
+   "group": null,
+   "exposed": 0.63,
+   "buried": false
   },
   {
    "index": 12,
@@ -154,7 +176,9 @@
    "name": "Limbic",
    "long": "Limbic",
    "short": "7Networks_5",
-   "group": null
+   "group": null,
+   "exposed": 0.844,
+   "buried": false
   },
   {
    "index": 13,
@@ -166,7 +190,9 @@
    "name": "Frontoparietal control",
    "long": "Frontoparietal control",
    "short": "7Networks_6",
-   "group": null
+   "group": null,
+   "exposed": 0.883,
+   "buried": false
   },
   {
    "index": 14,
@@ -178,7 +204,9 @@
    "name": "Default",
    "long": "Default",
    "short": "7Networks_7",
-   "group": null
+   "group": null,
+   "exposed": 0.825,
+   "buried": false
   }
  ]
 }

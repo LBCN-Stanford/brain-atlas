@@ -8,7 +8,7 @@
    Illustrator or Inkscape. Every word on the figure is generated from the data and the settings. */
 
 import type { CapturedView, ViewPreset } from '../brain/engine'
-import { binLabel, NO_DATA, type Bin } from '../model/colormap'
+import { binLabel, NO_AREA, NO_DATA, type Bin } from '../model/colormap'
 import { pngWithDpi } from '../model/mapData'
 
 const W = 2400
@@ -39,8 +39,13 @@ export interface FigureLegend {
   kind: 'coverage' | 'selection'
   bins?: Bin[]
   measure?: string
-  areas?: { n: number; color: string; name: string; detail: string }[]
+  /** what the colour scale covers beyond the drawn areas (the deep structures) */
+  scaleNote?: string
+  /** `drawn: false`: in the selection but not on this figure (a deep structure) */
+  areas?: { n: number; color: string; name: string; detail: string; drawn?: boolean }[]
   electrodes?: number | null
+  /** whose electrodes, when not everyone's ("Person 3 only") */
+  electrodesNote?: string
 }
 
 export interface FigureSpec {
@@ -112,19 +117,25 @@ function layout(views: CapturedView[], spec: FigureSpec): { ops: Op[]; height: n
     ops.push({ t: 'text', x: M, y, s: lg.measure ?? '', size: 30, weight: 500, fill: INK })
     y += 26
     let x = M
-    const items = [{ color: NO_DATA, label: '0' }, ...lg.bins.map((b) => ({ color: b.color, label: binLabel(b) }))]
+    const items = [{ color: NO_DATA, label: '0' }, ...lg.bins.map((b) => ({ color: b.color, label: binLabel(b) })), { color: NO_AREA, label: 'no area' }]
     for (const it of items) {
       ops.push({ t: 'rect', x, y, w: 72, h: 34, fill: it.color, stroke: '#d5d3cf' })
       ops.push({ t: 'text', x, y: y + 70, s: it.label, size: 26, weight: 400, fill: INK2 })
       x += Math.max(72, measureText(it.label, 26, 400)) + 34
     }
     y += 104
+    if (lg.scaleNote) {
+      for (const line of wrap(lg.scaleNote, W - 2 * M, 24)) { ops.push({ t: 'text', x: M, y, s: line, size: 24, weight: 400, fill: INK2 }); y += 34 }
+      y += 10
+    }
   } else if (lg.kind === 'selection' && lg.areas) {
     const colW = (W - 2 * M - GAP) / 2
     lg.areas.forEach((a, i) => {
       const cx = M + (i % 2) * (colW + GAP)
       const cy = y + Math.floor(i / 2) * 54
-      ops.push(...pinOps(cx + 18, cy, a.n, a.color, 18))
+      // a structure the figure does not draw gets a hollow mark, not a pin that points at nothing
+      if (a.drawn === false) ops.push({ t: 'circle', x: cx + 18, y: cy, r: 16, fill: '#ffffff', stroke: a.color, sw: 4 }, { t: 'text', x: cx + 18, y: cy + 7, s: String(a.n), size: 19, weight: 600, fill: a.color, anchor: 'middle' })
+      else ops.push(...pinOps(cx + 18, cy, a.n, a.color, 18))
       ops.push({ t: 'text', x: cx + 50, y: cy + 10, s: a.name, size: 28, weight: 500, fill: INK })
       // keep each entry inside its column: shorten the detail, never let it run into the next one
       const room = colW - 50 - measureText(a.name, 28, 500) - 16
@@ -136,7 +147,7 @@ function layout(views: CapturedView[], spec: FigureSpec): { ops: Op[]; height: n
   }
   if (lg.electrodes) {
     ops.push({ t: 'circle', x: M + 12, y: y - 2, r: 10, fill: '#4b4f57' })
-    ops.push({ t: 'text', x: M + 36, y: y + 8, s: `Stimulated surface contact at its registered fsaverage vertex (n = ${lg.electrodes.toLocaleString('en-US')}); depth contacts are not shown`, size: 26, weight: 400, fill: INK2 })
+    ops.push({ t: 'text', x: M + 36, y: y + 8, s: `Stimulated surface contact at its registered fsaverage vertex (n = ${lg.electrodes.toLocaleString('en-US')}${lg.electrodesNote ?? ''}); depth contacts are not shown`, size: 26, weight: 400, fill: INK2 })
     y += 54
   }
 

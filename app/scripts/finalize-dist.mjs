@@ -28,12 +28,13 @@ async function jsonLd() {
   const ld = {
     '@context': 'https://schema.org',
     '@type': 'Dataset',
-    name: 'Intracranial Stimulation Atlas: subjective responses to intracranial electrical stimulation',
+    name: 'Intracranial Stimulation Atlas: subjective responses to electrical stimulation of the human brain',
     description: 'What people reported when small areas of their brain were electrically stimulated during clinical monitoring for epilepsy, one row per stimulation, with the stimulation parameters, the contact pair, its areas in published brain atlases (Desikan-Killiany, Destrieux, Yeo 7 networks, FreeSurfer deep structures), and the bedside report.' + (m?.synthetic ? ' This deployment shows synthetic demonstration data only.' : ''),
     version: m?.version ?? undefined,
     creator: { '@type': 'Organization', name: 'Laboratory of Behavioral and Cognitive Neuroscience (LBCN), Stanford University School of Medicine', url: 'https://med.stanford.edu/parvizi-lab.html' },
-    license: 'https://creativecommons.org/licenses/by/4.0/',
-    isAccessibleForFree: true,
+    // only invented data are CC BY and free to all; a controlled build's data are licensed by no one
+    // (LICENSE-DATA, the IRB protocol), so its metadata says neither (validation of 16 Oct, L12)
+    ...(m?.synthetic ? { license: 'https://creativecommons.org/licenses/by/4.0/', isAccessibleForFree: true } : { isAccessibleForFree: false }),
     keywords: ['intracranial electrical stimulation', 'direct cortical stimulation', 'stereo-EEG', 'electrocorticography', 'subjective report', 'brain atlas', 'epilepsy'],
     ...(URL_ ? { url: URL_ } : {}),
   }

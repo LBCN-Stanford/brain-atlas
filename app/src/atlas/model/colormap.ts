@@ -8,8 +8,11 @@
 const PALETTE = ['#edf8b1', '#c7e9b4', '#7fcdbb', '#41b6c4', '#1d91c0', '#225ea8', '#253494']
 const STEPS = [5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000]
 
-/** shown for an area with no stimulation: the plain brain colour */
-export const NO_DATA = '#e9e6e1'
+/** an area with no stimulation: one light neutral, lighter than the first bin, so "darker = more"
+    holds from zero up (L5; the engine's COVERAGE_ZERO) */
+export const NO_DATA = '#f4f3f1'
+/** no area at all (the medial wall): the plain brain's medial grey, with its own legend entry */
+export const NO_AREA = '#d9d5cf'
 
 export interface Bin {
   lo: number
@@ -62,4 +65,22 @@ export function mixBlack(hex: string, t: number): string {
   const v = parseInt(hex.slice(1), 16)
   const ch = (x: number) => Math.round(x * (1 - t)).toString(16).padStart(2, '0')
   return `#${ch((v >> 16) & 255)}${ch((v >> 8) & 255)}${ch(v & 255)}`
+}
+
+/** n distinct shades of one area's colour for its n parts, alternating lighter and darker so
+    neighbours in the list differ most; none is the area's own colour, which the other parts'
+    background keeps (L2: eight fixed shades repeated from the ninth part; M1: the first was the
+    area's own colour, so slivers drawn in it read as part 1) */
+export function partShades(n: number): number[] {
+  // evenly spaced over [-0.55, -0.12] and [0.12, 0.7]: toward black below 0, toward white above,
+  // never within 0.12 of the area's own colour
+  const lo = -0.55, gap = 0.12, hi = 0.7
+  const dark = -gap - lo, span = dark + (hi - gap)
+  const ts = Array.from({ length: n }, (_, i) => {
+    const u = n === 1 ? span : (span * i) / (n - 1)
+    return u <= dark ? lo + u : gap + (u - dark)
+  })
+  const out: number[] = []
+  for (let i = 0, j = ts.length - 1; i <= j; i++, j--) { out.push(ts[j]); if (i !== j) out.push(ts[i]) }
+  return out
 }

@@ -17,7 +17,9 @@ export interface ViewState {
   view: ViewName
   smooth: boolean
   dots: boolean
-  see: number
+  /** the Opacity slider as the reader set it (0 = solid); null when they never moved it, so the
+      automatic fade applies. A solid cortex chosen by hand is kept in the link too (L7) */
+  see: number | null
   /** which pairs a selection counts: either contact inside (default) or both */
   pairs: 'either' | 'both'
   /** colour every area by how many people were stimulated there */
@@ -26,9 +28,11 @@ export interface ViewState {
   multi: boolean
   /** a subregion of the selected area, by the finer atlas's key */
   sub: string | null
+  /** experience search: the brain shows where people's reports contain these words */
+  say: string | null
 }
 
-export const DEFAULT_STATE: ViewState = { atlas: 'dk', sel: [], view: 'left', smooth: false, dots: false, see: 0, pairs: 'either', cov: false, multi: false, sub: null }
+export const DEFAULT_STATE: ViewState = { atlas: 'dk', sel: [], view: 'left', smooth: false, dots: false, see: null, pairs: 'either', cov: false, multi: false, sub: null, say: null }
 
 /** the parameters of a query or hash string, with or without its leading '?' or '#' */
 function params(s: string): URLSearchParams {
@@ -51,11 +55,12 @@ export function parseHash(hash: string): ViewState {
     view: view && VIEWS.includes(view) ? view : DEFAULT_STATE.view,
     smooth: q.get('smooth') === '1',
     dots: q.get('dots') === '1',
-    see: Number.isFinite(see) ? Math.min(1, Math.max(0, see)) : 0,
+    see: q.has('see') && Number.isFinite(see) ? Math.min(1, Math.max(0, see)) : null,
     pairs: q.get('pairs') === 'both' ? 'both' : 'either',
     cov: q.get('map') === 'coverage',
     multi: q.get('compare') === '1',
     sub: /^(lh|rh)\.[\w.\-&+]+$/.test(q.get('sub') ?? '') ? q.get('sub') : null,
+    say: /^[A-Za-z' -]{2,40}$/.test(q.get('say') ?? '') ? q.get('say')!.trim() : null,
   }
 }
 
@@ -66,11 +71,12 @@ export function toHash(s: ViewState): string {
   if (s.view !== 'left') q.set('view', s.view)
   if (s.smooth) q.set('smooth', '1')
   if (s.dots) q.set('dots', '1')
-  if (s.see > 0) q.set('see', s.see.toFixed(2))
+  if (s.see != null) q.set('see', s.see.toFixed(2))
   if (s.pairs === 'both') q.set('pairs', 'both')
   if (s.cov) q.set('map', 'coverage')
   if (s.multi) q.set('compare', '1')
   if (s.sub) q.set('sub', s.sub)
+  if (s.say) q.set('say', s.say)
   return '#' + q.toString().replace(/%3A/gi, ':').replace(/%2C/gi, ',')
 }
 
@@ -80,7 +86,7 @@ export function parseLocation(search: string, hash: string): ViewState {
   return parseHash([...q.keys()].some((k) => STATE_KEYS.has(k)) ? search : hash)
 }
 
-const STATE_KEYS = new Set(['atlas', 'sel', 'view', 'smooth', 'dots', 'see', 'pairs', 'map', 'compare', 'sub'])
+const STATE_KEYS = new Set(['atlas', 'sel', 'view', 'smooth', 'dots', 'see', 'pairs', 'map', 'compare', 'sub', 'say'])
 
 /** The release a link was made on, if it names one. */
 export function linkRelease(search: string, hash: string): string | null {

@@ -1,0 +1,2274 @@
+{
+ "source": "FreeSurfer fsaverage as distributed by MNE-Python (fetch_fsaverage)",
+ "written_by": "scripts/v2/build_brain_assets.py --fingerprint",
+ "surfaces": {
+  "lh": {
+   "pial_centroid": [
+    -29.53,
+    -21.996,
+    17.483
+   ],
+   "pial_min": [
+    -68.794,
+    -104.826,
+    -47.052
+   ],
+   "pial_max": [
+    1.783,
+    68.963,
+    78.028
+   ],
+   "inflated_extent": [
+    83.018,
+    216.056,
+    145.955
+   ],
+   "sulc_mean": -0.0,
+   "sulc_std": 0.59385
+  },
+  "rh": {
+   "pial_centroid": [
+    30.021,
+    -20.666,
+    18.149
+   ],
+   "pial_min": [
+    -0.88,
+    -103.664,
+    -47.831
+   ],
+   "pial_max": [
+    70.032,
+    69.34,
+    78.963
+   ],
+   "inflated_extent": [
+    81.819,
+    215.463,
+    146.654
+   ],
+   "sulc_mean": -0.0,
+   "sulc_std": 0.59247
+  }
+ },
+ "parcels": {
+  "dk": {
+   "lh.bankssts": {
+    "vertices": 2137,
+    "centroid": [
+     -54.09,
+     -44.883,
+     4.466
+    ],
+    "color": "#196428"
+   },
+   "lh.caudalanteriorcingulate": {
+    "vertices": 1439,
+    "centroid": [
+     -4.198,
+     18.992,
+     27.645
+    ],
+    "color": "#7d64a0"
+   },
+   "lh.caudalmiddlefrontal": {
+    "vertices": 3736,
+    "centroid": [
+     -35.495,
+     10.477,
+     44.096
+    ],
+    "color": "#641900"
+   },
+   "lh.cuneus": {
+    "vertices": 1630,
+    "centroid": [
+     -7.349,
+     -79.064,
+     18.586
+    ],
+    "color": "#dc1464"
+   },
+   "lh.entorhinal": {
+    "vertices": 1102,
+    "centroid": [
+     -23.238,
+     -7.629,
+     -32.15
+    ],
+    "color": "#dc140a"
+   },
+   "lh.fusiform": {
+    "vertices": 4714,
+    "centroid": [
+     -35.116,
+     -43.57,
+     -21.662
+    ],
+    "color": "#b4dc8c"
+   },
+   "lh.inferiorparietal": {
+    "vertices": 7871,
+    "centroid": [
+     -40.922,
+     -67.242,
+     28.189
+    ],
+    "color": "#dc3cdc"
+   },
+   "lh.inferiortemporal": {
+    "vertices": 4415,
+    "centroid": [
+     -49.808,
+     -35.4,
+     -24.41
+    ],
+    "color": "#b42878"
+   },
+   "lh.isthmuscingulate": {
+    "vertices": 2531,
+    "centroid": [
+     -6.399,
+     -45.836,
+     16.928
+    ],
+    "color": "#8c148c"
+   },
+   "lh.lateraloccipital": {
+    "vertices": 6379,
+    "centroid": [
+     -30.514,
+     -87.809,
+     -1.384
+    ],
+    "color": "#141e8c"
+   },
+   "lh.lateralorbitofrontal": {
+    "vertices": 4188,
+    "centroid": [
+     -24.763,
+     28.106,
+     -16.583
+    ],
+    "color": "#234b32"
+   },
+   "lh.lingual": {
+    "vertices": 4205,
+    "centroid": [
+     -15.235,
+     -66.479,
+     -5.117
+    ],
+    "color": "#e18c8c"
+   },
+   "lh.medialorbitofrontal": {
+    "vertices": 2653,
+    "centroid": [
+     -5.827,
+     34.631,
+     -16.404
+    ],
+    "color": "#c8234b"
+   },
+   "lh.middletemporal": {
+    "vertices": 4452,
+    "centroid": [
+     -57.863,
+     -30.982,
+     -12.677
+    ],
+    "color": "#a06432"
+   },
+   "lh.parahippocampal": {
+    "vertices": 1838,
+    "centroid": [
+     -23.794,
+     -31.825,
+     -18.689
+    ],
+    "color": "#14dc3c"
+   },
+   "lh.paracentral": {
+    "vertices": 3294,
+    "centroid": [
+     -8.021,
+     -29.167,
+     55.649
+    ],
+    "color": "#3cdc3c"
+   },
+   "lh.parsopercularis": {
+    "vertices": 3119,
+    "centroid": [
+     -45.518,
+     14.668,
+     12.597
+    ],
+    "color": "#dcb48c"
+   },
+   "lh.parsorbitalis": {
+    "vertices": 956,
+    "centroid": [
+     -42.692,
+     39.141,
+     -13.083
+    ],
+    "color": "#146432"
+   },
+   "lh.parstriangularis": {
+    "vertices": 2046,
+    "centroid": [
+     -43.572,
+     30.193,
+     1.733
+    ],
+    "color": "#dc3c14"
+   },
+   "lh.pericalcarine": {
+    "vertices": 1912,
+    "centroid": [
+     -12.659,
+     -80.356,
+     5.44
+    ],
+    "color": "#78643c"
+   },
+   "lh.postcentral": {
+    "vertices": 9519,
+    "centroid": [
+     -42.971,
+     -23.806,
+     44.009
+    ],
+    "color": "#dc1414"
+   },
+   "lh.posteriorcingulate": {
+    "vertices": 3266,
+    "centroid": [
+     -5.249,
+     -17.391,
+     37.098
+    ],
+    "color": "#dcb4dc"
+   },
+   "lh.precentral": {
+    "vertices": 10740,
+    "centroid": [
+     -38.841,
+     -10.44,
+     42.841
+    ],
+    "color": "#3c14dc"
+   },
+   "lh.precuneus": {
+    "vertices": 7308,
+    "centroid": [
+     -9.871,
+     -57.878,
+     36.645
+    ],
+    "color": "#a08cb4"
+   },
+   "lh.rostralanteriorcingulate": {
+    "vertices": 1350,
+    "centroid": [
+     -3.968,
+     35.514,
+     1.298
+    ],
+    "color": "#50148c"
+   },
+   "lh.rostralmiddlefrontal": {
+    "vertices": 7243,
+    "centroid": [
+     -32.77,
+     42.769,
+     17.421
+    ],
+    "color": "#4b327d"
+   },
+   "lh.superiorfrontal": {
+    "vertices": 12179,
+    "centroid": [
+     -11.613,
+     23.619,
+     43.428
+    ],
+    "color": "#14dca0"
+   },
+   "lh.superiorparietal": {
+    "vertices": 10456,
+    "centroid": [
+     -23.416,
+     -61.702,
+     47.495
+    ],
+    "color": "#14b48c"
+   },
+   "lh.superiortemporal": {
+    "vertices": 7271,
+    "centroid": [
+     -53.129,
+     -16.772,
+     -3.541
+    ],
+    "color": "#8cdcdc"
+   },
+   "lh.supramarginal": {
+    "vertices": 8600,
+    "centroid": [
+     -51.572,
+     -38.934,
+     31.403
+    ],
+    "color": "#50a014"
+   },
+   "lh.frontalpole": {
+    "vertices": 272,
+    "centroid": [
+     -7.252,
+     65.005,
+     -9.598
+    ],
+    "color": "#640064"
+   },
+   "lh.temporalpole": {
+    "vertices": 839,
+    "centroid": [
+     -30.967,
+     11.144,
+     -35.295
+    ],
+    "color": "#4614aa"
+   },
+   "lh.transversetemporal": {
+    "vertices": 1064,
+    "centroid": [
+     -44.106,
+     -23.367,
+     7.671
+    ],
+    "color": "#9696c8"
+   },
+   "lh.insula": {
+    "vertices": 5229,
+    "centroid": [
+     -36.78,
+     -3.794,
+     1.814
+    ],
+    "color": "#ffc020"
+   },
+   "rh.bankssts": {
+    "vertices": 2196,
+    "centroid": [
+     53.124,
+     -40.858,
+     5.566
+    ],
+    "color": "#196428"
+   },
+   "rh.caudalanteriorcingulate": {
+    "vertices": 1608,
+    "centroid": [
+     4.654,
+     19.578,
+     27.505
+    ],
+    "color": "#7d64a0"
+   },
+   "rh.caudalmiddlefrontal": {
+    "vertices": 3494,
+    "centroid": [
+     35.748,
+     12.211,
+     44.296
+    ],
+    "color": "#641900"
+   },
+   "rh.cuneus": {
+    "vertices": 1638,
+    "centroid": [
+     7.333,
+     -79.832,
+     19.679
+    ],
+    "color": "#dc1464"
+   },
+   "rh.entorhinal": {
+    "vertices": 902,
+    "centroid": [
+     23.498,
+     -6.528,
+     -32.477
+    ],
+    "color": "#dc140a"
+   },
+   "rh.fusiform": {
+    "vertices": 4661,
+    "centroid": [
+     35.391,
+     -43.321,
+     -21.111
+    ],
+    "color": "#b4dc8c"
+   },
+   "rh.inferiorparietal": {
+    "vertices": 9676,
+    "centroid": [
+     43.841,
+     -61.69,
+     28.862
+    ],
+    "color": "#dc3cdc"
+   },
+   "rh.inferiortemporal": {
+    "vertices": 4198,
+    "centroid": [
+     50.262,
+     -32.5,
+     -25.051
+    ],
+    "color": "#b42878"
+   },
+   "rh.isthmuscingulate": {
+    "vertices": 2388,
+    "centroid": [
+     7.25,
+     -45.199,
+     16.209
+    ],
+    "color": "#8c148c"
+   },
+   "rh.lateraloccipital": {
+    "vertices": 5963,
+    "centroid": [
+     31.215,
+     -87.293,
+     0.303
+    ],
+    "color": "#141e8c"
+   },
+   "rh.lateralorbitofrontal": {
+    "vertices": 4354,
+    "centroid": [
+     24.252,
+     28.046,
+     -17.743
+    ],
+    "color": "#234b32"
+   },
+   "rh.lingual": {
+    "vertices": 3894,
+    "centroid": [
+     15.593,
+     -65.965,
+     -4.42
+    ],
+    "color": "#e18c8c"
+   },
+   "rh.medialorbitofrontal": {
+    "vertices": 2801,
+    "centroid": [
+     6.389,
+     35.577,
+     -15.561
+    ],
+    "color": "#c8234b"
+   },
+   "rh.middletemporal": {
+    "vertices": 5057,
+    "centroid": [
+     57.964,
+     -29.441,
+     -12.857
+    ],
+    "color": "#a06432"
+   },
+   "rh.parahippocampal": {
+    "vertices": 1742,
+    "centroid": [
+     24.852,
+     -31.827,
+     -17.402
+    ],
+    "color": "#14dc3c"
+   },
+   "rh.paracentral": {
+    "vertices": 3831,
+    "centroid": [
+     7.988,
+     -27.761,
+     55.344
+    ],
+    "color": "#3cdc3c"
+   },
+   "rh.parsopercularis": {
+    "vertices": 2472,
+    "centroid": [
+     45.887,
+     14.518,
+     13.952
+    ],
+    "color": "#dcb48c"
+   },
+   "rh.parsorbitalis": {
+    "vertices": 946,
+    "centroid": [
+     43.866,
+     39.465,
+     -11.737
+    ],
+    "color": "#146432"
+   },
+   "rh.parstriangularis": {
+    "vertices": 2380,
+    "centroid": [
+     46.239,
+     29.618,
+     4.021
+    ],
+    "color": "#dc3c14"
+   },
+   "rh.pericalcarine": {
+    "vertices": 1823,
+    "centroid": [
+     12.726,
+     -79.616,
+     6.34
+    ],
+    "color": "#78643c"
+   },
+   "rh.postcentral": {
+    "vertices": 9138,
+    "centroid": [
+     42.28,
+     -22.461,
+     44.22
+    ],
+    "color": "#dc1414"
+   },
+   "rh.posteriorcingulate": {
+    "vertices": 2994,
+    "centroid": [
+     5.461,
+     -17.023,
+     37.607
+    ],
+    "color": "#dcb4dc"
+   },
+   "rh.precentral": {
+    "vertices": 10705,
+    "centroid": [
+     37.858,
+     -9.722,
+     44.314
+    ],
+    "color": "#3c14dc"
+   },
+   "rh.precuneus": {
+    "vertices": 7975,
+    "centroid": [
+     9.944,
+     -56.858,
+     37.638
+    ],
+    "color": "#a08cb4"
+   },
+   "rh.rostralanteriorcingulate": {
+    "vertices": 1051,
+    "centroid": [
+     5.07,
+     34.935,
+     1.742
+    ],
+    "color": "#50148c"
+   },
+   "rh.rostralmiddlefrontal": {
+    "vertices": 7864,
+    "centroid": [
+     33.636,
+     42.484,
+     18.279
+    ],
+    "color": "#4b327d"
+   },
+   "rh.superiorfrontal": {
+    "vertices": 11878,
+    "centroid": [
+     12.482,
+     25.369,
+     43.093
+    ],
+    "color": "#14dca0"
+   },
+   "rh.superiorparietal": {
+    "vertices": 10222,
+    "centroid": [
+     23.207,
+     -60.264,
+     49.381
+    ],
+    "color": "#14b48c"
+   },
+   "rh.superiortemporal": {
+    "vertices": 6868,
+    "centroid": [
+     53.974,
+     -13.138,
+     -4.958
+    ],
+    "color": "#8cdcdc"
+   },
+   "rh.supramarginal": {
+    "vertices": 8150,
+    "centroid": [
+     51.742,
+     -33.44,
+     31.014
+    ],
+    "color": "#50a014"
+   },
+   "rh.frontalpole": {
+    "vertices": 369,
+    "centroid": [
+     9.091,
+     64.386,
+     -11.224
+    ],
+    "color": "#640064"
+   },
+   "rh.temporalpole": {
+    "vertices": 817,
+    "centroid": [
+     31.69,
+     11.135,
+     -33.078
+    ],
+    "color": "#4614aa"
+   },
+   "rh.transversetemporal": {
+    "vertices": 781,
+    "centroid": [
+     44.593,
+     -21.115,
+     8.42
+    ],
+    "color": "#9696c8"
+   },
+   "rh.insula": {
+    "vertices": 5090,
+    "centroid": [
+     37.952,
+     -3.391,
+     1.926
+    ],
+    "color": "#ffc020"
+   }
+  },
+  "destrieux": {
+   "lh.G_and_S_frontomargin": {
+    "vertices": 932,
+    "centroid": [
+     -24.408,
+     56.5,
+     -5.943
+    ],
+    "color": "#17dc3c"
+   },
+   "lh.G_and_S_occipital_inf": {
+    "vertices": 1277,
+    "centroid": [
+     -38.286,
+     -81.055,
+     -12.84
+    ],
+    "color": "#173cb4"
+   },
+   "lh.G_and_S_paracentral": {
+    "vertices": 2272,
+    "centroid": [
+     -7.9,
+     -34.368,
+     67.662
+    ],
+    "color": "#3f643c"
+   },
+   "lh.G_and_S_subcentral": {
+    "vertices": 2607,
+    "centroid": [
+     -56.516,
+     -11.809,
+     14.102
+    ],
+    "color": "#3f14dc"
+   },
+   "lh.G_and_S_transv_frontopol": {
+    "vertices": 627,
+    "centroid": [
+     -15.72,
+     64.345,
+     0.123
+    ],
+    "color": "#0d00fa"
+   },
+   "lh.G_and_S_cingul-Ant": {
+    "vertices": 2171,
+    "centroid": [
+     -7.598,
+     40.001,
+     8.788
+    ],
+    "color": "#1a3c00"
+   },
+   "lh.G_and_S_cingul-Mid-Ant": {
+    "vertices": 1957,
+    "centroid": [
+     -7.119,
+     14.538,
+     36.723
+    ],
+    "color": "#1a3c4b"
+   },
+   "lh.G_and_S_cingul-Mid-Post": {
+    "vertices": 2386,
+    "centroid": [
+     -7.401,
+     -11.383,
+     41.46
+    ],
+    "color": "#1a3c96"
+   },
+   "lh.G_cingul-Post-dorsal": {
+    "vertices": 1098,
+    "centroid": [
+     -2.331,
+     -37.844,
+     30.708
+    ],
+    "color": "#193cfa"
+   },
+   "lh.G_cingul-Post-ventral": {
+    "vertices": 520,
+    "centroid": [
+     -7.064,
+     -47.23,
+     4.151
+    ],
+    "color": "#3c1919"
+   },
+   "lh.G_cuneus": {
+    "vertices": 1430,
+    "centroid": [
+     -4.592,
+     -82.603,
+     16.838
+    ],
+    "color": "#b41414"
+   },
+   "lh.G_front_inf-Opercular": {
+    "vertices": 1800,
+    "centroid": [
+     -50.321,
+     11.148,
+     7.955
+    ],
+    "color": "#dc1464"
+   },
+   "lh.G_front_inf-Orbital": {
+    "vertices": 453,
+    "centroid": [
+     -45.145,
+     30.514,
+     -10.586
+    ],
+    "color": "#8c3c3c"
+   },
+   "lh.G_front_inf-Triangul": {
+    "vertices": 1005,
+    "centroid": [
+     -50.444,
+     30.071,
+     3.498
+    ],
+    "color": "#b4dc8c"
+   },
+   "lh.G_front_middle": {
+    "vertices": 4252,
+    "centroid": [
+     -37.387,
+     32.042,
+     33.033
+    ],
+    "color": "#8c64b4"
+   },
+   "lh.G_front_sup": {
+    "vertices": 8394,
+    "centroid": [
+     -9.228,
+     21.728,
+     47.807
+    ],
+    "color": "#b4148c"
+   },
+   "lh.G_Ins_lg_and_S_cent_ins": {
+    "vertices": 769,
+    "centroid": [
+     -39.681,
+     -6.934,
+     -1.459
+    ],
+    "color": "#170a0a"
+   },
+   "lh.G_insular_short": {
+    "vertices": 924,
+    "centroid": [
+     -38.891,
+     9.506,
+     -3.311
+    ],
+    "color": "#e18c8c"
+   },
+   "lh.G_occipital_middle": {
+    "vertices": 2098,
+    "centroid": [
+     -40.194,
+     -84.252,
+     11.065
+    ],
+    "color": "#b43cb4"
+   },
+   "lh.G_occipital_sup": {
+    "vertices": 1365,
+    "centroid": [
+     -14.733,
+     -89.504,
+     27.874
+    ],
+    "color": "#14dc3c"
+   },
+   "lh.G_oc-temp_lat-fusifor": {
+    "vertices": 1701,
+    "centroid": [
+     -34.754,
+     -54.099,
+     -20.735
+    ],
+    "color": "#3c148c"
+   },
+   "lh.G_oc-temp_med-Lingual": {
+    "vertices": 2483,
+    "centroid": [
+     -10.041,
+     -72.398,
+     -5.618
+    ],
+    "color": "#dcb48c"
+   },
+   "lh.G_oc-temp_med-Parahip": {
+    "vertices": 2416,
+    "centroid": [
+     -22.705,
+     -20.127,
+     -25.217
+    ],
+    "color": "#416414"
+   },
+   "lh.G_orbital": {
+    "vertices": 2520,
+    "centroid": [
+     -28.554,
+     32.889,
+     -19.177
+    ],
+    "color": "#dc3c14"
+   },
+   "lh.G_pariet_inf-Angular": {
+    "vertices": 3108,
+    "centroid": [
+     -44.071,
+     -65.86,
+     37.464
+    ],
+    "color": "#143cdc"
+   },
+   "lh.G_pariet_inf-Supramar": {
+    "vertices": 4030,
+    "centroid": [
+     -56.356,
+     -37.519,
+     32.2
+    ],
+    "color": "#64643c"
+   },
+   "lh.G_parietal_sup": {
+    "vertices": 4220,
+    "centroid": [
+     -20.775,
+     -60.781,
+     58.161
+    ],
+    "color": "#dcb4dc"
+   },
+   "lh.G_postcentral": {
+    "vertices": 3509,
+    "centroid": [
+     -44.479,
+     -25.011,
+     54.463
+    ],
+    "color": "#14b48c"
+   },
+   "lh.G_precentral": {
+    "vertices": 3876,
+    "centroid": [
+     -42.186,
+     -9.405,
+     51.501
+    ],
+    "color": "#3c8cb4"
+   },
+   "lh.G_precuneus": {
+    "vertices": 3540,
+    "centroid": [
+     -5.411,
+     -58.437,
+     43.107
+    ],
+    "color": "#19148c"
+   },
+   "lh.G_rectus": {
+    "vertices": 1197,
+    "centroid": [
+     -3.781,
+     36.012,
+     -21.884
+    ],
+    "color": "#143c64"
+   },
+   "lh.G_subcallosal": {
+    "vertices": 240,
+    "centroid": [
+     -3.132,
+     15.9,
+     -10.536
+    ],
+    "color": "#3cdc14"
+   },
+   "lh.G_temp_sup-G_T_transv": {
+    "vertices": 716,
+    "centroid": [
+     -47.405,
+     -19.427,
+     6.928
+    ],
+    "color": "#3c3cdc"
+   },
+   "lh.G_temp_sup-Lateral": {
+    "vertices": 2784,
+    "centroid": [
+     -60.413,
+     -16.006,
+     -3.256
+    ],
+    "color": "#dc3cdc"
+   },
+   "lh.G_temp_sup-Plan_polar": {
+    "vertices": 851,
+    "centroid": [
+     -38.114,
+     5.244,
+     -20.614
+    ],
+    "color": "#41dc3c"
+   },
+   "lh.G_temp_sup-Plan_tempo": {
+    "vertices": 1454,
+    "centroid": [
+     -57.972,
+     -37.991,
+     17.824
+    ],
+    "color": "#198c14"
+   },
+   "lh.G_temporal_inf": {
+    "vertices": 2536,
+    "centroid": [
+     -51.99,
+     -37.412,
+     -25.728
+    ],
+    "color": "#dcdc64"
+   },
+   "lh.G_temporal_middle": {
+    "vertices": 2956,
+    "centroid": [
+     -60.801,
+     -33.932,
+     -11.803
+    ],
+    "color": "#b43c3c"
+   },
+   "lh.Lat_Fis-ant-Horizont": {
+    "vertices": 374,
+    "centroid": [
+     -39.129,
+     30.646,
+     -3.184
+    ],
+    "color": "#3d14dc"
+   },
+   "lh.Lat_Fis-ant-Vertical": {
+    "vertices": 496,
+    "centroid": [
+     -43.453,
+     21.23,
+     5.838
+    ],
+    "color": "#3d143c"
+   },
+   "lh.Lat_Fis-post": {
+    "vertices": 2018,
+    "centroid": [
+     -40.835,
+     -33.35,
+     16.686
+    ],
+    "color": "#3d3c64"
+   },
+   "lh.Pole_occipital": {
+    "vertices": 2028,
+    "centroid": [
+     -18.012,
+     -98.172,
+     -4.55
+    ],
+    "color": "#8c143c"
+   },
+   "lh.Pole_temporal": {
+    "vertices": 1661,
+    "centroid": [
+     -34.45,
+     4.774,
+     -39.54
+    ],
+    "color": "#dcb414"
+   },
+   "lh.S_calcarine": {
+    "vertices": 3085,
+    "centroid": [
+     -16.125,
+     -67.184,
+     4.082
+    ],
+    "color": "#3fb4b4"
+   },
+   "lh.S_central": {
+    "vertices": 4914,
+    "centroid": [
+     -36.005,
+     -20.993,
+     45.535
+    ],
+    "color": "#dd140a"
+   },
+   "lh.S_cingul-Marginalis": {
+    "vertices": 1920,
+    "centroid": [
+     -13.515,
+     -36.837,
+     47.214
+    ],
+    "color": "#dd1464"
+   },
+   "lh.S_circular_insula_ant": {
+    "vertices": 889,
+    "centroid": [
+     -30.667,
+     21.243,
+     -9.712
+    ],
+    "color": "#dd3c8c"
+   },
+   "lh.S_circular_insula_inf": {
+    "vertices": 2463,
+    "centroid": [
+     -40.978,
+     -12.776,
+     -6.602
+    ],
+    "color": "#dd14dc"
+   },
+   "lh.S_circular_insula_sup": {
+    "vertices": 3091,
+    "centroid": [
+     -35.913,
+     5.62,
+     10.168
+    ],
+    "color": "#3ddcdc"
+   },
+   "lh.S_collat_transv_ant": {
+    "vertices": 1151,
+    "centroid": [
+     -40.534,
+     -22.843,
+     -27.586
+    ],
+    "color": "#64c8c8"
+   },
+   "lh.S_collat_transv_post": {
+    "vertices": 323,
+    "centroid": [
+     -24.314,
+     -78.599,
+     -9.315
+    ],
+    "color": "#0ac8c8"
+   },
+   "lh.S_front_inf": {
+    "vertices": 2174,
+    "centroid": [
+     -39.718,
+     23.473,
+     21.463
+    ],
+    "color": "#dddc14"
+   },
+   "lh.S_front_middle": {
+    "vertices": 1376,
+    "centroid": [
+     -27.775,
+     43.862,
+     20.149
+    ],
+    "color": "#8d1464"
+   },
+   "lh.S_front_sup": {
+    "vertices": 3031,
+    "centroid": [
+     -24.231,
+     19.245,
+     44.398
+    ],
+    "color": "#3ddc64"
+   },
+   "lh.S_interm_prim-Jensen": {
+    "vertices": 435,
+    "centroid": [
+     -51.737,
+     -53.716,
+     30.684
+    ],
+    "color": "#8d3c14"
+   },
+   "lh.S_intrapariet_and_P_trans": {
+    "vertices": 4409,
+    "centroid": [
+     -29.942,
+     -58.47,
+     40.04
+    ],
+    "color": "#8f14dc"
+   },
+   "lh.S_oc_middle_and_Lunatus": {
+    "vertices": 951,
+    "centroid": [
+     -32.044,
+     -86.951,
+     4.008
+    ],
+    "color": "#653cdc"
+   },
+   "lh.S_oc_sup_and_transversal": {
+    "vertices": 1243,
+    "centroid": [
+     -27.195,
+     -81.336,
+     18.77
+    ],
+    "color": "#15148c"
+   },
+   "lh.S_occipital_ant": {
+    "vertices": 818,
+    "centroid": [
+     -43.746,
+     -68.874,
+     0.11
+    ],
+    "color": "#3d14b4"
+   },
+   "lh.S_oc-temp_lat": {
+    "vertices": 897,
+    "centroid": [
+     -43.555,
+     -51.335,
+     -15.804
+    ],
+    "color": "#dd8c14"
+   },
+   "lh.S_oc-temp_med_and_Lingual": {
+    "vertices": 2354,
+    "centroid": [
+     -28.674,
+     -48.64,
+     -12.218
+    ],
+    "color": "#8d64dc"
+   },
+   "lh.S_orbital_lateral": {
+    "vertices": 356,
+    "centroid": [
+     -42.131,
+     42.502,
+     -2.127
+    ],
+    "color": "#dd6414"
+   },
+   "lh.S_orbital_med-olfact": {
+    "vertices": 822,
+    "centroid": [
+     -12.285,
+     24.333,
+     -20.496
+    ],
+    "color": "#b5c814"
+   },
+   "lh.S_orbital-H_Shaped": {
+    "vertices": 1104,
+    "centroid": [
+     -26.356,
+     35.125,
+     -14.648
+    ],
+    "color": "#651414"
+   },
+   "lh.S_parieto_occipital": {
+    "vertices": 2220,
+    "centroid": [
+     -15.291,
+     -68.492,
+     23.066
+    ],
+    "color": "#6564b4"
+   },
+   "lh.S_pericallosal": {
+    "vertices": 2337,
+    "centroid": [
+     -3.21,
+     -7.98,
+     21.24
+    ],
+    "color": "#b5dc14"
+   },
+   "lh.S_postcentral": {
+    "vertices": 4447,
+    "centroid": [
+     -38.148,
+     -35.671,
+     45.174
+    ],
+    "color": "#158cc8"
+   },
+   "lh.S_precentral-inf-part": {
+    "vertices": 1881,
+    "centroid": [
+     -44.162,
+     4.585,
+     27.299
+    ],
+    "color": "#1514f0"
+   },
+   "lh.S_precentral-sup-part": {
+    "vertices": 1846,
+    "centroid": [
+     -27.993,
+     -8.484,
+     53.424
+    ],
+    "color": "#1514c8"
+   },
+   "lh.S_suborbital": {
+    "vertices": 742,
+    "centroid": [
+     -5.91,
+     37.976,
+     -10.978
+    ],
+    "color": "#15143c"
+   },
+   "lh.S_subparietal": {
+    "vertices": 1359,
+    "centroid": [
+     -9.186,
+     -49.436,
+     35.574
+    ],
+    "color": "#653c3c"
+   },
+   "lh.S_temporal_inf": {
+    "vertices": 1111,
+    "centroid": [
+     -52.15,
+     -41.267,
+     -15.512
+    ],
+    "color": "#15b4b4"
+   },
+   "lh.S_temporal_sup": {
+    "vertices": 6591,
+    "centroid": [
+     -49.092,
+     -44.437,
+     5.593
+    ],
+    "color": "#dfdc3c"
+   },
+   "lh.S_temporal_transverse": {
+    "vertices": 564,
+    "centroid": [
+     -51.123,
+     -25.246,
+     4.459
+    ],
+    "color": "#dd3c3c"
+   },
+   "rh.G_and_S_frontomargin": {
+    "vertices": 840,
+    "centroid": [
+     23.126,
+     58.06,
+     -8.674
+    ],
+    "color": "#17dc3c"
+   },
+   "rh.G_and_S_occipital_inf": {
+    "vertices": 1385,
+    "centroid": [
+     42.557,
+     -76.891,
+     -11.788
+    ],
+    "color": "#173cb4"
+   },
+   "rh.G_and_S_paracentral": {
+    "vertices": 2272,
+    "centroid": [
+     6.381,
+     -33.577,
+     67.878
+    ],
+    "color": "#3f643c"
+   },
+   "rh.G_and_S_subcentral": {
+    "vertices": 2134,
+    "centroid": [
+     56.111,
+     -10.733,
+     14.561
+    ],
+    "color": "#3f14dc"
+   },
+   "rh.G_and_S_transv_frontopol": {
+    "vertices": 827,
+    "centroid": [
+     17.182,
+     63.902,
+     1.889
+    ],
+    "color": "#0d00fa"
+   },
+   "rh.G_and_S_cingul-Ant": {
+    "vertices": 2834,
+    "centroid": [
+     8.482,
+     39.361,
+     7.837
+    ],
+    "color": "#1a3c00"
+   },
+   "rh.G_and_S_cingul-Mid-Ant": {
+    "vertices": 2197,
+    "centroid": [
+     7.605,
+     15.611,
+     36.97
+    ],
+    "color": "#1a3c4b"
+   },
+   "rh.G_and_S_cingul-Mid-Post": {
+    "vertices": 2352,
+    "centroid": [
+     7.103,
+     -10.027,
+     42.93
+    ],
+    "color": "#1a3c96"
+   },
+   "rh.G_cingul-Post-dorsal": {
+    "vertices": 923,
+    "centroid": [
+     2.369,
+     -38.658,
+     31.621
+    ],
+    "color": "#193cfa"
+   },
+   "rh.G_cingul-Post-ventral": {
+    "vertices": 616,
+    "centroid": [
+     7.768,
+     -49.329,
+     5.176
+    ],
+    "color": "#3c1919"
+   },
+   "rh.G_cuneus": {
+    "vertices": 1438,
+    "centroid": [
+     5.417,
+     -79.989,
+     18.82
+    ],
+    "color": "#b41414"
+   },
+   "rh.G_front_inf-Opercular": {
+    "vertices": 1568,
+    "centroid": [
+     51.134,
+     9.142,
+     7.287
+    ],
+    "color": "#dc1464"
+   },
+   "rh.G_front_inf-Orbital": {
+    "vertices": 288,
+    "centroid": [
+     49.209,
+     32.174,
+     -8.056
+    ],
+    "color": "#8c3c3c"
+   },
+   "rh.G_front_inf-Triangul": {
+    "vertices": 1101,
+    "centroid": [
+     52.871,
+     29.133,
+     7.655
+    ],
+    "color": "#b4dc8c"
+   },
+   "rh.G_front_middle": {
+    "vertices": 4051,
+    "centroid": [
+     38.332,
+     33.023,
+     32.549
+    ],
+    "color": "#8c64b4"
+   },
+   "rh.G_front_sup": {
+    "vertices": 7866,
+    "centroid": [
+     10.028,
+     23.567,
+     48.491
+    ],
+    "color": "#b4148c"
+   },
+   "rh.G_Ins_lg_and_S_cent_ins": {
+    "vertices": 782,
+    "centroid": [
+     41.247,
+     -3.941,
+     -3.758
+    ],
+    "color": "#170a0a"
+   },
+   "rh.G_insular_short": {
+    "vertices": 703,
+    "centroid": [
+     40.581,
+     10.257,
+     -2.775
+    ],
+    "color": "#e18c8c"
+   },
+   "rh.G_occipital_middle": {
+    "vertices": 2093,
+    "centroid": [
+     40.877,
+     -81.953,
+     13.542
+    ],
+    "color": "#b43cb4"
+   },
+   "rh.G_occipital_sup": {
+    "vertices": 1637,
+    "centroid": [
+     18.422,
+     -85.905,
+     31.66
+    ],
+    "color": "#14dc3c"
+   },
+   "rh.G_oc-temp_lat-fusifor": {
+    "vertices": 1749,
+    "centroid": [
+     33.82,
+     -53.341,
+     -19.814
+    ],
+    "color": "#3c148c"
+   },
+   "rh.G_oc-temp_med-Lingual": {
+    "vertices": 2231,
+    "centroid": [
+     10.811,
+     -65.496,
+     -4.547
+    ],
+    "color": "#dcb48c"
+   },
+   "rh.G_oc-temp_med-Parahip": {
+    "vertices": 2236,
+    "centroid": [
+     24.048,
+     -17.963,
+     -25.366
+    ],
+    "color": "#416414"
+   },
+   "rh.G_orbital": {
+    "vertices": 2967,
+    "centroid": [
+     28.375,
+     32.723,
+     -19.446
+    ],
+    "color": "#dc3c14"
+   },
+   "rh.G_pariet_inf-Angular": {
+    "vertices": 3220,
+    "centroid": [
+     46.568,
+     -60.963,
+     39.57
+    ],
+    "color": "#143cdc"
+   },
+   "rh.G_pariet_inf-Supramar": {
+    "vertices": 4188,
+    "centroid": [
+     57.767,
+     -32.572,
+     31.503
+    ],
+    "color": "#64643c"
+   },
+   "rh.G_parietal_sup": {
+    "vertices": 3336,
+    "centroid": [
+     21.543,
+     -57.008,
+     60.643
+    ],
+    "color": "#dcb4dc"
+   },
+   "rh.G_postcentral": {
+    "vertices": 3138,
+    "centroid": [
+     44.665,
+     -23.281,
+     54.139
+    ],
+    "color": "#14b48c"
+   },
+   "rh.G_precentral": {
+    "vertices": 3862,
+    "centroid": [
+     41.218,
+     -8.41,
+     52.108
+    ],
+    "color": "#3c8cb4"
+   },
+   "rh.G_precuneus": {
+    "vertices": 3919,
+    "centroid": [
+     5.774,
+     -59.757,
+     46.199
+    ],
+    "color": "#19148c"
+   },
+   "rh.G_rectus": {
+    "vertices": 932,
+    "centroid": [
+     4.468,
+     33.456,
+     -22.438
+    ],
+    "color": "#143c64"
+   },
+   "rh.G_subcallosal": {
+    "vertices": 231,
+    "centroid": [
+     3.995,
+     14.714,
+     -13.814
+    ],
+    "color": "#3cdc14"
+   },
+   "rh.G_temp_sup-G_T_transv": {
+    "vertices": 557,
+    "centroid": [
+     47.756,
+     -17.372,
+     7.276
+    ],
+    "color": "#3c3cdc"
+   },
+   "rh.G_temp_sup-Lateral": {
+    "vertices": 2531,
+    "centroid": [
+     61.498,
+     -12.045,
+     -3.836
+    ],
+    "color": "#dc3cdc"
+   },
+   "rh.G_temp_sup-Plan_polar": {
+    "vertices": 750,
+    "centroid": [
+     40.842,
+     6.142,
+     -19.216
+    ],
+    "color": "#41dc3c"
+   },
+   "rh.G_temp_sup-Plan_tempo": {
+    "vertices": 1022,
+    "centroid": [
+     59.069,
+     -31.637,
+     18.177
+    ],
+    "color": "#198c14"
+   },
+   "rh.G_temporal_inf": {
+    "vertices": 2273,
+    "centroid": [
+     53.601,
+     -34.94,
+     -26.082
+    ],
+    "color": "#dcdc64"
+   },
+   "rh.G_temporal_middle": {
+    "vertices": 3137,
+    "centroid": [
+     61.998,
+     -31.669,
+     -11.727
+    ],
+    "color": "#b43c3c"
+   },
+   "rh.Lat_Fis-ant-Horizont": {
+    "vertices": 476,
+    "centroid": [
+     41.201,
+     27.784,
+     1.155
+    ],
+    "color": "#3d14dc"
+   },
+   "rh.Lat_Fis-ant-Vertical": {
+    "vertices": 295,
+    "centroid": [
+     45.626,
+     20.759,
+     7.004
+    ],
+    "color": "#3d143c"
+   },
+   "rh.Lat_Fis-post": {
+    "vertices": 2604,
+    "centroid": [
+     40.691,
+     -27.439,
+     17.551
+    ],
+    "color": "#3d3c64"
+   },
+   "rh.Pole_occipital": {
+    "vertices": 2805,
+    "centroid": [
+     17.632,
+     -95.717,
+     -2.216
+    ],
+    "color": "#8c143c"
+   },
+   "rh.Pole_temporal": {
+    "vertices": 1818,
+    "centroid": [
+     37.665,
+     6.597,
+     -38.708
+    ],
+    "color": "#dcb414"
+   },
+   "rh.S_calcarine": {
+    "vertices": 2766,
+    "centroid": [
+     17.976,
+     -63.822,
+     4.619
+    ],
+    "color": "#3fb4b4"
+   },
+   "rh.S_central": {
+    "vertices": 4790,
+    "centroid": [
+     35.511,
+     -19.886,
+     45.819
+    ],
+    "color": "#dd140a"
+   },
+   "rh.S_cingul-Marginalis": {
+    "vertices": 2401,
+    "centroid": [
+     12.683,
+     -36.74,
+     47.526
+    ],
+    "color": "#dd1464"
+   },
+   "rh.S_circular_insula_ant": {
+    "vertices": 929,
+    "centroid": [
+     32.66,
+     22.485,
+     -7.518
+    ],
+    "color": "#dd3c8c"
+   },
+   "rh.S_circular_insula_inf": {
+    "vertices": 2274,
+    "centroid": [
+     42.651,
+     -11.372,
+     -7.093
+    ],
+    "color": "#dd14dc"
+   },
+   "rh.S_circular_insula_sup": {
+    "vertices": 2443,
+    "centroid": [
+     36.963,
+     6.666,
+     9.951
+    ],
+    "color": "#3ddcdc"
+   },
+   "rh.S_collat_transv_ant": {
+    "vertices": 1068,
+    "centroid": [
+     41.973,
+     -21.625,
+     -27.098
+    ],
+    "color": "#64c8c8"
+   },
+   "rh.S_collat_transv_post": {
+    "vertices": 410,
+    "centroid": [
+     26.109,
+     -78.265,
+     -9.937
+    ],
+    "color": "#0ac8c8"
+   },
+   "rh.S_front_inf": {
+    "vertices": 2363,
+    "centroid": [
+     40.391,
+     24.954,
+     21.522
+    ],
+    "color": "#dddc14"
+   },
+   "rh.S_front_middle": {
+    "vertices": 2004,
+    "centroid": [
+     29.578,
+     41.917,
+     22.334
+    ],
+    "color": "#8d1464"
+   },
+   "rh.S_front_sup": {
+    "vertices": 2846,
+    "centroid": [
+     24.726,
+     19.236,
+     45.663
+    ],
+    "color": "#3ddc64"
+   },
+   "rh.S_interm_prim-Jensen": {
+    "vertices": 788,
+    "centroid": [
+     49.144,
+     -44.746,
+     34.148
+    ],
+    "color": "#8d3c14"
+   },
+   "rh.S_intrapariet_and_P_trans": {
+    "vertices": 4277,
+    "centroid": [
+     30.365,
+     -55.469,
+     44.098
+    ],
+    "color": "#8f14dc"
+   },
+   "rh.S_oc_middle_and_Lunatus": {
+    "vertices": 824,
+    "centroid": [
+     34.356,
+     -83.707,
+     6.732
+    ],
+    "color": "#653cdc"
+   },
+   "rh.S_oc_sup_and_transversal": {
+    "vertices": 1482,
+    "centroid": [
+     28.252,
+     -78.203,
+     21.847
+    ],
+    "color": "#15148c"
+   },
+   "rh.S_occipital_ant": {
+    "vertices": 578,
+    "centroid": [
+     44.722,
+     -66.044,
+     3.777
+    ],
+    "color": "#3d14b4"
+   },
+   "rh.S_oc-temp_lat": {
+    "vertices": 915,
+    "centroid": [
+     44.212,
+     -51.15,
+     -16.012
+    ],
+    "color": "#dd8c14"
+   },
+   "rh.S_oc-temp_med_and_Lingual": {
+    "vertices": 2079,
+    "centroid": [
+     30.22,
+     -47.352,
+     -12.687
+    ],
+    "color": "#8d64dc"
+   },
+   "rh.S_orbital_lateral": {
+    "vertices": 336,
+    "centroid": [
+     43.702,
+     41.37,
+     -1.647
+    ],
+    "color": "#dd6414"
+   },
+   "rh.S_orbital_med-olfact": {
+    "vertices": 951,
+    "centroid": [
+     13.058,
+     23.341,
+     -19.513
+    ],
+    "color": "#b5c814"
+   },
+   "rh.S_orbital-H_Shaped": {
+    "vertices": 1241,
+    "centroid": [
+     26.72,
+     35.516,
+     -15.04
+    ],
+    "color": "#651414"
+   },
+   "rh.S_parieto_occipital": {
+    "vertices": 2188,
+    "centroid": [
+     16.84,
+     -67.031,
+     24.903
+    ],
+    "color": "#6564b4"
+   },
+   "rh.S_pericallosal": {
+    "vertices": 2326,
+    "centroid": [
+     4.273,
+     -7.74,
+     21.62
+    ],
+    "color": "#b5dc14"
+   },
+   "rh.S_postcentral": {
+    "vertices": 4163,
+    "centroid": [
+     37.342,
+     -33.54,
+     46.607
+    ],
+    "color": "#158cc8"
+   },
+   "rh.S_precentral-inf-part": {
+    "vertices": 1867,
+    "centroid": [
+     43.637,
+     6.262,
+     28.478
+    ],
+    "color": "#1514f0"
+   },
+   "rh.S_precentral-sup-part": {
+    "vertices": 1920,
+    "centroid": [
+     27.184,
+     -7.689,
+     54.169
+    ],
+    "color": "#1514c8"
+   },
+   "rh.S_suborbital": {
+    "vertices": 433,
+    "centroid": [
+     5.675,
+     40.416,
+     -13.35
+    ],
+    "color": "#15143c"
+   },
+   "rh.S_subparietal": {
+    "vertices": 1808,
+    "centroid": [
+     8.712,
+     -49.297,
+     36.786
+    ],
+    "color": "#653c3c"
+   },
+   "rh.S_temporal_inf": {
+    "vertices": 1056,
+    "centroid": [
+     53.862,
+     -39.139,
+     -14.193
+    ],
+    "color": "#15b4b4"
+   },
+   "rh.S_temporal_sup": {
+    "vertices": 7803,
+    "centroid": [
+     49.636,
+     -41.839,
+     6.587
+    ],
+    "color": "#dfdc3c"
+   },
+   "rh.S_temporal_transverse": {
+    "vertices": 413,
+    "centroid": [
+     52.535,
+     -21.786,
+     7.214
+    ],
+    "color": "#dd3c3c"
+   }
+  },
+  "yeo7": {
+   "lh.7Networks_1": {
+    "vertices": 21632,
+    "centroid": [
+     -22.364,
+     -75.049,
+     2.582
+    ],
+    "color": "#781286"
+   },
+   "lh.7Networks_2": {
+    "vertices": 29778,
+    "centroid": [
+     -36.127,
+     -22.759,
+     39.253
+    ],
+    "color": "#4682b4"
+   },
+   "lh.7Networks_3": {
+    "vertices": 17511,
+    "centroid": [
+     -33.466,
+     -44.174,
+     35.981
+    ],
+    "color": "#00760e"
+   },
+   "lh.7Networks_4": {
+    "vertices": 17392,
+    "centroid": [
+     -34.251,
+     -6.946,
+     22.329
+    ],
+    "color": "#c43afa"
+   },
+   "lh.7Networks_5": {
+    "vertices": 11380,
+    "centroid": [
+     -26.827,
+     8.408,
+     -26.628
+    ],
+    "color": "#dcf8a4"
+   },
+   "lh.7Networks_6": {
+    "vertices": 16635,
+    "centroid": [
+     -32.754,
+     -3.839,
+     26.262
+    ],
+    "color": "#e69422"
+   },
+   "lh.7Networks_7": {
+    "vertices": 35314,
+    "centroid": [
+     -30.173,
+     -6.615,
+     14.963
+    ],
+    "color": "#cd3e4e"
+   },
+   "rh.7Networks_1": {
+    "vertices": 22519,
+    "centroid": [
+     23.569,
+     -72.457,
+     3.733
+    ],
+    "color": "#781286"
+   },
+   "rh.7Networks_2": {
+    "vertices": 30207,
+    "centroid": [
+     36.453,
+     -21.759,
+     38.286
+    ],
+    "color": "#4682b4"
+   },
+   "rh.7Networks_3": {
+    "vertices": 17604,
+    "centroid": [
+     32.606,
+     -42.156,
+     38.193
+    ],
+    "color": "#00760e"
+   },
+   "rh.7Networks_4": {
+    "vertices": 19402,
+    "centroid": [
+     35.884,
+     -7.785,
+     24.113
+    ],
+    "color": "#c43afa"
+   },
+   "rh.7Networks_5": {
+    "vertices": 11614,
+    "centroid": [
+     27.569,
+     9.52,
+     -26.612
+    ],
+    "color": "#dcf8a4"
+   },
+   "rh.7Networks_6": {
+    "vertices": 22330,
+    "centroid": [
+     33.485,
+     1.9,
+     25.629
+    ],
+    "color": "#e69422"
+   },
+   "rh.7Networks_7": {
+    "vertices": 26056,
+    "centroid": [
+     28.576,
+     -6.007,
+     14.174
+    ],
+    "color": "#cd3e4e"
+   }
+  }
+ },
+ "deep": {
+  "Left-Thalamus": {
+   "aseg_label": 10,
+   "hemisphere": "lh",
+   "voxels": 8610,
+   "centroid": [
+    -11.752,
+    -19.876,
+    5.166
+   ]
+  },
+  "Right-Thalamus": {
+   "aseg_label": 49,
+   "hemisphere": "rh",
+   "voxels": 8589,
+   "centroid": [
+    12.494,
+    -19.226,
+    5.664
+   ]
+  },
+  "Left-Caudate": {
+   "aseg_label": 11,
+   "hemisphere": "lh",
+   "voxels": 3627,
+   "centroid": [
+    -15.034,
+    9.438,
+    6.913
+   ]
+  },
+  "Right-Caudate": {
+   "aseg_label": 50,
+   "hemisphere": "rh",
+   "voxels": 3852,
+   "centroid": [
+    16.159,
+    9.458,
+    8.239
+   ]
+  },
+  "Left-Putamen": {
+   "aseg_label": 12,
+   "hemisphere": "lh",
+   "voxels": 7242,
+   "centroid": [
+    -26.366,
+    -0.157,
+    -2.092
+   ]
+  },
+  "Right-Putamen": {
+   "aseg_label": 51,
+   "hemisphere": "rh",
+   "voxels": 6872,
+   "centroid": [
+    26.945,
+    0.548,
+    -2.249
+   ]
+  },
+  "Left-Pallidum": {
+   "aseg_label": 13,
+   "hemisphere": "lh",
+   "voxels": 1765,
+   "centroid": [
+    -20.917,
+    -5.189,
+    -2.411
+   ]
+  },
+  "Right-Pallidum": {
+   "aseg_label": 52,
+   "hemisphere": "rh",
+   "voxels": 1804,
+   "centroid": [
+    22.105,
+    -4.939,
+    -1.954
+   ]
+  },
+  "Left-Hippocampus": {
+   "aseg_label": 17,
+   "hemisphere": "lh",
+   "voxels": 5165,
+   "centroid": [
+    -26.088,
+    -24.43,
+    -15.149
+   ]
+  },
+  "Right-Hippocampus": {
+   "aseg_label": 53,
+   "hemisphere": "rh",
+   "voxels": 5387,
+   "centroid": [
+    27.744,
+    -23.379,
+    -14.995
+   ]
+  },
+  "Left-Amygdala": {
+   "aseg_label": 18,
+   "hemisphere": "lh",
+   "voxels": 1941,
+   "centroid": [
+    -23.909,
+    -7.34,
+    -20.636
+   ]
+  },
+  "Right-Amygdala": {
+   "aseg_label": 54,
+   "hemisphere": "rh",
+   "voxels": 2228,
+   "centroid": [
+    24.943,
+    -6.011,
+    -20.738
+   ]
+  },
+  "Left-Accumbens-area": {
+   "aseg_label": 26,
+   "hemisphere": "lh",
+   "voxels": 778,
+   "centroid": [
+    -9.63,
+    10.96,
+    -8.787
+   ]
+  },
+  "Right-Accumbens-area": {
+   "aseg_label": 58,
+   "hemisphere": "rh",
+   "voxels": 757,
+   "centroid": [
+    9.987,
+    10.424,
+    -8.705
+   ]
+  }
+ }
+}

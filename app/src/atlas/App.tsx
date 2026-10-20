@@ -5,22 +5,22 @@
    the reading panel. The brain draws scripts/v2/build_brain_assets.py's fsaverage assets. */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ChevronDown, Download, Info, List, RotateCcw } from 'lucide-react'
+import { ChevronDown, Download, Info, List } from 'lucide-react'
 import { useAtlasDb } from './data'
 import type { EventRow } from '../lib/core/data'
 import { loadAtlas, loadBrain, loadInflated, type AtlasAssets, type BrainAssets, type Hemi } from './brain/assets'
 import type { CoverageColors, Dot, SelectedArea, Subregions } from './brain/engine'
-import { sitePointMni305 } from './model/space'
 import { BrainCanvas, type BrainCanvasHandle } from './ui/BrainCanvas'
 import { SearchBox } from './ui/SearchBox'
 import { ReadingPanel, type AreaView } from './ui/ReadingPanel'
-import { AboutSheet, AreaListSheet, ATLAS_CARDS, AtlasPicker, CiteSheet, CoverageLegend, DownloadMenu, MIN_PEOPLE, NoticesSheet } from './ui/Sheets'
+import { AboutSheet, AreaListSheet, ATLAS_CARDS, AtlasPicker, CiteSheet, CoverageLegend, DownloadMenu, MIN_PEOPLE, NoticesSheet, WordLegend } from './ui/Sheets'
 import { REFERENCES, SITE, citation, viewUrl } from './site'
 import { FIGURE_TILES, figurePng, figureSvg, type FigureSpec } from './ui/mapFigure'
-import { binsFor, colorFor, mixBlack, mixWhite, NO_DATA } from './model/colormap'
+import { binsFor, colorFor, mixBlack, mixWhite, NO_DATA, partShades } from './model/colormap'
 import { giftiFunc, giftiLabel, mapCsv, mapReadme, summariseAreas, vertexValues } from './model/mapData'
-import { cortexId, deepId, hemiWord, indexSites, selectablesFor, type AtlasId, type Selectable, type SiteParcelRecord, type SiteParcelsFile } from './model/parcels'
-import { eventGroup, narrowResult, selectRows, type SelectedRow } from './model/selection'
+import { areaParts, cortexId, deepId, hemiWord, indexSites, selectablesFor, surfaceDots, type AtlasId, type Selectable, type SiteParcelRecord, type SiteParcelsFile } from './model/parcels'
+import { allContactsInside, eventGroup, inPart, narrowResult, patientLabel, selectRows, type SelectedRow } from './model/selection'
+import { wordMap, wordTerms } from './model/wordMap'
 import { DOWNLOAD_COLUMNS, datasetDescription, downloadRows, readme, sha256sums, toCsv } from './model/download'
 import { zipStore } from './model/zip'
 import { MAX_AREAS, PALETTE, assignSlots, linkRelease, normaliseSelection, parseLocation, toHash, toSearch, type ViewName, type ViewState } from './model/urlState'
@@ -36,8 +36,7 @@ const VIEW_WORDS: Partial<Record<ViewName, string>> = { insideL: 'inside left', 
 
 /** the finer atlas whose areas subdivide an area of this one (none for the finest) */
 const FINER: Record<AtlasId, AtlasId | null> = { dk: 'destrieux', yeo7: 'dk', destrieux: null }
-/** shades for the subdivisions of one selected area: its own colour, lighter and darker */
-const SHADES = [0, 0.42, -0.3, 0.62, -0.5, 0.25, -0.15, 0.75]
+
 
 interface ReportTextFile { release?: string; text: Record<string, string> }
 
@@ -90,6 +89,7 @@ export function App() {
   const [linkRel] = useState(() => linkRelease(window.location.search, window.location.hash))
   const [unknownIds, setUnknownIds] = useState<string[]>([])
   const [relNoticeSeen, setRelNoticeSeen] = useState(false)
+  const [pairsNoticeSeen, setPairsNoticeSeen] = useState(false)
   const [atlas, setAtlas] = useState<AtlasAssets | null>(null)
   const [hover, setHover] = useState<{ id: string; x: number; y: number } | null>(null)
   const [picker, setPicker] = useState(false)
@@ -108,7 +108,11 @@ export function App() {
   const [inflated, setInflated] = useState<Record<Hemi, Float32Array> | null>(null)
   useEffect(() => { loadBrain().then(setBrain, (e: Error) => setBrainError(e.message)) }, [])
   // the inflated surfaces follow the brain, so the first view never waits for them
-  useEffect(() => { if (brain) loadInflated().then(setInflated, () => { /* "Smooth" stays unavailable */ }) }, [brain])
+  // the inflated surfaces follow the brain; if they fail, "Smooth" is unavailable and a link's (or
+  // a buried pick's) smooth=1 is dropped rather than left checked over a folded brain (L8)
+  const [inflatedFailed, setInflatedFailed] = useState(false)
+  useEffect(() => { if (brain) loadInflated().then(setInflated, () => setInflatedFailed(true)) }, [brain])
+  useEffect(() => { if (inflatedFailed) setState((s) => (s.smooth ? { ...s, smooth: false } : s)) }, [inflatedFailed])
   useEffect(() => {
     let alive = true
     setAtlas(null)
@@ -116,11 +120,23 @@ export function App() {
     return () => { alive = false }
   }, [state.atlas])
   const release = db?.manifest.version ?? null
+  const stepKey = `${state.atlas}|${state.sel.join(',')}|${state.sub ?? ''}`
+  const lastStep = useRef(stepKey)
+  const fromHistory = useRef(false)
   useEffect(() => {
     // one page, one address: the root with the state in the query. A legacy hash, or the path
-    // of index.html, is replaced so the address bar is always the canonical link.
-    window.history.replaceState(null, '', ROOT_PATH + toSearch(state, release ?? linkRel))
-  }, [state, release, linkRel])
+    // of index.html, is replaced so the address bar is always the canonical link. A new atlas,
+    // selection or part is a step Back can return to; the camera and the switches are not (U9)
+    const url = ROOT_PATH + toSearch(state, release ?? linkRel)
+    if (url === window.location.pathname + window.location.search) return
+    // a part dropped because its area went (a new pick, Clear) is the same step, not a new one:
+    // pushing it trapped Back on the new area (re-audit R1)
+    const [la, ls, lsub] = lastStep.current.split('|')
+    const subDropped = la === state.atlas && ls === state.sel.join(',') && lsub && !state.sub
+    if (stepKey !== lastStep.current && !subDropped) window.history.pushState(null, '', url)
+    else window.history.replaceState(null, '', url)
+    lastStep.current = stepKey
+  }, [state, release, linkRel, stepKey])
   useEffect(() => {
     // back/forward, or a pasted legacy hash link: follow it, or the address bar and the screen
     // disagree (found by the real-data count check, which navigated by hash)
@@ -129,6 +145,8 @@ export function App() {
       setState((s) => {
         if (toHash(s) === toHash(next)) return s
         if (next.view !== s.view) canvas.current?.setView(next.view)
+        lastStep.current = `${next.atlas}|${next.sel.join(',')}|${next.sub ?? ''}`
+        fromHistory.current = true
         return next
       })
     }
@@ -157,16 +175,11 @@ export function App() {
     return text?.get(eid) ?? null
   }, [db, text])
 
-  /** both contacts of the site identified and each inside one of `ids` (the strict pair rule) */
-  const bothInside = useCallback((siteId: string, ids: ReadonlySet<string>) => {
-    const rec = parcelsBySite.get(siteId)
-    if (!rec || rec.c.length !== 2 || !parcels) return false
-    return rec.c.every((cid) => {
-      const c = parcels.contacts[cid]
-      const k = c?.[state.atlas]
-      return !!c && ((!!k && ids.has(cortexId(k))) || (!!c.deep && ids.has(deepId(c.deep))))
-    })
-  }, [parcelsBySite, parcels, state.atlas])
+  /** the strict pair rule: every contact current passed through (both of a pair, or a monopolar
+      site's one contact) identified and inside one of `ids` (model/selection.ts) */
+  const bothInside = useCallback((siteId: string, ids: ReadonlySet<string>) => (
+    !!parcels && allContactsInside(parcelsBySite.get(siteId), db?.siteById.get(siteId)?.montage_type, parcels.contacts, state.atlas, ids)
+  ), [parcelsBySite, parcels, state.atlas, db])
 
   /** the site's person is held: an open question on record about where their electrodes are */
   const heldSite = useCallback((siteId: string) => parcelsBySite.get(siteId)?.dk?.s === 'held', [parcelsBySite])
@@ -224,13 +237,16 @@ export function App() {
     for (const r of db.rows) {
       if (eventGroup(r) !== 'stimulation') continue
       const rec = parcelsBySite.get(r.site.site_id)
-      if (!rec || !(rec[state.atlas]?.p.length || rec.deep?.p.length)) continue
+      if (!rec) continue
+      const ids = [...(rec[state.atlas]?.p ?? []).map(cortexId), ...(rec.deep?.p ?? []).map(deepId)]
+      // under the strict rule a stimulation is placed only where both contacts lie in one area
+      if (!ids.some((id) => state.pairs !== 'both' || bothInside(r.site.site_id, new Set([id])))) continue
       t.stim++
       people.add(r.event.patient_id)
     }
     t.people = people.size
     return t
-  }, [db, parcels, parcelsBySite, state.atlas])
+  }, [db, parcels, parcelsBySite, state.atlas, state.pairs, bothInside])
 
   const sel = useMemo(() => normaliseSelection(state.sel, (id) => byId.has(id)), [state.sel, byId])
   useEffect(() => {
@@ -266,6 +282,11 @@ export function App() {
     if (s.kind === 'deep') bits.push('deep structure')
     return bits.filter(Boolean).join(' · ')
   }, [byId, state.atlas])
+  /** an area's name with its side ("Amygdala, left"), for the areas a pair also touches */
+  const areaLabel = useCallback((id: string) => {
+    const s = byId.get(id)
+    return s ? `${s.name}${s.hemisphere ? `, ${s.hemisphere === 'lh' ? 'left' : 'right'}` : ''}` : id
+  }, [byId])
   const areaViews: AreaView[] = useMemo(
     () => selectedAreas.map((a) => ({ id: a.id, name: areaName(a.id), sub: areaSub(a.id), color: a.color, n: a.n })),
     [selectedAreas, areaName, areaSub],
@@ -276,52 +297,21 @@ export function App() {
       if (!db) return null
       const ids = new Set(sel)
       return selectRows(sel, sitesByArea, db.eventsBySite as ReadonlyMap<string, readonly EventRow[]>, textFor,
-        { bothInside: (s) => bothInside(s, ids), strict: state.pairs === 'both' })
+        { bothInside: (s) => bothInside(s, ids), insideArea: (s, a) => bothInside(s, new Set([a])), strict: state.pairs === 'both' })
     },
     [db, sel, sitesByArea, textFor, bothInside, state.pairs],
   )
 
   const dots: Dot[] = useMemo(() => {
-    // Every stimulated contact. A SURFACE contact sits at the fsaverage vertex it was registered
-    // to, coloured by the selected area that contact itself lies in. A DEPTH electrode is drawn
-    // once per stimulated pair, at the pair's MNI305 point inside the brain: an affine estimate
-    // (median 4.5 mm from FreeSurfer's own nonlinear placement), so it shows where the coverage
-    // is, not an exact position. Without it the deep coverage (insula, hippocampus, cingulate)
-    // looked empty.
+    // stimulated surface contacts at their registered fsaverage vertex; depth contacts are not
+    // drawn (model/parcels.ts, surfaceDots)
     if (!db || !parcels || !(state.dots || person)) return []
-    const mine = (sid: string) => !person || db.siteById.get(sid)?.patient_id === person
     const colorByKey = new Map<string, string>()
     for (const a of selectedAreas) colorByKey.set(a.id, a.color)
-    const out: Dot[] = []
-    const seen = new Set<string>()
-    for (const [sid, rec] of parcelsBySite) {
-      if (!mine(sid) || !(db.eventsBySite.get(sid) ?? []).some((r) => eventGroup(r) === 'stimulation')) continue
-      for (const cid of rec.c ?? []) {
-        const c = parcels.contacts?.[cid]
-        if (!c || c.k !== 's' || c.v == null || c.h == null || c.held || seen.has(cid)) continue
-        seen.add(cid)
-        const key = c[state.atlas]
-        const color = (key && colorByKey.get(cortexId(key))) || (c.deep && colorByKey.get(deepId(c.deep))) || null
-        out.push({ hemi: c.h, v: c.v, areaColor: color })
-      }
-    }
-    for (const r of db.rows) {
-      const site = r.site
-      if (site.electrode_type !== 'sEEG_depth' || !mine(site.site_id) || seen.has(site.site_id) || eventGroup(r) !== 'stimulation' || heldSite(site.site_id)) continue
-      seen.add(site.site_id)
-      const pt = sitePointMni305(site)
-      if (!pt) continue
-      const rec = parcelsBySite.get(site.site_id)
-      // a point the builder found in no tissue at all (outside the brain, or contacts never
-      // identified) is not drawn: it would show an electrode where none can have been
-      const st = rec?.dk?.s
-      if (!rec || st === 'unlabelled' || st === 'contacts_unidentified' || st === 'held') continue
-      const keys = [...(rec?.[state.atlas]?.p ?? []).map(cortexId), ...(rec?.deep?.p ?? []).map(deepId)]
-      const color = keys.map((k) => colorByKey.get(k)).find(Boolean) ?? null
-      out.push({ hemi: site.hemisphere === 'L' ? 'lh' : 'rh', p: [pt[0], pt[1], pt[2]], areaColor: color })
-    }
-    return out
-  }, [db, parcels, parcelsBySite, state.dots, state.atlas, selectedAreas, heldSite, person])
+    const stimulated = (sid: string) => (!person || db.siteById.get(sid)?.patient_id === person)
+      && (db.eventsBySite.get(sid) ?? []).some((r) => eventGroup(r) === 'stimulation')
+    return surfaceDots(parcels, stimulated, state.atlas, (id) => colorByKey.get(id) ?? null)
+  }, [db, parcels, state.dots, state.atlas, selectedAreas, person])
 
   const coverage = useMemo(() => {
     // People stimulated per area, on one shared binned scale across the atlas and the deep
@@ -330,21 +320,59 @@ export function App() {
     const people = (id: string) => areaCounts.get(id)?.people ?? 0
     const max = Math.max(0, ...selectables.map((a) => people(a.id)))
     const bins = binsFor(max)
-    const colors: CoverageColors = { cortex: new Map(), deep: new Map() }
-    // with areas selected, the coverage scale steps back so the selection colours stand out
-    // (the selection's blue sat inside the coverage blues)
+    // with areas selected, the coverage scale steps back on screen so the selection colours stand
+    // out (the selection's blue sat inside the coverage blues). A figure is drawn from the unfaded
+    // colours, the ones its legend and areas.csv give (H2)
+    const paint = (fade: boolean): CoverageColors => {
+      const shade = (c: string | null) => (c && fade ? mixWhite(c, 0.6) : c)
+      const colors: CoverageColors = { cortex: new Map(), deep: new Map() }
+      for (const l of atlasReady.table.labels) {
+        const c = shade(l.key ? colorFor(people(cortexId(l.key)), bins) : null)
+        if (c) colors.cortex.set(l.index, c)
+      }
+      for (const d of brain.deep) {
+        const c = shade(colorFor(people(deepId(d.key)), bins))
+        if (c) colors.deep.set(d.key, c)
+      }
+      return colors
+    }
+    const reaching5 = selectables.filter((a) => people(a.id) >= 5).length
+    return { colors: paint(sel.length > 0), unfaded: paint(false), bins, max, reaching5, areas: selectables.length }
+  }, [state.cov, atlasReady, brain, areaCounts, selectables, sel.length])
+
+  /* ----- experience search: a word becomes a map (model/wordMap.ts) ------------------------- */
+
+  const sayTerms = useMemo(() => (state.say ? wordTerms(state.say) : []), [state.say])
+  const words = useMemo(() => {
+    if (!db || !parcels || !sayTerms.length) return null
+    const areasOfSite = (sid: string) => {
+      const rec = parcelsBySite.get(sid)
+      const ids = [...(rec?.[state.atlas]?.p ?? []).map(cortexId), ...(rec?.deep?.p ?? []).map(deepId)]
+      // the same pair rule as the panel, the hover card and Coverage
+      return state.pairs === 'both' ? ids.filter((id) => bothInside(sid, new Set([id]))) : ids
+    }
+    return wordMap(db.rows, sayTerms, textFor, areasOfSite, heldSite)
+  }, [db, parcels, parcelsBySite, sayTerms, state.atlas, state.pairs, bothInside, textFor, heldSite])
+  const wordColors = useMemo(() => {
+    // people who said it, per area, on a binned scale like Coverage; an area where people were
+    // stimulated and nobody said it takes the zero colour, an area never stimulated stays plain
+    if (!words || !atlasReady || !brain) return null
+    const said = (id: string) => words.perArea.get(id)?.saidPeople ?? 0
+    const max = Math.max(0, ...selectables.map((a) => said(a.id)))
+    const bins = binsFor(max)
     const shade = (c: string | null) => (c && sel.length ? mixWhite(c, 0.6) : c)
+    const colors: CoverageColors = { cortex: new Map(), deep: new Map() }
     for (const l of atlasReady.table.labels) {
-      const c = shade(l.key ? colorFor(people(cortexId(l.key)), bins) : null)
+      const c = shade(l.key ? colorFor(said(cortexId(l.key)), bins) : null)
       if (c) colors.cortex.set(l.index, c)
     }
     for (const d of brain.deep) {
-      const c = shade(colorFor(people(deepId(d.key)), bins))
+      const c = shade(colorFor(said(deepId(d.key)), bins))
       if (c) colors.deep.set(d.key, c)
     }
-    const reaching5 = selectables.filter((a) => people(a.id) >= 5).length
-    return { colors, bins, max, reaching5, areas: selectables.length }
-  }, [state.cov, atlasReady, brain, areaCounts, selectables, sel.length])
+    const areasWith = selectables.filter((a) => said(a.id) > 0).length
+    return { colors, bins, max, areasWith }
+  }, [words, atlasReady, brain, selectables, sel.length])
 
   /* ----- focus and subregions --------------------------------------------------------------- */
 
@@ -365,90 +393,179 @@ export function App() {
   }, [])
   const prevFocus = useRef(focusArea)
   useEffect(() => {
+    // Back and Forward restore the area with its part, so a step from history keeps it
+    if (fromHistory.current) { fromHistory.current = false; prevFocus.current = focusArea; return }
     if (prevFocus.current !== focusArea && prevFocus.current !== null) setSubFilter(null)
     prevFocus.current = focusArea
   }, [focusArea, setSubFilter])
+  // the history flag lives for the one render it arrived in (this runs after the effect above)
+  useEffect(() => { fromHistory.current = false })
   // a subregion the finer atlas does not have in this area is dropped, once the subregions are known
 
-  /** The finer atlas's areas inside the focused area: same vertices, so a subregion is exactly the
-      part of a published finer area that falls inside this one (Destrieux inside Desikan-Killiany,
-      Desikan-Killiany inside a Yeo network). Slivers under 3% of the area are left out. */
+  /** The finer atlas's areas inside the focused area: same vertices, so a part is exactly the piece
+      of a published finer area that falls inside this one (Destrieux inside Desikan-Killiany,
+      Desikan-Killiany inside a Yeo network). Slivers under 3% of the area are not listed
+      (model/parcels.ts, areaParts). */
   const sub = useMemo(() => {
     if (!finer || !finerId || !atlasReady || !focusArea?.startsWith('ctx:') || sel.length !== 1 || state.cov) return null
     const lab = atlasReady.table.labels.find((l) => l.key && cortexId(l.key) === focusArea)
-    if (!lab?.hemisphere) return null
+    if (!lab?.hemisphere || !lab.key) return null
     const h = lab.hemisphere as Hemi
-    const coarse = atlasReady.labels[h], fine = finer.labels[h]
-    const count = new Map<number, number>()
-    let total = 0
-    for (let v = 0; v < coarse.length; v++) if (coarse[v] === lab.index) { total++; count.set(fine[v], (count.get(fine[v]) ?? 0) + 1) }
-    const parts = [...count].filter(([i, n]) => i > 0 && finer.table.labels[i]?.key && n / total >= 0.03).sort((a, b) => b[1] - a[1])
+    const { parts, sliverShare } = areaParts(atlasReady.labels[h], finer.labels[h], lab.index, finer.table.labels)
     if (parts.length < 2) return null
     const base = selectedAreas.find((a) => a.id === focusArea)?.color ?? PALETTE[0]
+    const shades = partShades(parts.length)
     const colors = new Map<number, string>(), keys = new Map<number, string>()
-    const list = parts.map(([i, n], k) => {
-      const l = finer.table.labels[i]
-      const t = SHADES[k % SHADES.length]
+    const list = parts.map((x, k) => {
+      const t = shades[k]
       const color = t >= 0 ? mixWhite(base, t) : mixBlack(base, -t)
-      colors.set(i, color)
-      keys.set(i, l.key!)
-      return { key: l.key!, name: l.name, color, share: n / total }
+      colors.set(x.index, color)
+      keys.set(x.index, x.key)
+      return { key: x.key, name: x.name, color, share: x.share }
     })
     const engine: Subregions = { labels: finer.labels, colors, keys }
-    return { engine, list, atlas: finerId, title: ATLAS_CARDS.find((c) => c.id === finerId)!.title }
-  }, [finer, finerId, atlasReady, focusArea, sel.length, state.cov, selectedAreas])
+    return { engine, list, sliverShare, area: { atlas: state.atlas, key: lab.key }, atlas: finerId, title: ATLAS_CARDS.find((c) => c.id === finerId)!.title }
+  }, [finer, finerId, atlasReady, focusArea, sel.length, state.cov, selectedAreas, state.atlas])
 
-  /** a stimulation is in a subregion when one of its two contacts carries that finer label */
-  const inSub = useCallback((r: SelectedRow, key: string) => {
-    if (!parcels || !sub) return false
-    const rec = parcelsBySite.get(r.row.site.site_id)
-    return (rec?.c ?? []).some((cid) => (parcels.contacts[cid] as unknown as Record<string, string | null> | undefined)?.[sub.atlas] === key)
-  }, [parcels, parcelsBySite, sub])
-  const subList = useMemo(() => sub && result ? sub.list.map((x) => {
-    const rows = result.stimulations.filter((r) => inSub(r, x.key))
-    return { ...x, stim: rows.length, people: new Set(rows.map((r) => r.row.event.patient_id)).size }
-  }) : null, [sub, result, inSub])
-  useEffect(() => { setPerson(null) }, [focusArea, state.atlas, subFilter])
+  /** a stimulation is in a part when one contact carries the part's label and lies in the area
+      itself (model/selection.ts, inPart) */
+  const inSub = useCallback((r: SelectedRow, key: string) => (
+    !!parcels && !!sub && inPart(parcelsBySite.get(r.row.site.site_id), parcels.contacts, sub.area, { atlas: sub.atlas, key })
+  ), [parcels, parcelsBySite, sub])
+  const subInfo = useMemo(() => {
+    if (!sub || !result) return null
+    const list = sub.list.map((x) => {
+      const rows = result.stimulations.filter((r) => inSub(r, x.key))
+      return { ...x, stim: rows.length, people: new Set(rows.map((r) => r.row.event.patient_id)).size }
+    })
+    // the parts need not cover the area (slivers are not listed) and may overlap (a pair can lie
+    // in two parts): both are said, not left for the reader to discover in the sums (M1)
+    let outside = 0, overlap = false
+    for (const r of result.stimulations) {
+      const n = sub.list.filter((x) => inSub(r, x.key)).length
+      if (n === 0) outside++
+      if (n > 1) overlap = true
+    }
+    return { list, outside, overlap }
+  }, [sub, result, inSub])
+  const subList = subInfo?.list ?? null
+  // a part filter applies only while the parts it names are on screen: under Coverage, Compare or
+  // another atlas there are none, and narrowing by it emptied the panel ("No stimulations were
+  // recorded in this area", H5). It stays in the state, so it returns when they do.
+  const activeSub = subFilter && subList?.some((x) => x.key === subFilter) ? subFilter : null
+  // one person in focus belongs to the selection it was chosen in: any change to the selection
+  // clears it (removing the other area of a comparison left a filter with no rows and no control
+  // to clear it, H5), and so does a result that no longer holds them
+  const selKey = sel.join(',')
+  useEffect(() => { setPerson(null) }, [selKey, state.atlas, activeSub])
+  // phone only: the reading sheet lowered to see the brain; a new selection raises it again (U5)
+  const [panelDown, setPanelDown] = useState(false)
+  const [phone, setPhone] = useState(() => window.matchMedia?.('(max-width: 700px)').matches ?? false)
+  useEffect(() => {
+    const m = window.matchMedia?.('(max-width: 700px)')
+    if (!m) return
+    const on = () => setPhone(m.matches)
+    m.addEventListener('change', on)
+    return () => m.removeEventListener('change', on)
+  }, [])
+  // how much of the brain's stage the phone's reading sheet covers, measured, so the view's centre
+  // moves into the part left open (the sheet is 55% of the window; the stage ends above the footer)
+  const [sheetInset, setSheetInset] = useState(0)
+  const sheetOpen = phone && sel.length > 0 && !panelDown
+  useEffect(() => {
+    if (!sheetOpen) { setSheetInset(0); return }
+    const measure = () => {
+      const c = document.querySelector('.atlas-canvas')?.getBoundingClientRect()
+      const sheetTop = window.innerHeight * 0.45
+      setSheetInset(c ? Math.max(0, Math.round(Math.min(c.bottom, window.innerHeight) - sheetTop)) : 0)
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [sheetOpen])
+  useEffect(() => { setPanelDown(false) }, [selKey, state.atlas])
+  useEffect(() => {
+    if (person && result && !result.stimulations.some((r) => r.row.event.patient_id === person)) setPerson(null)
+  }, [person, result])
   const shown = useMemo(() => {
     if (!result) return result
     let r = result
-    if (subFilter) r = narrowResult(r, (x) => inSub(x, subFilter))
+    if (activeSub) r = narrowResult(r, (x) => inSub(x, activeSub))
     if (person) r = narrowResult(r, (x) => x.row.event.patient_id === person)
     return r
-  }, [result, subFilter, inSub, person])
+  }, [result, activeSub, inSub, person])
   // a link's subregion that this area does not hold is dropped rather than filtering to nothing
   useEffect(() => {
     if (subFilter && subList && !subList.some((x) => x.key === subFilter)) setSubFilter(null)
   }, [subFilter, subList, setSubFilter])
 
-  // the cortex fades on its own when what was picked, or the electrodes, are inside it
-  const autoSee = sel.some((id) => id.startsWith('deep:')) ? 0.7 : state.dots ? 0.5 : 0
+  // the cortex fades on its own when a deep structure is picked, so it can be seen inside. The
+  // electrodes no longer fade it: every dot is a surface contact, on the cortex (M3)
+  const autoSee = sel.some((id) => id.startsWith('deep:')) ? 0.7 : 0
   // the Opacity slider, once moved (or set by a link), wins over the automatic fade
-  const [manualSee, setManualSee] = useState<number | null>(() => (state.see > 0 ? state.see : null))
+  const [manualSee, setManualSee] = useState<number | null>(() => state.see)
   const see = manualSee ?? autoSee
+  // a deep structure newly picked gets the automatic fade back, or one picked after Opacity was
+  // set solid sits hidden inside the cortex (U8)
+  // compared on the selection as stored, which a link sets before anything loads: the shown
+  // selection is empty until the atlas arrives, so a link's own deep id looked newly picked (re-audit R2)
+  const prevSel = useRef(state.sel)
+  useEffect(() => {
+    if (state.sel.some((id) => id.startsWith('deep:') && !prevSel.current.includes(id))) {
+      setManualSee(null)
+      setState((s) => (s.see == null ? s : { ...s, see: null }))
+    }
+    prevSel.current = state.sel
+  }, [state.sel])
 
   const onCanvasClick = (id: string | null) => {
-    if (id?.startsWith('sub:')) { const k = id.slice(4); setSubFilter((f) => (f === k ? null : k)); return }
+    // 'sub:' alone is a sliver of the selected area, in no listed part: it clears the part, and
+    // never deselects the area (M1)
+    if (id?.startsWith('sub:')) { const k = id.slice(4); setSubFilter((f) => (!k || f === k ? null : k)); return }
     toggleArea(id)
   }
 
-  // "Smooth" switched on only because a buried area was picked goes off again when it is cleared
+  // "Smooth" switched on only because a buried area was picked goes off again once no buried area
+  // is selected, and whenever a deep structure is picked: the smoothed surface hides the deep
+  // structures, so a hippocampus picked after an insula showed nothing (M9)
   const autoSmoothed = useRef(false)
-  useEffect(() => {
-    if (!sel.length && autoSmoothed.current) { autoSmoothed.current = false; setState((x) => ({ ...x, smooth: false })) }
-  }, [sel.length])
 
-  /** most of the area lies in a sulcus (FreeSurfer sulc > 0 on over 75% of its vertices: the insula, Heschl's gyrus, sulcal parcels) */
+  /** the folded brain hides the area: measured at build time, one verdict for both sides
+      (build_brain_assets.py, BURIED: the insula, Heschl's gyrus, the plana polare, the deep sulci) */
   const buried = useCallback((id: string) => {
-    if (!id.startsWith('ctx:') || !atlasReady || !brain) return false
-    const lab = atlasReady.table.labels.find((l) => l.key && cortexId(l.key) === id)
-    if (!lab?.hemisphere) return false
-    const h = lab.hemisphere as Hemi
-    const labels = atlasReady.labels[h], sulc = brain.hemis[h].sulc
-    let n = 0, deep = 0
-    for (let v = 0; v < labels.length; v++) if (labels[v] === lab.index) { n++; if (sulc[v] > 0) deep++ }
-    return n > 0 && deep / n > 0.75
-  }, [atlasReady, brain])
+    if (!id.startsWith('ctx:') || !atlasReady) return false
+    return !!atlasReady.table.labels.find((l) => l.key && cortexId(l.key) === id)?.buried
+  }, [atlasReady])
+
+  useEffect(() => {
+    // the deep structures are drawn on the folded brain only: a deep pick or link turns Smooth
+    // off, whoever turned it on, or the structure is selected and invisible (U7)
+    if (state.smooth && sel.some((id) => id.startsWith('deep:'))) {
+      if (!autoSmoothed.current) setToast({ text: 'Smooth is off: the deep structures are drawn on the folded brain.' })
+      autoSmoothed.current = false
+      setState((x) => ({ ...x, smooth: false }))
+      return
+    }
+    if (!autoSmoothed.current) return
+    if (!sel.some(buried)) { autoSmoothed.current = false; setState((x) => ({ ...x, smooth: false })) }
+  }, [sel, buried, state.smooth])
+
+  // a link to a buried area opens on the smoothed surface too, as a click on it does (U17)
+  const linkSmoothed = useRef(false)
+  useEffect(() => {
+    if (linkSmoothed.current || !atlasReady || !inflated) return
+    linkSmoothed.current = true
+    if (!state.smooth && sel.some(buried) && !sel.some((id) => id.startsWith('deep:'))) {
+      autoSmoothed.current = true
+      setState((x) => ({ ...x, smooth: true }))
+    }
+  }, [atlasReady, inflated, sel, buried, state.smooth])
+
+  /** Undo puts back what Clear took: the areas and the Smooth that came with them (L8) */
+  const restorer = useCallback(() => {
+    const prev = { sel: state.sel, smooth: state.smooth, auto: autoSmoothed.current }
+    return () => { autoSmoothed.current = prev.auto; setState((x) => ({ ...x, sel: prev.sel, smooth: prev.smooth })) }
+  }, [state.sel, state.smooth])
 
   /* ----- actions -------------------------------------------------------------------------- */
 
@@ -463,8 +580,9 @@ export function App() {
       }
       // a buried area (the insula, deep in its sulcus) is shown on the smoothed surface, where it
       // can be seen; the toggle stays the reader's to turn off
-      if (!s.smooth && buried(id)) autoSmoothed.current = true
-      const smooth = s.smooth || buried(id)
+      const canSmooth = !inflatedFailed
+      if (!s.smooth && canSmooth && buried(id)) autoSmoothed.current = true
+      const smooth = s.smooth || (canSmooth && buried(id))
       // one area at a time unless comparing: a new pick replaces the old one
       if (!s.multi) return { ...s, sel: [id], smooth }
       if (s.sel.length >= MAX_AREAS) {
@@ -473,7 +591,7 @@ export function App() {
       }
       return { ...s, sel: [...s.sel, id], smooth }
     })
-  }, [areaName, byId, buried])
+  }, [areaName, byId, buried, inflatedFailed])
 
   const pickAtlas = (a: AtlasId) => {
     setPicker(false)
@@ -489,6 +607,8 @@ export function App() {
     setState((s) => ({ ...s, view: v }))
     canvas.current?.setView(v)
   }
+  /** the outside of the hemisphere the area in focus is on (U3: Outside always showed the left) */
+  const outside = () => setView(byId.get(focusArea ?? '')?.hemisphere === 'rh' ? 'right' : 'left')
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -498,7 +618,7 @@ export function App() {
       if (sheet && e.key !== '?') return
       if (e.key === 'ArrowLeft') canvas.current?.rotateBy(-Math.PI / 12)
       else if (e.key === 'ArrowRight') canvas.current?.rotateBy(Math.PI / 12)
-      else if (e.key === 'r' || e.key === 'R') setView('left')
+      else if (e.key === 'r' || e.key === 'R') outside()
       else if (e.key === '?') setSheet('about')
       else if (e.key === 'a' || e.key === 'A') setSheet('areas')
     }
@@ -508,9 +628,17 @@ export function App() {
 
   const downloadReports = async () => {
     if (!db || !atlas) return
-    const rows: SelectedRow[] = result && sel.length
-      ? [...result.stimulations, ...result.zeroCurrent, ...result.sham]
+    // what is on screen: the selection as narrowed to a part or a person, so the file, its README
+    // and the link it cites describe the same rows (M15: the zip held the whole area while citing
+    // a link that opens one part of it)
+    const rows: SelectedRow[] = shown && sel.length
+      ? [...shown.stimulations, ...shown.zeroCurrent, ...shown.sham]
       : db.rows.map((row) => ({ row, areas: [], text: textFor(row.event.event_id) }))
+    const partName = activeSub ? subList?.find((x) => x.key === activeSub)?.name ?? activeSub : null
+    const narrowed = [
+      partName ? `the part ${partName} (${sub?.title})` : null,
+      person ? `one person, ${patientLabel(person)} (patient_id ${person}; the link does not carry the person)` : null,
+    ].filter(Boolean).join(' and ') || null
     const isHeld = (r: SelectedRow) => eventGroup(r.row) === 'stimulation' && heldSite(r.row.site.site_id)
     // left and right areas share names ("Insula"): the download names the side
     const areaLabel = (id: string) => [hemiWord(byId.get(id)?.hemisphere ?? null), areaName(id)].filter(Boolean).join(' ')
@@ -527,13 +655,16 @@ export function App() {
           release: db.manifest.version,
           synthetic: db.manifest.synthetic,
           atlasTitle: atlas.table.title,
-          atlasCitation: atlas.table.citation,
+          atlasCitation: ATLAS_CITATION[state.atlas],
           areas: sel.map((id) => `${areaName(id)} (${areaSub(id)})`),
+          narrowed,
+          pulseWidthRecorded: rows.filter((r) => r.row.event.pulse_width_us != null).length,
           pairs: state.pairs,
           stimulations: stim.length,
           sham: rows.filter((r) => eventGroup(r.row) === 'sham').length,
           zeroCurrent: rows.filter((r) => eventGroup(r.row) === 'zero_current').length,
           excluded: rows.filter((r) => eventGroup(r.row) === 'excluded').length,
+          excludedElsewhere: sel.length && !activeSub && !person ? result?.counts.excluded ?? 0 : 0,
           held: rows.filter(isHeld).length,
           patients: new Set(stim.map((r) => r.row.event.patient_id)).size,
           generated: new Date(),
@@ -542,7 +673,7 @@ export function App() {
       { name: 'CITATION.bib', data: enc.encode(cite.bibtex + '\n') },
       { name: 'dataset_description.json', data: enc.encode(datasetDescription({
         name: SITE.name, release: db.manifest.version, synthetic: db.manifest.synthetic, authors: SITE.lab, institution: SITE.institution,
-        url: viewUrl(), doi: SITE.datasetDoi, irb: SITE.irb, funding: SITE.funding, references: [atlas.table.citation, REFERENCES.fischl],
+        url: viewUrl(), doi: SITE.datasetDoi, irb: SITE.irb, funding: SITE.funding, references: [ATLAS_CITATION[state.atlas], REFERENCES.fischl],
       })) },
     ]
     files.push({ name: 'SHA256SUMS', data: enc.encode(await sha256sums(files)) })
@@ -550,10 +681,10 @@ export function App() {
     const blob = new Blob([zip.buffer as ArrayBuffer], { type: 'application/zip' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = `brain-atlas_${state.atlas}_${sel.length ? `${sel.length}-areas` : 'all'}_${new Date().toISOString().slice(0, 10)}.zip`
+    a.download = `brain-atlas_${state.atlas}_${sel.length ? `${sel.length}-areas` : 'all'}_${localDate()}.zip`
     a.click()
     setTimeout(() => URL.revokeObjectURL(a.href), 2000)
-    setToast({ text: `Saved ${rows.length.toLocaleString()} rows${sel.length ? ` from ${sel.length} area${sel.length === 1 ? '' : 's'}` : ''}, with a README.` })
+    setToast({ text: `Saved ${rows.length.toLocaleString()} rows${sel.length ? ` from ${sel.length} area${sel.length === 1 ? '' : 's'}` : ''}${narrowed ? `, narrowed to ${partName && person ? 'a part and a person' : partName ? 'one part' : 'one person'}` : ''}, with a README.` })
   }
 
   /** the map on screen: coverage when it is on, else the selected areas */
@@ -563,9 +694,10 @@ export function App() {
     setToast({ text: 'Making the map…' })
     await new Promise((r) => setTimeout(r, 30)) // let the toast paint before the render blocks
     const synth = db.manifest.synthetic
-    const date = new Date().toISOString().slice(0, 10)
+    // the reader's own date: a Pacific-evening figure was stamped with tomorrow's UTC date (L12)
+    const date = localDate()
     const cite = ATLAS_CITATION[state.atlas]
-    const rule = state.pairs === 'both' ? 'both contacts of the pair lie inside it' : 'either contact of the pair lies in it'
+    const rule = state.pairs === 'both' ? 'both contacts of the pair lie inside it' : 'one of its contacts lies in it'
     const side = (id: string) => (byId.get(id)?.hemisphere === 'lh' ? 'left' : 'right')
     const selNumber = (id: string) => (sel.includes(id) ? (slotMap.get(id) ?? 0) + 1 : null)
     const selColour = (id: string) => selectedAreas.find((a) => a.id === id)?.color ?? null
@@ -577,19 +709,30 @@ export function App() {
 
     if (!inflated) setInflated(await loadInflated())
     await new Promise((r) => setTimeout(r, 30)) // the engine takes the surfaces on the next render
-    const views = canvas.current.captureViews(FIGURE_TILES.map((t) => ({ view: t.view, w: t.w, h: t.h, scale: t.scale })), { inflated: true })
+    const views = canvas.current.captureViews(FIGURE_TILES.map((t) => ({ view: t.view, w: t.w, h: t.h, scale: t.scale })),
+      { inflated: true, coverage: mapKind === 'coverage' ? coverage?.unfaded ?? null : undefined })
+    // a coverage figure explains no selection, so it carries no selection pins (M8)
+    if (mapKind === 'coverage') for (const v of views) v.pins = []
+    // the figure is the cortex on the inflated surface: deep structures are in the legend and the
+    // table, marked as not drawn, and the coverage scale says it includes them (M8)
+    const deepScale = mapKind === 'coverage' && summaries.some((r) => r.atlas === 'aseg' && r.people > Math.max(0, ...summaries.filter((x) => x.atlas !== 'aseg').map((x) => x.people)))
+    const electrodesNote = person ? ` (${patientLabel(person)} only)` : ''
     const spec: FigureSpec = {
       title: mapKind === 'coverage' ? 'People stimulated per area' : `${sel.length} selected area${sel.length === 1 ? '' : 's'}`,
       subtitle: `${atlasCard.title} · fsaverage, inflated surface · release ${db.manifest.version}`,
       legend: mapKind === 'coverage'
-        ? { kind: 'coverage', bins, measure: `People with at least one stimulation in the area (of ${totals.people} people)`, electrodes: state.dots ? dots.length : null }
+        ? { kind: 'coverage', bins, measure: `People with at least one stimulation in the area (of ${placed.people} people with a stimulation in ${placedInWords[state.atlas]} or a deep structure)`,
+            scaleNote: `The scale includes the 14 deep structures, which this cortical figure does not draw (see areas.csv)${deepScale ? '; the top step is reached only by a deep structure' : ''}.`,
+            electrodes: state.dots || person ? dots.length : null, electrodesNote }
         : {
             kind: 'selection',
-            electrodes: state.dots ? dots.length : null,
+            electrodes: state.dots || person ? dots.length : null,
+            electrodesNote,
             areas: selectedAreas.map((a) => {
               const b = perArea.get(a.id)
-              const counts = b ? `${b.stimulations.toLocaleString('en-US')} stimulations · ${b.people} ${b.people === 1 ? 'person' : 'people'}` : ''
-              return { n: a.n, color: a.color, name: `${areaName(a.id)}, ${side(a.id)}`, detail: a.id.startsWith('deep:') ? `deep structure · ${counts}` : counts }
+              const counts = b ? `${b.stimulations.toLocaleString('en-US')} stimulation${b.stimulations === 1 ? '' : 's'} · ${b.people} ${b.people === 1 ? 'person' : 'people'}` : ''
+              const deep = a.id.startsWith('deep:')
+              return { n: a.n, color: a.color, name: `${areaName(a.id)}, ${side(a.id)}`, detail: deep ? `not on this figure · ${counts}` : counts, drawn: !deep }
             }),
           },
       source: `Areas: ${cite}, on FreeSurfer fsaverage (Fischl et al. 1999). A stimulation counts in an area when ${rule}, by each contact's label in the person's own MRI. Counted: stimulations with current delivered (no sham, none recorded at 0 mA, none excluded by quality control) from people whose electrode positions have no open question. Intracranial Stimulation Atlas, made ${date}.`,
@@ -638,8 +781,8 @@ export function App() {
       name: 'README.txt',
       data: enc.encode(mapReadme({
         kind: mapKind, release: db.manifest.version, synthetic: synth, generated: new Date(), atlasTitle: atlasCard.title,
-        citation: cite, rule, people: totals.people, stimulations: totals.stim, areas: summaries.length,
-        gifti: giftiNames, electrodes: state.dots ? dots.length : null,
+        citation: cite, rule, people: placed.people, stimulations: placed.stim, releasePeople: totals.people, releaseStimulations: totals.stim, areas: summaries.length,
+        gifti: giftiNames, electrodes: state.dots || person ? dots.length : null,
         selected: selectedAreas.map((a) => `${a.n} ${areaName(a.id)} (${side(a.id)})`),
       })),
     })
@@ -657,7 +800,7 @@ export function App() {
 
   const linkNotice: string[] = []
   if (linkRel && release && linkRel !== release && !relNoticeSeen) linkNotice.push(`This link was made on data release ${linkRel}. You are viewing release ${release}, so counts may differ.`)
-  if (state.pairs === 'both') linkNotice.push('This link counts only pairs with both contacts inside an area (the stricter rule).')
+  if (state.pairs === 'both' && !pairsNoticeSeen) linkNotice.push('This link counts only pairs with both contacts inside an area (the stricter rule).')
   if (unknownIds.length) linkNotice.push(`This link names ${unknownIds.length === 1 ? 'an area' : `${unknownIds.length} areas`} not in ${ATLAS_CARDS.find((c) => c.id === state.atlas)!.title}: ${unknownIds.map((id) => id.replace(/^(ctx|deep):/, '')).join(', ')}.`)
   const err = dbError || brainError || parcelError
   const ready = db && brain && parcels && result && (synthetic || text)
@@ -691,7 +834,8 @@ export function App() {
             </button>
             {menu && (
               <DownloadMenu
-                reports={sel.length ? `The stimulations in the ${sel.length} selected area${sel.length === 1 ? '' : 's'}, with their reports.` : 'Every stimulation in the release, with its report.'}
+                reports={!sel.length ? 'Every stimulation in the release, with its report.'
+                  : `The stimulations ${person ? `of ${patientLabel(person)} ` : ''}in ${activeSub ? `${subList?.find((x) => x.key === activeSub)?.name ?? activeSub}, part of ${areaName(sel[sel.length - 1])}` : sel.length === 1 ? `${areaName(sel[0])} (${areaSub(sel[0])})` : `the ${sel.length} selected areas`}, with their reports.`}
                 onReports={() => { setMenu(false); downloadReports().catch((e: Error) => setToast({ text: `The download could not be made: ${e.message}` })) }}
                 map={mapKind}
                 onMap={() => {
@@ -731,30 +875,45 @@ export function App() {
               selected={selectedAreas}
               smooth={state.smooth}
               see={see}
+              seeManual={manualSee != null && manualSee >= 0.5}
+              onHidden={(h) => setState((s) => {
+                // the engine showed or hid a hemisphere for a focus: the view, its buttons and the
+                // link follow it (M12)
+                const view: ViewName = h === 'rh' ? 'insideL' : h === 'lh' ? 'insideR' : s.view.startsWith('inside') ? 'left' : s.view
+                return view === s.view ? s : { ...s, view }
+              })}
               focus={focusArea}
+              bottomInset={sheetInset}
               fade={sel.length > 0 && !state.cov}
               subregions={sub?.engine ?? null}
-              subActive={subFilter}
+              subActive={activeSub}
               dots={dots}
               showDots={state.dots || !!person}
-              coverage={coverage?.colors ?? null}
+              coverage={wordColors?.colors ?? coverage?.colors ?? null}
               initialView={state.view}
-              label={`3D brain${VIEW_WORDS[state.view] ? `, ${VIEW_WORDS[state.view]}` : ''}. ${sel.length ? `${sel.length} areas selected: ${sel.map(areaName).join(', ')}.` : 'No areas selected.'} Use the Areas list for the same choices without the 3D view.`}
+              label={`3D brain${VIEW_WORDS[state.view] ? `, ${VIEW_WORDS[state.view]}` : ''}. ${sel.length ? `${sel.length} ${sel.length === 1 ? 'area' : 'areas'} selected: ${sel.map(areaName).join(', ')}.` : 'No areas selected.'} Use the Areas list for the same choices without the 3D view.`}
               onHover={(id, x, y) => setHover(id ? { id, x, y } : null)}
               onClick={onCanvasClick}
               onError={(m) => setGlError(m)}
             />
           )}
-          {brain && <SearchBox all={selectables} counts={areaCounts} onPick={(id) => { if (!state.sel.includes(id)) toggleArea(id) }} />}
+          {brain && <SearchBox all={selectables} counts={areaCounts} onPick={(id) => { if (!state.sel.includes(id)) toggleArea(id) }}
+            onSay={(q) => setState((s) => ({ ...s, say: q, cov: false }))} />}
 
-          {hover && hover.id.startsWith('sub:') && !picker && !sheet && (() => {
+          {hover && hover.id === 'sub:' && !picker && !sheet && (
+            <div className="atlas-tip" style={{ left: hover.x + 14, top: hover.y + 14 }}>
+              <strong>Smaller parts of {areaName(focusArea ?? '')}</strong>
+              <span>Each under 3% of the area · {sub?.title}; not listed</span>
+            </div>
+          )}
+          {hover && hover.id.startsWith('sub:') && hover.id !== 'sub:' && !picker && !sheet && (() => {
             const x = subList?.find((t) => t.key === hover.id.slice(4))
             return x ? (
               <div className="atlas-tip" style={{ left: hover.x + 14, top: hover.y + 14 }}>
                 <strong>{x.name}</strong>
                 <span>Part of {areaName(focusArea ?? '')} · {sub?.title}</span>
-                <span>{x.stim ? `${x.stim.toLocaleString()} stimulations · ${x.people} ${x.people === 1 ? 'person' : 'people'}` : 'No stimulation here'}</span>
-                <span>{subFilter === x.key ? 'Click to deselect' : 'Click to select'}</span>
+                <span>{x.stim ? `${x.stim.toLocaleString()} stimulation${x.stim === 1 ? '' : 's'} · ${x.people} ${x.people === 1 ? 'person' : 'people'}` : 'No stimulation here'}</span>
+                <span>{activeSub === x.key ? 'Click to deselect' : 'Click to select'}</span>
               </div>
             ) : null
           })()}
@@ -762,7 +921,11 @@ export function App() {
             <div className="atlas-tip" style={{ left: hover.x + 14, top: hover.y + 14 }}>
               <strong>{areaName(hover.id)}</strong>
               <span>{areaSub(hover.id)}</span>
-              <span>{hoverCount && hoverCount.stim ? `${hoverCount.stim.toLocaleString()} stimulations · ${hoverCount.people} ${hoverCount.people === 1 ? 'person' : 'people'}` : state.pairs === 'both' ? 'No stimulation with both contacts inside' : 'No stimulation here'}</span>
+              <span>{hoverCount && hoverCount.stim ? `${hoverCount.stim.toLocaleString()} stimulation${hoverCount.stim === 1 ? '' : 's'} · ${hoverCount.people} ${hoverCount.people === 1 ? 'person' : 'people'}` : state.pairs === 'both' ? 'No stimulation with both contacts inside' : 'No stimulation here'}</span>
+              {words && (() => {
+                const w = words.perArea.get(hover.id)
+                return w ? <span>{w.saidPeople} of {w.people} {w.people === 1 ? 'person' : 'people'} with a report here said “{state.say}” · {w.saidReports} of {w.reports} reports</span> : null
+              })()}
               {hoverCount && hoverCount.people > 0 && hoverCount.people < MIN_PEOPLE && <span>Fewer than {MIN_PEOPLE} people</span>}
             </div>
           )}
@@ -782,7 +945,7 @@ export function App() {
           {linkNotice.length > 0 && (
             <div className="atlas-linknote" role="status">
               {linkNotice.map((t) => <p key={t}>{t}</p>)}
-              <button className="link small" onClick={() => { setUnknownIds([]); setRelNoticeSeen(true) }}>Dismiss</button>
+              <button className="link small" onClick={() => { setUnknownIds([]); setRelNoticeSeen(true); setPairsNoticeSeen(true) }}>Dismiss</button>
             </div>
           )}
           <div className="atlas-status" aria-live="polite">
@@ -790,24 +953,28 @@ export function App() {
               <>{totals.stim.toLocaleString()} stimulations · {totals.people} people · {totals.withReport.toLocaleString()} recorded reports</>
             ) : db ? 'Loading reports…' : `Loading the data… ${progress.done}/${progress.total}`}
           </div>
-          {(state.dots || coverage) && (
+          {(state.dots || person || coverage || words) && (
             <div className="atlas-float">
-              {coverage && <CoverageLegend bins={coverage.bins} reaching5={coverage.reaching5} areas={coverage.areas} faded={sel.length > 0} />}
-              {state.dots && <p className="atlas-note">Surface contacts on the cortex; depth electrodes inside it, at approximate positions.</p>}
+              {words && wordColors && <WordLegend say={state.say!} bins={wordColors.bins} areasWith={wordColors.areasWith} areas={selectables.length}
+                stimulation={words.stimulation} sham={words.sham} faded={sel.length > 0} onClear={() => setState((s) => ({ ...s, say: null }))} />}
+              {!words && coverage && <CoverageLegend bins={coverage.bins} reaching5={coverage.reaching5} areas={coverage.areas} faded={sel.length > 0} deepHidden={see < 0.5} />}
+              {(state.dots || person) && <p className="atlas-note">Stimulated surface contacts, each at the point of the standard brain it was registered to. Depth contacts are not drawn.</p>}
             </div>
+          )}
+          {sel.length > 0 && result && db && panelDown && (
+            <button className="atlas-panel-up atlas-primary" onClick={() => setPanelDown(false)}>Read the reports</button>
           )}
           <div className="atlas-bottom">
             <div className="atlas-views" role="group" aria-label="View">
-              <button className={!state.view.startsWith('inside') ? 'on' : ''} aria-pressed={!state.view.startsWith('inside')} onClick={() => setView('left')}>Outside</button>
+              <button className={!state.view.startsWith('inside') ? 'on' : ''} aria-pressed={!state.view.startsWith('inside')} onClick={outside} title="The outer surface (R)">Outside</button>
               <button className={state.view.startsWith('inside') ? 'on' : ''} aria-pressed={state.view.startsWith('inside')} title="The inner (medial) surface of the hemisphere"
                 onClick={() => setView(state.view === 'insideL' ? 'insideR' : state.view === 'insideR' ? 'insideL' : (byId.get(focusArea ?? '')?.hemisphere === 'rh' ? 'insideR' : 'insideL'))}>
                 {state.view === 'insideL' ? 'Inside · left' : state.view === 'insideR' ? 'Inside · right' : 'Inside'}
               </button>
-              <button onClick={() => setView('left')} aria-label="Reset view" title="Reset view (R)"><RotateCcw size={14} aria-hidden /></button>
             </div>
             <div className="atlas-toggles" role="group" aria-label="Display">
               <label className="atlas-toggle">
-                <input type="checkbox" role="switch" aria-label="Smooth" checked={state.smooth} disabled={!inflated} onChange={(e) => { autoSmoothed.current = false; setState((s) => ({ ...s, smooth: e.target.checked })) }} />
+                <input type="checkbox" role="switch" aria-label="Smooth" checked={state.smooth && !inflatedFailed} disabled={!inflated} onChange={(e) => { autoSmoothed.current = false; setState((s) => ({ ...s, smooth: e.target.checked })) }} />
                 <span>Smooth</span>
               </label>
               <label className="atlas-toggle">
@@ -815,10 +982,10 @@ export function App() {
                 <span>Electrodes</span>
               </label>
               <label className="atlas-toggle" title="Colour every area by how many people were stimulated there">
-                <input type="checkbox" role="switch" aria-label="Coverage" checked={state.cov} onChange={(e) => setState((s) => ({ ...s, cov: e.target.checked }))} />
+                <input type="checkbox" role="switch" aria-label="Coverage" checked={state.cov && !state.say} onChange={(e) => setState((s) => ({ ...s, cov: e.target.checked, say: e.target.checked ? null : s.say }))} />
                 <span>Coverage</span>
               </label>
-              <label className="atlas-slider" title="How solid the cortex is: lower it to see selected areas whole, the deep structures and the depth electrodes inside">
+              <label className="atlas-slider" title="How solid the cortex is: lower it to see selected areas whole and the deep structures inside">
                 <span>Opacity</span>
                 <input type="range" min={0.1} max={1} step={0.01} value={1 - see} aria-label="Opacity"
                   onChange={(e) => { const v = 1 - Number(e.target.value); setManualSee(v); setState((s) => ({ ...s, see: v })) }} />
@@ -827,47 +994,48 @@ export function App() {
           </div>
         </section>
 
-        {sel.length > 0 && result && db && (
+        {sel.length > 0 && result && db && !panelDown && (
           <ReadingPanel
             areas={areaViews}
             result={shown!}
             atlas={state.atlas}
             atlasTitle={atlasCard.title}
             parcelsBySite={parcelsBySite}
-            areaShort={(key) => areaName(`ctx:${key}`)}
+            areaLabel={areaLabel}
             synthetic={db.manifest.synthetic}
+            pairs={state.pairs}
+            fullPatients={result.counts.patients}
+            query={state.say}
             compare={state.multi}
             onCompare={(on) => setState((s) => ({ ...s, multi: on, sel: on ? s.sel : s.sel.slice(-1) }))}
-            subregions={subList && sub ? { title: sub.title, list: subList, active: subFilter, onClear: () => setSubFilter(null) } : null}
+            subregions={subInfo && sub ? { title: sub.title, list: subInfo.list, active: activeSub, onPick: (k: string) => setSubFilter(k), onClear: () => setSubFilter(null), outside: subInfo.outside, overlap: subInfo.overlap } : null}
             onRemove={(id) => toggleArea(id)}
             person={person}
             onPerson={setPerson}
-            onBack={() => {
-              // phone layout: the panel covers the brain, so closing it clears the selection
-              // (the toast offers to undo)
-              const prev = state.sel
-              setState((s) => ({ ...s, sel: [] }))
-              setToast({ text: 'Back to the brain.', undo: () => setState((s) => ({ ...s, sel: prev })) })
-            }}
+            onBack={() => setPanelDown(true)}
             onClear={() => {
-              const prev = state.sel
+              const undo = restorer()
               setState((s) => ({ ...s, sel: [] }))
-              setToast({ text: 'Cleared all areas.', undo: () => setState((s) => ({ ...s, sel: prev })) })
+              setToast({ text: 'Cleared all areas.', undo })
             }}
           />
         )}
       </main>
 
       <footer className="atlas-foot">
-        <span>{SITE.labShort}, Stanford University</span>
-        {release && <span>Data release {release}</span>}
-        <button className="link" onClick={() => setSheet('cite')} disabled={!release}>How to cite</button>
-        <button className="link" onClick={() => setSheet('notices')}>Licences</button>
-        <a href="https://www.stanford.edu/site/terms/" target="_blank" rel="noreferrer">Terms of use</a>
-        <a href="https://www.stanford.edu/site/privacy/" target="_blank" rel="noreferrer">Privacy</a>
-        <a href="https://www.stanford.edu/site/accessibility/" target="_blank" rel="noreferrer">Accessibility</a>
-        <a href={SITE.issuesUrl} target="_blank" rel="noreferrer">Report a problem</a>
-        <span>© Stanford University, Stanford, California 94305</span>
+        <div className="atlas-foot-lab">
+          <span>{SITE.labShort}, Stanford University</span>
+          {release && <span>Data release {release}</span>}
+          <button className="link" onClick={() => setSheet('cite')} disabled={!release}>How to cite</button>
+          <button className="link" onClick={() => setSheet('notices')}>Licences</button>
+          <a href={SITE.issuesUrl} target="_blank" rel="noreferrer">Report a problem</a>
+        </div>
+        {/* Stanford's global footer, complete and unaltered (Stanford Identity: its links "may not be
+            altered"). Links as on www.stanford.edu, checked 19 Oct 2026. */}
+        <nav className="atlas-foot-su" aria-label="Stanford University">
+          {STANFORD_FOOTER.map(([label, href]) => <a key={label} href={href} target="_blank" rel="noreferrer">{label}</a>)}
+          <span>© Stanford University. Stanford, California 94305.</span>
+        </nav>
       </footer>
 
       {toast && (
@@ -887,25 +1055,46 @@ export function App() {
           totals={totals}
           placed={placed}
           atlas={state.atlas}
-          placedIn={({ dk: 'a Desikan–Killiany area', destrieux: 'a Destrieux area', yeo7: 'a Yeo network' } as const)[state.atlas]}
+          placedIn={placedInWords[state.atlas]}
           validation={(parcels as unknown as { validation?: Parameters<typeof AboutSheet>[0]['validation'] })?.validation ?? null}
         />
       )}
       {sheet === 'cite' && release && <CiteSheet onClose={() => setSheet(null)} release={release} atlasCitation={ATLAS_CITATION[state.atlas]} />}
-      {sheet === 'notices' && <NoticesSheet onClose={() => setSheet(null)} />}
+      {sheet === 'notices' && <NoticesSheet onClose={() => setSheet(null)} synthetic={!!db?.manifest.synthetic} />}
       {sheet === 'areas' && (
         <AreaListSheet
           onClose={() => setSheet(null)}
           all={selectables}
           counts={areaCounts}
           selected={sel}
-          onToggle={toggleArea}
+          onToggle={(id) => { toggleArea(id); if (!state.multi && !sel.includes(id)) setSheet(null) }}
           atlasTitle={atlasCard.title}
         />
       )}
     </div>
   )
 }
+
+const placedInWords: Record<AtlasId, string> = { dk: 'a Desikan–Killiany area', destrieux: 'a Destrieux area', yeo7: 'a Yeo network' }
+
+/** today's date where the reader is, as yyyy-mm-dd */
+function localDate(d = new Date()): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+/** Stanford's global footer links, in Stanford's order, as on www.stanford.edu (19 Oct 2026) */
+const STANFORD_FOOTER: [string, string][] = [
+  ['Stanford Home', 'https://www.stanford.edu/'],
+  ['Maps & Directions', 'https://visit.stanford.edu/basics'],
+  ['Search Stanford', 'https://www.stanford.edu/search'],
+  ['Emergency Info', 'https://emergency.stanford.edu'],
+  ['Terms of Use', 'https://www.stanford.edu/terms'],
+  ['Privacy', 'https://www.stanford.edu/privacy'],
+  ['Copyright', 'https://uit.stanford.edu/security/copyright-infringement'],
+  ['Trademarks', 'https://adminguide.stanford.edu/chapter-1/subchapter-5/policy-1-5-4'],
+  ['Non-Discrimination', 'https://non-discrimination.stanford.edu/'],
+  ['Accessibility', 'https://www.stanford.edu/accessibility'],
+]
 
 /** one-click starting points, shown when they exist in the loaded atlas */
 const EXAMPLES: { id: string; label: string }[] = [

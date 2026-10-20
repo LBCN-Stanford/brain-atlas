@@ -2,16 +2,9 @@
 
 ## The public demonstration build (synthetic data)
 
-Live at https://lbcn-stanford.github.io/brain-atlas/. The public repository
-`LBCN-Stanford/brain-atlas` holds the atlas's source on `main` (exported from this repository by
-`scripts/export_public_source.py`) and the built site on `gh-pages`, which Pages serves. A push to
-its `main` rebuilds and redeploys the site (its `pages` workflow).
-
-- **From CI:** push a tag `atlas-vX.Y.Z` (or run the `deploy-demo` workflow by hand). It builds,
-  refuses a non-synthetic release, runs the browser check and deploys. It needs the repository
-  secret `DEMO_DEPLOY_TOKEN` (fine-grained, Contents: write on `LBCN-Stanford/brain-atlas` only).
-- **From a lab machine:** `app/scripts/deploy_demo.sh` (dry run) then `--push`. It builds a fresh
-  worktree of HEAD, so local controlled data and uncommitted edits cannot reach the bundle.
+Live at https://lbcn-stanford.github.io/brain-atlas/. A push to `main` runs the `pages` workflow
+(`.github/workflows/pages.yml`): it refuses a non-synthetic release, builds, runs the browser
+check, and publishes `app/dist` to the `gh-pages` branch, which GitHub Pages serves.
 
 ## Any other host (for example a Stanford address)
 
@@ -30,7 +23,7 @@ The build is static files. A host needs:
    'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'`
    (the inline script is the schema.org metadata), `X-Content-Type-Options: nosniff`,
    `Referrer-Policy: strict-origin-when-cross-origin`.
-6. **No analytics or cookies.** The About page says the site collects nothing; keep it true.
+6. **No analytics or cookies.** The About page says the page sets no cookies and runs no analytics; keep it true.
 
 Build:
 
@@ -39,9 +32,7 @@ SITE_BASE=/ SITE_URL=https://<host>/ SITE_INDEX=yes npm run build
 ```
 
 Stanford hosting has its own approvals (the domain, a Stanford-affiliated site owner, accessibility
-and security standards). What they are and who decides is written up in
-`../../deliverables/2026-10-16-v2-change-list-part2.md` (section I) in the stream folder, outside
-this repository.
+and security standards). The lab handles them with Stanford.
 
 ## The controlled build
 

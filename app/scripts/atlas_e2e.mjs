@@ -13,6 +13,9 @@
      - "Smooth" works (the inflated surfaces load after the brain)
      - the reports download is a zip that holds reports.csv, README.txt and the citation files
      - the area list reaches every report without the 3D canvas
+     - experience search turns a word into a map with sham alongside, and the sham explorer opens
+     - a real mouse click on the canvas selects the area under it, with Electrodes on and with a
+       deep structure selected (the cortex was unclickable in both, validation H1)
      - at phone width nothing overlaps the brain and Download stays reachable
      - axe finds no serious or critical accessibility violation on the page */
 
@@ -78,14 +81,14 @@ try {
   check(new URL(page.url()).searchParams.get('sel')?.includes('insula') ?? false, 'the selection is in the address')
 
   /* ---- one area at a time; compare is opt-in; subregions ------------------------------------- */
-  check(/Divided into \d+ parts \(Destrieux\)/.test((await page.textContent('.atlas-panel')) ?? ''), 'the insula says its subregions can be picked on the brain')
+  check(/\d+ parts \(Destrieux\)\. Pick one on the brain/.test((await page.textContent('.atlas-panel')) ?? ''), 'the insula says its subregions can be picked on the brain')
   // a person is one block; selecting it narrows the panel to them
   const firstPerson = page.locator('.atlas-personhead').first()
   await firstPerson.click()
   await page.waitForTimeout(300)
   check(await page.locator('.atlas-personblock.on').isVisible(), 'a person block selects that person')
   check((await page.locator('.atlas-personblock').count()) === 1, 'with a person selected, only their block is listed')
-  await page.getByRole('button', { name: 'Show everyone' }).click()
+  await page.getByRole('button', { name: 'Show everyone', exact: true }).click()
   check((await page.locator('.atlas-personblock').count()) > 1, 'clearing the person lists everyone again')
   check((await page.locator('.atlas-dl dt', { hasText: 'Record' }).count()) === 0, 'no record ids in the report details')
   check(await page.getByLabel('Opacity').isVisible(), 'the opacity slider is back')
@@ -125,6 +128,45 @@ try {
   check((await page.locator('[aria-label="All areas"] button[aria-pressed]').count()) > 30, 'the area list names every area as a button')
   await page.keyboard.press('Escape')
 
+  /* ---- experience search and the sham explorer (17 Oct) ------------------------------------ */
+  await page.goto(BASE + '/?atlas=dk', { waitUntil: 'domcontentloaded' })
+  await page.waitForFunction(() => /stimulations ·/.test(document.querySelector('.atlas-status')?.textContent ?? ''), null, { timeout: 60000 })
+  await page.fill('input[aria-label="Find a brain area"]', 'tingl')
+  await page.locator('.atlas-search-say').dispatchEvent('mousedown')
+  await page.waitForTimeout(800)
+  const legendText = (await page.textContent('.atlas-legend')) ?? ''
+  check(new URL(page.url()).searchParams.get('say') === 'tingl' && /Under stimulation/.test(legendText) && /under sham/.test(legendText),
+    'experience search: a typed word becomes a map, in the link, with sham alongside in the legend')
+  await page.goto(BASE + '/?atlas=dk&sel=ctx:lh.precentral', { waitUntil: 'domcontentloaded' })
+  await page.waitForSelector('.atlas-panel', { timeout: 60000 })
+  await page.getByRole('button', { name: /Sham trials, no current delivered/ }).click()
+  await page.getByLabel('Side by side with real stimulation').check()
+  await page.waitForTimeout(300)
+  check((await page.locator('.atlas-shamcmp').count()) > 0, 'sham explorer: sham trials sit beside the same person\'s real stimulations')
+
+  /* ---- a click on the brain (M21: nothing clicked the canvas before) ------------------------ */
+  // the visible cortex is clickable whatever is switched on: find a screen point the engine
+  // resolves to a left cortical area, click it with the mouse, and read the selection back
+  for (const [what, q] of [['Electrodes on', '?atlas=dk&dots=1&test=1'], ['a deep structure selected', '?atlas=dk&sel=deep:Left-Hippocampus&test=1']]) {
+    await page.goto(BASE + '/' + q, { waitUntil: 'domcontentloaded' })
+    await page.waitForFunction(() => window.__atlasEngine && /stimulations ·/.test(document.querySelector('.atlas-status')?.textContent ?? ''), null, { timeout: 60000 })
+    await page.waitForTimeout(1500)
+    const target = await page.evaluate(() => {
+      const e = window.__atlasEngine, c = document.querySelector('.atlas-canvas canvas').getBoundingClientRect()
+      for (let j = 4; j < 16; j++) for (let i = 4; i < 26; i++) {
+        const x = c.left + (c.width * i) / 30, y = c.top + (c.height * j) / 20
+        const id = e.debugPick(x, y)
+        if (id && id.startsWith('ctx:lh.')) return { x, y, id }
+      }
+      return null
+    })
+    if (!target) { check(false, `${what}: a point on the left cortex resolves to an area`); continue }
+    await page.mouse.click(target.x, target.y)
+    await page.waitForTimeout(500)
+    const got = new URL(page.url()).searchParams.get('sel') ?? ''
+    check(got.split(',').includes(target.id), `${what}: clicking the cortex selects ${target.id} (got ${got || 'nothing'})`)
+  }
+
   /* ---- accessibility -------------------------------------------------------------------- */
   const require = createRequire(import.meta.url)
   let axePath = null
@@ -136,6 +178,10 @@ try {
     check(res.length === 0, `axe: no serious or critical violations${res.length ? ` (${res.join(', ')})` : ''}`)
   } else check(false, 'axe-core is installed')
 
+  // Stanford's global footer is complete (its links may not be altered or dropped)
+  const su = await page.locator('nav[aria-label="Stanford University"] a').allInnerTexts()
+  const want = ['Stanford Home', 'Maps & Directions', 'Search Stanford', 'Emergency Info', 'Terms of Use', 'Privacy', 'Copyright', 'Trademarks', 'Non-Discrimination', 'Accessibility']
+  check(want.every((w) => su.includes(w)) && /© Stanford University\. Stanford, California 94305\./.test((await page.textContent('nav[aria-label="Stanford University"]')) ?? ''), `Stanford's global footer is complete (${su.length} of ${want.length} links)`)
   check(errors.length === 0, `no console errors${errors.length ? `: ${errors.slice(0, 3).join(' | ')}` : ''}`)
   check(failed.length === 0, `no failed requests${failed.length ? `: ${failed.slice(0, 3).join(' | ')}` : ''}`)
   await ctx.close()
@@ -166,12 +212,43 @@ try {
   await pp.waitForSelector('.atlas-panel', { timeout: 60000 })
   const dlBox = await pp.getByRole('button', { name: /Download/ }).first().boundingBox()
   check(!!dlBox && dlBox.x >= 0 && dlBox.x + dlBox.width <= 375, 'phone: Download is on screen')
+  // on screen is not enough: the reading sheet once covered the whole header (U5)
+  const dlReach = await pp.evaluate(() => {
+    const b = [...document.querySelectorAll('button')].find((x) => x.getAttribute('aria-label') === 'Download')
+    if (!b) return false
+    const r = b.getBoundingClientRect()
+    return b.contains(document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2))
+  })
+  check(dlReach, 'phone: Download can be tapped while an area is open')
   const overflow = await pp.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)
   check(!overflow, 'phone: no sideways scroll')
   await pp.getByRole('button', { name: /Back to the brain/ }).click()
   const canvasVisible = await pp.locator('.atlas-canvas canvas').isVisible()
   const panelGone = !(await pp.locator('.atlas-panel').isVisible())
-  check(canvasVisible && panelGone, 'phone: the panel closes back to the brain')
+  check(canvasVisible && panelGone, 'phone: Back lowers the reading sheet to the brain')
+  check(new URL(pp.url()).searchParams.get('sel') === 'ctx:lh.insula', 'phone: Back keeps the selection, so the area stays highlighted')
+  await pp.getByRole('button', { name: /Read the reports/ }).click()
+  check(await pp.locator('.atlas-panel').isVisible(), 'phone: the reading sheet comes back')
+  // a tap on the brain selects the area and nothing the sheet then puts under the finger (U1:
+  // the tap also clicked the first person block, or focused the report search)
+  await pp.goto(BASE + '/?atlas=dk', { waitUntil: 'domcontentloaded' })
+  await pp.waitForSelector('.atlas-canvas canvas', { timeout: 60000 })
+  await pp.waitForFunction(() => /stimulations ·/.test(document.querySelector('.atlas-status')?.textContent ?? ''), null, { timeout: 60000 })
+  await pp.waitForTimeout(1500)
+  let tapped = 0, ghost = 0
+  for (const [x, y] of [[120, 360], [150, 380], [200, 340], [170, 400]]) {
+    await pp.goto(BASE + '/?atlas=dk', { waitUntil: 'domcontentloaded' })
+    await pp.waitForFunction(() => /stimulations ·/.test(document.querySelector('.atlas-status')?.textContent ?? ''), null, { timeout: 60000 })
+    await pp.waitForTimeout(800)
+    await pp.touchscreen.tap(x, y)
+    await pp.waitForTimeout(600)
+    if (!(await pp.locator('.atlas-panel').isVisible())) continue
+    tapped++
+    const t = (await pp.textContent('.atlas-panel')) ?? ''
+    const focused = await pp.evaluate(() => document.activeElement?.className ?? '')
+    if (/Showing one person/.test(t) || /atlas-filter/.test(focused)) ghost++
+  }
+  check(tapped > 0 && ghost === 0, `phone: a tap on the brain selects only the area (${tapped} taps opened an area, ${ghost} also clicked the sheet)`)
   await phone.close()
 } finally {
   await browser.close()

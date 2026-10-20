@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Check, Copy, FileText, Map as MapIcon, X } from 'lucide-react'
 import { hemiWord, type AtlasId, type Selectable } from '../model/parcels'
-import { binLabel, mixWhite, NO_DATA, type Bin } from '../model/colormap'
+import { binLabel, mixWhite, NO_AREA, NO_DATA, type Bin } from '../model/colormap'
 import { BUILD, REFERENCES, SITE, citation, viewUrl } from '../site'
 
 /** fewer people than this in an area: its reports are individual cases, not a regional pattern
@@ -74,8 +74,8 @@ export function DownloadMenu({ reports, onReports, map, onMap, onClose }: {
   )
 }
 
-export function CoverageLegend({ bins, reaching5, areas, faded }: { bins: Bin[]; reaching5: number; areas: number; faded?: boolean }) {
-  const items = [{ color: NO_DATA, label: '0' }, ...bins.map((b) => ({ color: faded ? mixWhite(b.color, 0.6) : b.color, label: binLabel(b) }))]
+export function CoverageLegend({ bins, reaching5, areas, faded, deepHidden }: { bins: Bin[]; reaching5: number; areas: number; faded?: boolean; deepHidden?: boolean }) {
+  const items = [{ color: NO_DATA, label: '0' }, ...bins.map((b) => ({ color: faded ? mixWhite(b.color, 0.6) : b.color, label: binLabel(b) })), { color: NO_AREA, label: 'no area' }]
   return (
     <div className="atlas-legend" role="group" aria-label="Coverage legend">
       <div className="atlas-legend-title">People stimulated per area</div>
@@ -84,7 +84,35 @@ export function CoverageLegend({ bins, reaching5, areas, faded }: { bins: Bin[];
           <span key={it.label} className="atlas-legend-item"><i style={{ background: it.color }} />{it.label}</span>
         ))}
       </div>
-      <div className="atlas-legend-note">{reaching5} of {areas} areas have {MIN_PEOPLE} or more people{faded ? '. Faded while areas are selected.' : ''}</div>
+      <div className="atlas-legend-note">{reaching5} of {areas} areas have {MIN_PEOPLE} or more people.{faded ? ' Faded while areas are selected.' : ''}{deepHidden ? ' The deep structures are coloured too: lower Opacity to see them.' : ''}</div>
+    </div>
+  )
+}
+
+/** Experience search's legend: people who said the words, per area, and the same words under sham
+    and under stimulation across the release, side by side, as counts. */
+export function WordLegend({ say, bins, areasWith, areas, stimulation, sham, faded, onClear }: {
+  say: string
+  bins: Bin[]
+  areasWith: number
+  areas: number
+  stimulation: { reports: number; saidReports: number; people: number; saidPeople: number }
+  sham: { reports: number; saidReports: number; people: number; saidPeople: number }
+  faded?: boolean
+  onClear: () => void
+}) {
+  const items = [{ color: NO_DATA, label: '0' }, ...bins.map((b) => ({ color: faded ? mixWhite(b.color, 0.6) : b.color, label: binLabel(b) })), { color: NO_AREA, label: 'no area' }]
+  return (
+    <div className="atlas-legend" role="group" aria-label="Where people said it">
+      <div className="atlas-legend-title">People who said “{say}”, per area <button className="link small" onClick={onClear}>Clear</button></div>
+      <div className="atlas-legend-row">
+        {items.map((it) => <span key={it.label} className="atlas-legend-item"><i style={{ background: it.color }} />{it.label}</span>)}
+      </div>
+      <div className="atlas-legend-note">
+        In {areasWith} of {areas} areas. Under stimulation, {stimulation.saidReports.toLocaleString()} of {stimulation.reports.toLocaleString()} reports ({stimulation.saidPeople} of {stimulation.people} people);
+        under sham, with no current, {sham.saidReports.toLocaleString()} of {sham.reports.toLocaleString()} reports ({sham.saidPeople} of {sham.people} people).
+        Words are matched as typed, from the start of a word. Hover an area to see how many people were stimulated there.
+      </div>
     </div>
   )
 }
@@ -96,7 +124,7 @@ export function Sheet({ title, onClose, children, wide }: { title: string; onClo
   const ref = useRef<HTMLElement>(null)
   useEffect(() => {
     const back = document.activeElement as HTMLElement | null
-    ref.current?.focus()
+    ;(ref.current?.querySelector<HTMLElement>('[data-autofocus]') ?? ref.current)?.focus()
     const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', esc)
     return () => { window.removeEventListener('keydown', esc); back?.focus?.() }
@@ -191,21 +219,21 @@ export function AboutSheet({ onClose, release, synthetic, totals, placed, placed
           <tbody>
             <tr className="em"><td>In the atlas</td><td>{n(totals.stim)}</td><td>{n(totals.people)}</td></tr>
             <tr><td className="indent">in {placedIn} or a deep structure</td><td>{n(placed.stim)}</td><td>{n(placed.people)}</td></tr>
-            <tr><td className="indent">with a transcribed report</td><td>{n(totals.withReport)}</td><td /></tr>
+            <tr><td className="indent">with a recorded report</td><td>{n(totals.withReport)}</td><td /></tr>
             {totals.held > 0 && <tr><td>Held: an open question about electrode positions</td><td>{n(totals.held)}</td><td>{n(totals.heldPeople)}</td></tr>}
             <tr><td>Kept apart: sham trials (no current)</td><td>{n(totals.sham)}</td><td /></tr>
             <tr><td>Kept apart: recorded at 0 mA</td><td>{n(totals.zero)}</td><td /></tr>
             <tr><td>Excluded by quality control</td><td>{n(totals.excluded)}</td><td /></tr>
           </tbody>
         </table>
-        <p className="note">Data release {release}. Every count on the page uses the first row. The other rows stay in the full download, each marked with its reason.</p>
+        <p className="note">Data release {release}. Counts on the page use the first row and the two rows under it. Held, sham, 0 mA and QC-excluded events are in the download of everything, each marked with its group.</p>
 
         <h3>How a stimulation is placed in an area</h3>
         <p>
-          Each contact was labelled in the person’s own MRI with FreeSurfer, read by the lab’s iELVis pipeline (Groppe et al. 2017). A stimulation passes current between two neighbouring contacts, and it counts in every area either contact lies in (Rangarajan et al. 2014; Fox et al. 2020). The download marks the pairs with both contacts inside (Duong et al. 2023), because a pair that straddles a boundary may owe its effect to the other side (Foster et al. 2017).
+          Each contact was labelled in the person’s own MRI with FreeSurfer, read by the lab’s iELVis pipeline (Groppe et al. 2017). A stimulation passes current between two contacts of the same electrode, usually neighbours, or through one contact for a monopolar site, and it counts in every area one of its contacts lies in (Rangarajan et al. 2014; Fox et al. 2020). The download marks the stimulations whose contacts all lie inside (Duong et al. 2023), because a pair that straddles a boundary may owe its effect to the other side (Foster and Parvizi 2017).
         </p>
         <p>
-          A contact with no label, or in white matter or fluid, is in no area. No position is estimated in its place.
+          A contact with no label, in white matter or fluid, or in another structure (brainstem, cerebellum) is in no area. No position is estimated in its place.
           {synthetic && ' In this demonstration copy the contacts are placed on the standard brain, not in anyone’s own scan.'}
         </p>
         {!synthetic && validation?.site_states && (
@@ -213,29 +241,30 @@ export function AboutSheet({ onClose, release, synthetic, totals, placed, placed
             <li>{n(st.contacts_unidentified)} sites are in no area because their contacts could not be identified in the localisation records.</li>
             <li>{n(st.unlabelled)} have no label in the person’s records.</li>
             <li>{n((st.white_matter ?? 0) + (st.ventricle_csf ?? 0))} lie in white matter or fluid.</li>
+            <li>{n(st.other_structure)} lie in another structure (brainstem, cerebellum).</li>
             <li>{n(st.side_conflict)} have a label on the other side of the brain from the electrode.</li>
           </ul>
         )}
         {!synthetic && held > 0 && (
-          <p className="small">{held} people are held back because a record questions where their electrodes are: {HELD_REASONS.filter(([k]) => reasons[k]).map(([k, w]) => `${w} (${reasons[k]})`).join('; ')}. They return when the question is resolved.</p>
+          <p className="small">{held} people are held back because a record questions where their electrodes are: {HELD_REASONS.filter(([k]) => reasons[k]).map(([k, w]) => `${w} (${reasons[k]})`).join('; ')}.{HELD_REASONS.reduce((a, [k]) => a + (reasons[k] ?? 0), 0) > held && ' Some people have more than one reason.'} They return when the question is resolved.</p>
         )}
 
         <h3>Electrodes on the brain</h3>
         <p>
-          “Electrodes” shows each stimulated surface contact at the point of the standard brain its own cortical folds map to (Fischl et al. 1999).
-          {reg?.dk?.agreement != null && <> For {pct(reg.dk.agreement)} of surface contacts the area under the dot is the area from the person’s own MRI; the lists always follow the person’s own MRI.</>}
-          {' '}Depth electrodes are drawn inside the brain, one dot per stimulated pair, at an approximate position (a straight-line fit to the standard brain that cannot follow the folds). They show where the coverage is, not an exact location.
+          “Electrodes” shows the stimulated surface contacts that have a registered position, each at the point of the standard brain its own cortical folds map to (Fischl et al. 1999). Contacts of people held back are not drawn.
+          {reg?.[atlas]?.agreement != null && <> In {ATLAS_CARDS.find((c) => c.id === atlas)?.title ?? atlas}, for {pct(reg[atlas].agreement)} of surface contacts the area under the dot is the area from the person’s own MRI; the lists always follow the person’s own MRI.</>}
+          {' '}Depth contacts are not drawn: their only position on the standard brain is a straight-line fit that cannot follow the folds, and it put a fifth of them outside the brain. They are counted, by their label in the person’s own MRI, like every other contact.
         </p>
 
         <h3>The reports</h3>
         <p>
-          Reports are shown as transcribed at the bedside, without coding or categories, ordered by area, person and current. The clinician’s entry from the stimulation sheet (an effect, “none”, or blank) is in the download, not on screen. Writing “none” was routine through 2022 and had stopped by 2024, so a blank is not a “none” and the entries are never turned into a rate.
+          Reports are shown as transcribed at the bedside, without coding or categories, ordered by area, person and current. The clinician’s entry from the stimulation sheet (an effect, “none”, or blank) is under “See more” beside each report, and in the download. Writing “none” was routine through 2022 and had stopped by 2024, so a blank is not a “none” and the entries are never turned into a rate.
           Areas with fewer than {MIN_PEOPLE} people are marked: their reports are individual cases.
         </p>
 
         <h3>The brain and the atlases</h3>
         <p>
-          The brain is FreeSurfer’s <em>fsaverage</em> surface, drawn as distributed. “Smooth” shows FreeSurfer’s inflated version of the same surface. The deep structures are surfaces built from fsaverage’s own segmentation.
+          The brain is FreeSurfer’s <em>fsaverage</em> surface, drawn as distributed. “Smooth” shows FreeSurfer’s inflated version of the same surface, moved a few millimetres sideways so the two halves do not overlap; picking an area the folds hide (the insula, Heschl’s gyrus, the deep sulci) turns it on. The deep structures are surfaces built from fsaverage’s own segmentation.
         </p>
 
         <h3>Use</h3>
@@ -249,7 +278,7 @@ export function AboutSheet({ onClose, release, synthetic, totals, placed, placed
         )}
 
         <h3>Privacy and accessibility</h3>
-        <p className="small">This site sets no cookies and collects no personal information. It aims to meet WCAG 2.1 AA; every report can be reached from the Areas list without the 3D view. To report a barrier or any other problem, <a href={SITE.issuesUrl} target="_blank" rel="noreferrer">open an issue</a>.</p>
+        <p className="small">This page sets no cookies and runs no analytics. Its host keeps standard server logs. It aims to meet WCAG 2.1 AA; every report the brain shows can also be reached from the Areas list. To report a barrier or any other problem, <a href={SITE.issuesUrl} target="_blank" rel="noreferrer">open an issue</a>.</p>
 
         <h3>Made by</h3>
         <p className="small">{SITE.lab}, {SITE.department}, {SITE.institution}. Maintained by the lab; problems are answered as time allows. <a href={SITE.labUrl} target="_blank" rel="noreferrer">The lab</a> · <a href={SITE.repoUrl} target="_blank" rel="noreferrer">Source</a></p>
@@ -271,9 +300,9 @@ export const SHORTCUTS: [string, string][] = [
   ['/', 'Find an area'],
   ['A', 'Open the list of areas'],
   ['← →', 'Turn the brain'],
-  ['R', 'Reset the view'],
+  ['R', 'The outer surface, on the area’s side'],
   ['?', 'About and help'],
-  ['Esc', 'Close a panel or menu'],
+  ['Esc', 'Close a sheet or menu'],
 ]
 
 function HelpBody({ examples, onExample }: { examples: { id: string; label: string }[]; onExample: (id: string) => void }) {
@@ -282,8 +311,8 @@ function HelpBody({ examples, onExample }: { examples: { id: string; label: stri
       <h3>Using the atlas</h3>
       <ol className="atlas-steps">
         <li>Click an area of the brain, find one by name, or open <strong>Areas</strong> for the full list. The view moves in on it and the rest of the brain steps back.</li>
-        <li>The panel lists every stimulation in that area and what the person said. Where a finer atlas divides the area, its parts are drawn inside it: click one on the brain to read only its reports, and click it again to see the whole area.</li>
-        <li>Turn on <strong>Compare areas</strong> to read several areas together. <strong>Download</strong> gives the reports as a table, or a map figure of what is on screen.</li>
+        <li>The panel lists every stimulation in that area and what the person said. Where a finer atlas divides the area, its parts are drawn inside it: click one on the brain, or pick it from the list in the panel, to read only its reports, and click it again to see the whole area.</li>
+        <li>Turn on <strong>Compare areas</strong> to read several areas together. <strong>Download</strong> gives the reports as a table, or a map figure of the coverage or the selected areas.</li>
       </ol>
       {examples.length > 0 && (
         <div className="atlas-examples" role="group" aria-label="Examples">
@@ -295,22 +324,20 @@ function HelpBody({ examples, onExample }: { examples: { id: string; label: stri
       <h3>What the numbers mean</h3>
       <dl className="atlas-faq">
         <dt>What is counted?</dt>
-        <dd>Stimulations with current delivered, from people whose electrode positions have no open question. A stimulation counts in every area either of its two contacts lies in. Sham trials, stimulations recorded at 0 mA and those excluded by quality control are listed separately and never counted.</dd>
+        <dd>Stimulations with current delivered, from people whose electrode positions have no open question. A stimulation counts in every area one of its contacts lies in. Sham trials and stimulations recorded at 0 mA are listed apart under each area. Those excluded by quality control are left out of the areas and are only in the download of everything. None of them is counted.</dd>
         <dt>Why is there no percentage?</dt>
         <dd>How clinicians recorded “nothing felt” changed over the years, so the bedside entries cannot be turned into a response rate. Read the reports themselves.</dd>
-        <dt>What does “no transcribed report” mean?</dt>
+        <dt>What does “no recorded report” mean?</dt>
         <dd>Nothing was transcribed for that stimulation. It does not mean the person felt nothing.</dd>
         <dt>Why is an area empty or thin?</dt>
         <dd>Electrodes are placed for each patient’s clinical needs, so some areas were rarely or never stimulated. <strong>Coverage</strong> shows how many people were stimulated in each area. Areas with fewer than {MIN_PEOPLE} people are marked.</dd>
-        <dt>Where are the electrodes?</dt>
-        <dd><strong>Electrodes</strong> shows every stimulated contact: surface contacts on the cortex, depth electrodes inside it at approximate positions.</dd>
       </dl>
 
       <h3>Keyboard</h3>
       <table className="atlas-table atlas-keys">
         <tbody>{SHORTCUTS.map(([k, w]) => <tr key={k}><td><kbd>{k}</kbd></td><td>{w}</td></tr>)}</tbody>
       </table>
-      <p className="small">The 3D brain needs WebGL 2 (current Chrome, Edge, Firefox or Safari). Without it, the Areas list still reaches every report. The tables behind the page are static JSON files under <code>data/</code> and <code>atlas/data/</code>; for analysis, use Download.</p>
+      <p className="small">The 3D brain needs WebGL 2 (current Chrome, Edge, Firefox or Safari). Without it, the Areas list reaches every report the brain would show. The tables behind the page are static JSON files under <code>data/</code> and <code>atlas/data/</code>; for analysis, use Download.</p>
     </>
   )
 }
@@ -337,7 +364,7 @@ export function CiteSheet({ onClose, release, atlasCitation }: { onClose: () => 
         </div>
         {SITE.paper && (<><h3>The paper</h3><blockquote className="atlas-cite">{SITE.paper.citation} doi:{SITE.paper.doi}</blockquote></>)}
         <h3>This view</h3>
-        <p className="small">A link to exactly what is on screen, including the release, so it opens the same data later.</p>
+        <p className="small">A link to what is on screen (the release, the atlas, the areas and their part, the view and the switches), so it opens the same data later. A person chosen in the panel is not in the link.</p>
         <blockquote className="atlas-cite mono">{url}</blockquote>
         <div className="atlas-row"><CopyButton text={url} label="Copy link" /><CopyButton text={view.text} label="Copy citation for this view" /></div>
         <h3>The atlas areas</h3>
@@ -350,10 +377,10 @@ export function CiteSheet({ onClose, release, atlasCitation }: { onClose: () => 
 
 /* ---- Licences ------------------------------------------------------------------------------ */
 
-export function NoticesSheet({ onClose }: { onClose: () => void }) {
+export function NoticesSheet({ onClose, synthetic }: { onClose: () => void; synthetic: boolean }) {
   const rows: [string, string, string][] = [
     ['This site’s code', 'BSD 3-Clause', 'LICENSE.txt'],
-    ['Derived and synthetic data', 'CC BY 4.0', 'LICENSE-DATA.txt'],
+    ...(synthetic ? [['Synthetic demonstration data (data/, atlas/data/)', 'CC BY 4.0', 'LICENSE-DATA.txt'] as [string, string, string]] : []),
     ['fsaverage surfaces, segmentation, Desikan–Killiany and Destrieux labels (FreeSurfer; converted and therefore modified)', 'FreeSurfer Software License', 'NOTICE.txt'],
     ['Yeo 7-network labels on fsaverage (distributed with FreeSurfer)', 'FreeSurfer Software License', 'NOTICE.txt'],
     ['three.js, three-mesh-bvh, React, React DOM', 'MIT', 'NOTICE.txt'],
@@ -389,15 +416,15 @@ export function AreaListSheet({ onClose, all, counts, selected, onToggle, atlasT
   const rows = useMemo(() => {
     const s = q.trim().toLowerCase()
     return [...all]
-      .filter((a) => (side === 'all' || a.hemisphere === side) && (!s || `${a.name} ${a.short} ${a.group ?? ''}`.toLowerCase().includes(s)))
+      .filter((a) => (side === 'all' || a.hemisphere === side) && (!s || `${a.name} ${a.short} ${a.long ?? ''} ${a.group ?? ''}`.toLowerCase().replace(/\s+/g, ' ').includes(s.replace(/\s+/g, ' '))))
       .sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'cortex' ? -1 : 1) || a.name.localeCompare(b.name) || (a.hemisphere ?? '').localeCompare(b.hemisphere ?? ''))
   }, [all, q, side])
   const chosen = new Set(selected)
   return (
     <Sheet title={`Areas · ${atlasTitle}`} onClose={onClose} wide>
-      <p className="small muted">Every area of the atlas and the deep structures, with how many stimulations and people each holds. Choose up to eight; their reports open beside the brain.</p>
+      <p className="small muted">Every area of the atlas and the deep structures, with how many stimulations and people each holds. Choose an area and its reports open beside the brain; turn on Compare areas to read up to eight together.</p>
       <div className="atlas-row">
-        <input className="atlas-filter grow" placeholder="Filter areas" aria-label="Filter areas" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input data-autofocus className="atlas-filter grow" placeholder="Filter areas" aria-label="Filter areas" value={q} onChange={(e) => setQ(e.target.value)} />
         <div className="atlas-seg" role="group" aria-label="Side">
           {(['all', 'lh', 'rh'] as const).map((k) => (
             <button key={k} aria-pressed={side === k} className={side === k ? 'on' : ''} onClick={() => setSide(k)}>{k === 'all' ? 'Both' : k === 'lh' ? 'Left' : 'Right'}</button>
@@ -412,7 +439,7 @@ export function AreaListSheet({ onClose, all, counts, selected, onToggle, atlasT
             <li key={a.id}>
               <button aria-pressed={chosen.has(a.id)} className={chosen.has(a.id) ? 'on' : ''} onClick={() => onToggle(a.id)} disabled={!c?.stim && !chosen.has(a.id)}>
                 <span className="name" title={a.long ?? undefined}>{a.name}<span className="sub">{[hemiWord(a.hemisphere), a.kind === 'deep' ? 'deep structure' : ''].filter(Boolean).join(' · ')}</span></span>
-                <span className="nums">{c?.stim ? `${c.stim.toLocaleString()} stimulations · ${c.people} ${c.people === 1 ? 'person' : 'people'}` : 'No stimulation'}{thin && <span className="atlas-tag" title={`Fewer than ${MIN_PEOPLE} people`}>few people</span>}</span>
+                <span className="nums">{c?.stim ? `${c.stim.toLocaleString()} stimulation${c.stim === 1 ? '' : 's'} · ${c.people} ${c.people === 1 ? 'person' : 'people'}` : 'No stimulation'}{thin && <span className="atlas-tag" title={`Fewer than ${MIN_PEOPLE} people`}>few people</span>}</span>
                 {chosen.has(a.id) && <Check size={15} aria-hidden />}
               </button>
             </li>

@@ -342,98 +342,10 @@ export const ATLAS_NATIVE_FRAME: Readonly<Record<string, CoordinateFrame>> = {
 }
 
 /**
- * The frame our stored `mni_midpoint_*` / `mni_*` columns are actually in.
- *
- * Declared `mni305` on the evidence above. This is deliberately NOT `mni152`: labelling
- * them MNI152 is what let every atlas query pass `assertFrameCompatible` trivially while
- * being read ~2.2 mm away from the contact. Declaring the honest frame makes the guard fire,
- * which is the whole reason the guard exists.
- *
- * CONFIRMED 2026-08-03 — no longer provisional. `scripts/verify_coordinate_provenance.py`
- * composed `talairach.xfm · Norig · Torig⁻¹` per subject on the lab share and reproduced the
- * `MNI_coord` columns of `elec_loc` for **156 of 222 assessable subjects (70.3%)** at a median
- * residual of **7.5e-6 mm** — spreadsheet rounding, not registration error. That count is
- * MAINTAINED IN docs/manuscript/section_11.md §11.1, where verify_writeup_numbers.py pins it;
- * this comment restated it as 155/222 (69.8%) and drifted, which is the same failure mode
- * publication/audit/corrections.md identifies as the common cause of every entry in that file —
- * a number measured once and then repeated as durable fact. Re-derive from the manuscript or
- * from scripts/verify_coordinate_provenance.py rather than from here. The earlier probe
- * showed only that *an* exact affine existed; this names the matrix that produces it. The
- * `elec_recon` step is iELVis (`yangWangElecPjct` → `dykstraElecPjct`); its logs never mention
- * MNI, SPM, FLIRT or any template.
- *
- * The 67 subjects that do NOT reproduce are not evidence against this. 66 admit no single affine
- * at all (median best-fit residual ~6-7 mm) and exactly 1 fits some other single affine. They
- * are flagged per-subject in `derivatives/localization/coordinate_provenance.json`.
- *
- * THAT FILE IS STILL NOT IN THE REPOSITORY, and that half of this comment remains true: it is
- * gitignored (.gitignore:249), absent from git ls-files, and regenerating it needs the lab share.
- * What is NO LONGER true is the conclusion that the claim is therefore unauditable. Two tracked,
- * PHI-free artifacts now carry the same evidence and can be read from any clone:
- * `derivatives/localization/coordinate_provenance_by_modality.json` and
- * `derivatives/localization/ecog_surface_morph.json`.
- *
- * WHY THEY FAIL IS KNOWN, AND THEY ARE NOT BROKEN. The paragraph that stood here was headed
- * "WHY THEY FAIL IS UNKNOWN" and concluded that "for these subjects the MNI columns are not
- * recoverable by any transform". Section 11.1 formally withdraws exactly that sentence, and 4.2
- * gives the mechanism, so this module — the one a methods reviewer opens to find out what the
- * project refuses and why — was telling them the project does not understand 45% of its own sites.
- *
- * The cause is that ONE transform was being fitted to data produced by TWO. Depth and subdural
- * contacts do not travel the same road:
- *
- *   sEEG depth      talairach.xfm o (Norig · inv(Torig)) o LEPTO   — 159/160 subjects, <1e-3 mm
- *   ECoG subdural   projection onto the nearest fsaverage vertex   — 0/66 by ANY affine
- *
- * The separation is total: all 154 pure-sEEG subjects reproduce, all 60 pure-ECoG subjects fail.
- * And the mechanism is not inferred — it is in the lab's own `projectElectrodesOnSurface.m`,
- * which calls `mesh_vertex_nearest` and REPLACES the contact's coordinate with the position of
- * the nearest mesh vertex. A subdural MNI coordinate is therefore a vertex position, not a
- * transformed measurement, which is why no affine can fit it. Three independent consequences
- * follow and all three are observed (ecog_surface_morph.json): contacts in DIFFERENT patients
- * nearest the same vertex get byte-identical MNI (1,169 of 1,169 such pairs, median MNI distance
- * 0.0 while sitting a median 19.1 mm apart in their own heads); ECoG lies a median 0.515 mm from
- * the fsaverage pial against 3.41 mm for sEEG; and 21.6% of ECoG contacts share an exact MNI
- * position with another patient against 0.7% of depths.
- *
- * Because fsaverage's own talairach.xfm is the identity, fsaverage surface RAS IS MNI305. The
- * subdural coordinates were never in an unknown frame and were never lost.
- *
- * The genuinely unrecoverable residue is a much smaller set — one subject (RNS artifact in the
- * pre-operative MRI), one subject (pre-RNS scan), one subject (xfm pairing fault) — and for those, and
- * only those, native coordinates are the ones to use.
- *
- * The four explanations below were tested against the WRONG QUESTION: they were candidate causes
- * of a defect that does not exist. They are kept because each is a real negative result and
- * because two of them were once asserted as fact here.
- *
- * FOUR REFUTED EXPLANATIONS (5 Aug 2026), retained as negative results:
- *
- *   1. FreeSurfer re-run after the sheets were written — 0 of 67 have a newer `talairach.xfm`.
- *   2. Two implants unioned into one row set. **An earlier version of this comment asserted
- *      this as fact; it is wrong.** Against the verified subject crosswalk, only 15 of 66 (23%)
- *      are multi-implant, and multi-implant patients are 9.7% of the CONFIRMED group too, so it
- *      neither causes nor predicts the failure. RANSAC at 1 mm finds NO affine-consistent
- *      subset of their rows on any of 16 subjects tested (largest 3-13% of contacts) — pooled
- *      implants would leave two clean groups to find.
- *   3. Rows mis-ordered, MNI paired with the wrong LEPTO — matching predicted against actual
- *      coordinates as SETS, order ignored, improves the median only 8.9 → 6.9 mm; a permutation
- *      would give ~0.
- *   4. A nonlinear normalisation, which no affine could fit — STILL OPEN. A test was written
- *      and its result WITHDRAWN as invalid: its own negative control (the 155 confirmed
- *      subjects, whose residual is float64 noise containing no displacement field) scored a
- *      STRONGER "smooth field" signature than the subjects under test. See
- *      `scripts/test_nonlinear_residual_structure.py`, which is kept only to record the failure.
- *
- * This matters practically: pooled implants would be repairable by SPLITTING ROWS, and this is
- * not. Do not plan that work on the strength of the retracted claim. The one worked example is
- * one subject, whose folder README records an RNS-device artifact in the pre-operative MRI that made
- * the brain unmappable to MNI — "DO NOT USE THE MNI COORDINATES ... The Lepto coordinates are
- * fine to use." That subject IS genuinely unrecoverable. The generalisation that once closed this
- * paragraph — "for these subjects the MNI columns are not recoverable by any transform" — is
- * withdrawn (section 11.1): it was true of one subject and a handful like it, and false of the 60
- * pure-ECoG subjects, whose coordinates are fsaverage vertex positions and therefore already
- * MNI305. Native coordinates remain unaffected throughout and are still the primary anatomy.
+ * The frame our stored `mni_midpoint_*` / `mni_*` columns are actually in: MNI305, the space of
+ * FreeSurfer's fsaverage (whose talairach.xfm is the identity). Declaring it, not MNI152, makes
+ * assertFrameCompatible fire wherever a query would mix the two frames. The evidence is in the
+ * dataset descriptor; native coordinates remain the primary anatomy.
  */
 export const SITE_COORDINATE_FRAME: CoordinateFrame = MNI305_FRAME
 

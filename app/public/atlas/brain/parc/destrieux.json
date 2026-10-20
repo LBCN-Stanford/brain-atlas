@@ -22,7 +22,9 @@
    "name": "Frontomarginal gyrus",
    "long": "Fronto-marginal gyrus (of Wernicke) and sulcus",
    "short": "G_and_S_frontomargin",
-   "group": null
+   "group": null,
+   "exposed": 0.954,
+   "buried": false
   },
   {
    "index": 2,
@@ -34,7 +36,9 @@
    "name": "Inferior occipital gyrus",
    "long": "Inferior occipital gyrus and sulcus",
    "short": "G_and_S_occipital_inf",
-   "group": null
+   "group": null,
+   "exposed": 0.998,
+   "buried": false
   },
   {
    "index": 3,
@@ -46,7 +50,9 @@
    "name": "Paracentral lobule",
    "long": "Paracentral lobule and sulcus",
    "short": "G_and_S_paracentral",
-   "group": null
+   "group": null,
+   "exposed": 0.905,
+   "buried": false
   },
   {
    "index": 4,
@@ -58,7 +64,9 @@
    "name": "Subcentral gyrus",
    "long": "Subcentral gyrus (central operculum) and sulci",
    "short": "G_and_S_subcentral",
-   "group": null
+   "group": null,
+   "exposed": 0.55,
+   "buried": false
   },
   {
    "index": 5,
@@ -70,7 +78,9 @@
    "name": "Transverse frontopolar gyri",
    "long": "Transverse frontopolar gyri and sulci",
    "short": "G_and_S_transv_frontopol",
-   "group": null
+   "group": null,
+   "exposed": 0.998,
+   "buried": false
   },
   {
    "index": 6,
@@ -80,9 +90,11 @@
    "color": "#1a3c00",
    "vertices": 2171,
    "name": "Anterior cingulate",
-   "long": "Anterior part of the cingulate gyrus and sulcus (ACC)",
+   "long": "Anterior part of the cingulate gyrus and sulcus (ACC)",
    "short": "G_and_S_cingul-Ant",
-   "group": null
+   "group": null,
+   "exposed": 0.823,
+   "buried": false
   },
   {
    "index": 7,
@@ -92,9 +104,11 @@
    "color": "#1a3c4b",
    "vertices": 1957,
    "name": "Anterior midcingulate",
-   "long": "Middle-anterior part of the cingulate gyrus and sulcus (aMCC)",
+   "long": "Middle-anterior part of the cingulate gyrus and sulcus (aMCC)",
    "short": "G_and_S_cingul-Mid-Ant",
-   "group": null
+   "group": null,
+   "exposed": 0.85,
+   "buried": false
   },
   {
    "index": 8,
@@ -104,9 +118,11 @@
    "color": "#1a3c96",
    "vertices": 2386,
    "name": "Posterior midcingulate",
-   "long": "Middle-posterior part of the cingulate gyrus and sulcus (pMCC)",
+   "long": "Middle-posterior part of the cingulate gyrus and sulcus (pMCC)",
    "short": "G_and_S_cingul-Mid-Post",
-   "group": null
+   "group": null,
+   "exposed": 0.694,
+   "buried": false
   },
   {
    "index": 9,
@@ -116,9 +132,11 @@
    "color": "#193cfa",
    "vertices": 1098,
    "name": "Dorsal posterior cingulate",
-   "long": "Posterior-dorsal part of the cingulate gyrus (dPCC)",
+   "long": "Posterior-dorsal part of the cingulate gyrus (dPCC)",
    "short": "G_cingul-Post-dorsal",
-   "group": null
+   "group": null,
+   "exposed": 0.948,
+   "buried": false
   },
   {
    "index": 10,
@@ -128,9 +146,11 @@
    "color": "#3c1919",
    "vertices": 520,
    "name": "Ventral posterior cingulate",
-   "long": "Posterior-ventral part of the cingulate gyrus (vPCC, isthmus of the cingulate gyrus)",
+   "long": "Posterior-ventral part of the cingulate gyrus (vPCC, isthmus of the cingulate gyrus)",
    "short": "G_cingul-Post-ventral",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 11,
@@ -142,7 +162,9 @@
    "name": "Cuneus",
    "long": "Cuneus",
    "short": "G_cuneus",
-   "group": null
+   "group": null,
+   "exposed": 0.92,
+   "buried": false
   },
   {
    "index": 12,
@@ -154,7 +176,9 @@
    "name": "Pars opercularis",
    "long": "Opercular part of the inferior frontal gyrus",
    "short": "G_front_inf-Opercular",
-   "group": null
+   "group": null,
+   "exposed": 0.672,
+   "buried": false
   },
   {
    "index": 13,
@@ -166,7 +190,9 @@
    "name": "Pars orbitalis",
    "long": "Orbital part of the inferior frontal gyrus",
    "short": "G_front_inf-Orbital",
-   "group": null
+   "group": null,
+   "exposed": 0.863,
+   "buried": false
   },
   {
    "index": 14,
@@ -178,7 +204,9 @@
    "name": "Pars triangularis",
    "long": "Triangular part of the inferior frontal gyrus",
    "short": "G_front_inf-Triangul",
-   "group": null
+   "group": null,
+   "exposed": 0.965,
+   "buried": false
   },
   {
    "index": 15,
@@ -190,7 +218,9 @@
    "name": "Middle frontal gyrus",
    "long": "Middle frontal gyrus",
    "short": "G_front_middle",
-   "group": null
+   "group": null,
+   "exposed": 0.996,
+   "buried": false
   },
   {
    "index": 16,
@@ -202,7 +232,9 @@
    "name": "Superior frontal gyrus",
    "long": "Superior frontal gyrus",
    "short": "G_front_sup",
-   "group": null
+   "group": null,
+   "exposed": 0.997,
+   "buried": false
   },
   {
    "index": 17,
@@ -214,7 +246,9 @@
    "name": "Long insular gyri",
    "long": "Long insular gyrus and central sulcus of the insula",
    "short": "G_Ins_lg_and_S_cent_ins",
-   "group": null
+   "group": null,
+   "exposed": 0.272,
+   "buried": true
   },
   {
    "index": 18,
@@ -226,7 +260,9 @@
    "name": "Short insular gyri",
    "long": "Short insular gyri",
    "short": "G_insular_short",
-   "group": null
+   "group": null,
+   "exposed": 0.575,
+   "buried": false
   },
   {
    "index": 19,
@@ -238,7 +274,9 @@
    "name": "Middle occipital gyrus",
    "long": "Middle occipital gyrus (lateral occipital gyrus)",
    "short": "G_occipital_middle",
-   "group": null
+   "group": null,
+   "exposed": 0.998,
+   "buried": false
   },
   {
    "index": 20,
@@ -250,7 +288,9 @@
    "name": "Superior occipital gyrus",
    "long": "Superior occipital gyrus",
    "short": "G_occipital_sup",
-   "group": null
+   "group": null,
+   "exposed": 0.996,
+   "buried": false
   },
   {
    "index": 21,
@@ -260,9 +300,11 @@
    "color": "#3c148c",
    "vertices": 1701,
    "name": "Fusiform gyrus",
-   "long": "Lateral occipito-temporal gyrus (fusiform gyrus)",
+   "long": "Lateral occipito-temporal gyrus (fusiform gyrus)",
    "short": "G_oc-temp_lat-fusifor",
-   "group": null
+   "group": null,
+   "exposed": 0.984,
+   "buried": false
   },
   {
    "index": 22,
@@ -272,9 +314,11 @@
    "color": "#dcb48c",
    "vertices": 2483,
    "name": "Lingual gyrus",
-   "long": "Lingual gyrus, ligual part of the medial occipito-temporal gyrus",
+   "long": "Lingual gyrus, lingual part of the medial occipito-temporal gyrus",
    "short": "G_oc-temp_med-Lingual",
-   "group": null
+   "group": null,
+   "exposed": 0.952,
+   "buried": false
   },
   {
    "index": 23,
@@ -284,9 +328,11 @@
    "color": "#416414",
    "vertices": 2416,
    "name": "Parahippocampal gyrus",
-   "long": "Parahippocampal gyrus, parahippocampal part of the medial occipito-temporal gyrus",
+   "long": "Parahippocampal gyrus, parahippocampal part of the medial occipito-temporal gyrus",
    "short": "G_oc-temp_med-Parahip",
-   "group": null
+   "group": null,
+   "exposed": 0.861,
+   "buried": false
   },
   {
    "index": 24,
@@ -298,7 +344,9 @@
    "name": "Orbital gyri",
    "long": "Orbital gyri",
    "short": "G_orbital",
-   "group": null
+   "group": null,
+   "exposed": 0.944,
+   "buried": false
   },
   {
    "index": 25,
@@ -310,7 +358,9 @@
    "name": "Angular gyrus",
    "long": "Angular gyrus",
    "short": "G_pariet_inf-Angular",
-   "group": null
+   "group": null,
+   "exposed": 0.971,
+   "buried": false
   },
   {
    "index": 26,
@@ -322,7 +372,9 @@
    "name": "Supramarginal gyrus",
    "long": "Supramarginal gyrus",
    "short": "G_pariet_inf-Supramar",
-   "group": null
+   "group": null,
+   "exposed": 0.855,
+   "buried": false
   },
   {
    "index": 27,
@@ -332,9 +384,11 @@
    "color": "#dcb4dc",
    "vertices": 4220,
    "name": "Superior parietal lobule",
-   "long": "Superior parietal lobule (lateral part of P1)",
+   "long": "Superior parietal lobule (lateral part of P1)",
    "short": "G_parietal_sup",
-   "group": null
+   "group": null,
+   "exposed": 0.987,
+   "buried": false
   },
   {
    "index": 28,
@@ -346,7 +400,9 @@
    "name": "Postcentral gyrus",
    "long": "Postcentral gyrus",
    "short": "G_postcentral",
-   "group": null
+   "group": null,
+   "exposed": 0.9,
+   "buried": false
   },
   {
    "index": 29,
@@ -358,7 +414,9 @@
    "name": "Precentral gyrus",
    "long": "Precentral gyrus",
    "short": "G_precentral",
-   "group": null
+   "group": null,
+   "exposed": 0.885,
+   "buried": false
   },
   {
    "index": 30,
@@ -368,9 +426,11 @@
    "color": "#19148c",
    "vertices": 3540,
    "name": "Precuneus",
-   "long": "Precuneus (medial part of P1)",
+   "long": "Precuneus (medial part of P1)",
    "short": "G_precuneus",
-   "group": null
+   "group": null,
+   "exposed": 0.965,
+   "buried": false
   },
   {
    "index": 31,
@@ -382,7 +442,9 @@
    "name": "Gyrus rectus",
    "long": "Straight gyrus, Gyrus rectus",
    "short": "G_rectus",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 32,
@@ -394,7 +456,9 @@
    "name": "Subcallosal gyrus",
    "long": "Subcallosal area, subcallosal gyrus",
    "short": "G_subcallosal",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 33,
@@ -404,9 +468,11 @@
    "color": "#3c3cdc",
    "vertices": 716,
    "name": "Heschl's gyrus",
-   "long": "Anterior transverse temporal gyrus (of Heschl)",
+   "long": "Anterior transverse temporal gyrus (of Heschl)",
    "short": "G_temp_sup-G_T_transv",
-   "group": null
+   "group": null,
+   "exposed": 0.228,
+   "buried": true
   },
   {
    "index": 34,
@@ -416,9 +482,11 @@
    "color": "#dc3cdc",
    "vertices": 2784,
    "name": "Lateral superior temporal gyrus",
-   "long": "Lateral aspect of the superior temporal gyrus",
+   "long": "Lateral aspect of the superior temporal gyrus",
    "short": "G_temp_sup-Lateral",
-   "group": null
+   "group": null,
+   "exposed": 0.965,
+   "buried": false
   },
   {
    "index": 35,
@@ -428,9 +496,11 @@
    "color": "#41dc3c",
    "vertices": 851,
    "name": "Planum polare",
-   "long": "Planum polare of the superior temporal gyrus",
+   "long": "Planum polare of the superior temporal gyrus",
    "short": "G_temp_sup-Plan_polar",
-   "group": null
+   "group": null,
+   "exposed": 0.358,
+   "buried": true
   },
   {
    "index": 36,
@@ -440,9 +510,11 @@
    "color": "#198c14",
    "vertices": 1454,
    "name": "Planum temporale",
-   "long": "Planum temporale or temporal plane of the superior temporal gyrus",
+   "long": "Planum temporale or temporal plane of the superior temporal gyrus",
    "short": "G_temp_sup-Plan_tempo",
-   "group": null
+   "group": null,
+   "exposed": 0.732,
+   "buried": false
   },
   {
    "index": 37,
@@ -454,7 +526,9 @@
    "name": "Inferior temporal gyrus",
    "long": "Inferior temporal gyrus",
    "short": "G_temporal_inf",
-   "group": null
+   "group": null,
+   "exposed": 0.986,
+   "buried": false
   },
   {
    "index": 38,
@@ -466,7 +540,9 @@
    "name": "Middle temporal gyrus",
    "long": "Middle temporal gyrus",
    "short": "G_temporal_middle",
-   "group": null
+   "group": null,
+   "exposed": 0.974,
+   "buried": false
   },
   {
    "index": 39,
@@ -476,9 +552,11 @@
    "color": "#3d14dc",
    "vertices": 374,
    "name": "Anterior horizontal ramus of the Sylvian fissure",
-   "long": "Horizontal ramus of the anterior segment of the lateral sulcus (or fissure)",
+   "long": "Horizontal ramus of the anterior segment of the lateral sulcus (or fissure)",
    "short": "Lat_Fis-ant-Horizont",
-   "group": null
+   "group": null,
+   "exposed": 0.409,
+   "buried": false
   },
   {
    "index": 40,
@@ -488,9 +566,11 @@
    "color": "#3d143c",
    "vertices": 496,
    "name": "Anterior ascending ramus of the Sylvian fissure",
-   "long": "Vertical ramus of the anterior segment of the lateral sulcus (or fissure)",
+   "long": "Vertical ramus of the anterior segment of the lateral sulcus (or fissure)",
    "short": "Lat_Fis-ant-Vertical",
-   "group": null
+   "group": null,
+   "exposed": 0.812,
+   "buried": false
   },
   {
    "index": 41,
@@ -500,9 +580,11 @@
    "color": "#3d3c64",
    "vertices": 2018,
    "name": "Posterior ramus of the Sylvian fissure",
-   "long": "Posterior ramus (or segment) of the lateral sulcus (or fissure)",
+   "long": "Posterior ramus (or segment) of the lateral sulcus (or fissure)",
    "short": "Lat_Fis-post",
-   "group": null
+   "group": null,
+   "exposed": 0.143,
+   "buried": true
   },
   {
    "index": 42,
@@ -514,7 +596,9 @@
    "name": "Occipital pole",
    "long": "Occipital pole",
    "short": "Pole_occipital",
-   "group": null
+   "group": null,
+   "exposed": 0.986,
+   "buried": false
   },
   {
    "index": 43,
@@ -526,7 +610,9 @@
    "name": "Temporal pole",
    "long": "Temporal pole",
    "short": "Pole_temporal",
-   "group": null
+   "group": null,
+   "exposed": 0.986,
+   "buried": false
   },
   {
    "index": 44,
@@ -538,7 +624,9 @@
    "name": "Calcarine sulcus",
    "long": "Calcarine sulcus",
    "short": "S_calcarine",
-   "group": null
+   "group": null,
+   "exposed": 0.201,
+   "buried": true
   },
   {
    "index": 45,
@@ -548,9 +636,11 @@
    "color": "#dd140a",
    "vertices": 4914,
    "name": "Central sulcus",
-   "long": "Central sulcus (Rolando's fissure)",
+   "long": "Central sulcus (Rolando's fissure)",
    "short": "S_central",
-   "group": null
+   "group": null,
+   "exposed": 0.117,
+   "buried": true
   },
   {
    "index": 46,
@@ -560,9 +650,11 @@
    "color": "#dd1464",
    "vertices": 1920,
    "name": "Marginal ramus of the cingulate sulcus",
-   "long": "Marginal branch (or part) of the cingulate sulcus",
+   "long": "Marginal branch (or part) of the cingulate sulcus",
    "short": "S_cingul-Marginalis",
-   "group": null
+   "group": null,
+   "exposed": 0.276,
+   "buried": true
   },
   {
    "index": 47,
@@ -572,9 +664,11 @@
    "color": "#dd3c8c",
    "vertices": 889,
    "name": "Anterior circular insular sulcus",
-   "long": "Anterior segment of the circular sulcus of the insula",
+   "long": "Anterior segment of the circular sulcus of the insula",
    "short": "S_circular_insula_ant",
-   "group": null
+   "group": null,
+   "exposed": 0.22,
+   "buried": true
   },
   {
    "index": 48,
@@ -584,9 +678,11 @@
    "color": "#dd14dc",
    "vertices": 2463,
    "name": "Inferior circular insular sulcus",
-   "long": "Inferior segment of the circular sulcus of the insula",
+   "long": "Inferior segment of the circular sulcus of the insula",
    "short": "S_circular_insula_inf",
-   "group": null
+   "group": null,
+   "exposed": 0.027,
+   "buried": true
   },
   {
    "index": 49,
@@ -596,9 +692,11 @@
    "color": "#3ddcdc",
    "vertices": 3091,
    "name": "Superior circular insular sulcus",
-   "long": "Superior segment of the circular sulcus of the insula",
+   "long": "Superior segment of the circular sulcus of the insula",
    "short": "S_circular_insula_sup",
-   "group": null
+   "group": null,
+   "exposed": 0.09,
+   "buried": true
   },
   {
    "index": 50,
@@ -610,7 +708,9 @@
    "name": "Anterior transverse collateral sulcus",
    "long": "Anterior transverse collateral sulcus",
    "short": "S_collat_transv_ant",
-   "group": null
+   "group": null,
+   "exposed": 0.877,
+   "buried": false
   },
   {
    "index": 51,
@@ -622,7 +722,9 @@
    "name": "Posterior transverse collateral sulcus",
    "long": "Posterior transverse collateral sulcus",
    "short": "S_collat_transv_post",
-   "group": null
+   "group": null,
+   "exposed": 0.997,
+   "buried": false
   },
   {
    "index": 52,
@@ -634,7 +736,9 @@
    "name": "Inferior frontal sulcus",
    "long": "Inferior frontal sulcus",
    "short": "S_front_inf",
-   "group": null
+   "group": null,
+   "exposed": 0.888,
+   "buried": false
   },
   {
    "index": 53,
@@ -646,7 +750,9 @@
    "name": "Middle frontal sulcus",
    "long": "Middle frontal sulcus",
    "short": "S_front_middle",
-   "group": null
+   "group": null,
+   "exposed": 0.984,
+   "buried": false
   },
   {
    "index": 54,
@@ -658,7 +764,9 @@
    "name": "Superior frontal sulcus",
    "long": "Superior frontal sulcus",
    "short": "S_front_sup",
-   "group": null
+   "group": null,
+   "exposed": 0.828,
+   "buried": false
   },
   {
    "index": 55,
@@ -670,7 +778,9 @@
    "name": "Intermediate sulcus of Jensen",
    "long": "Sulcus intermedius primus (of Jensen)",
    "short": "S_interm_prim-Jensen",
-   "group": null
+   "group": null,
+   "exposed": 0.97,
+   "buried": false
   },
   {
    "index": 56,
@@ -680,9 +790,11 @@
    "color": "#8f14dc",
    "vertices": 4409,
    "name": "Intraparietal and transverse parietal sulci",
-   "long": "Intraparietal sulcus (interparietal sulcus) and transverse parietal sulci",
+   "long": "Intraparietal sulcus (interparietal sulcus) and transverse parietal sulci",
    "short": "S_intrapariet_and_P_trans",
-   "group": null
+   "group": null,
+   "exposed": 0.804,
+   "buried": false
   },
   {
    "index": 57,
@@ -694,7 +806,9 @@
    "name": "Middle occipital and lunate sulci",
    "long": "Middle occipital sulcus and lunatus sulcus",
    "short": "S_oc_middle_and_Lunatus",
-   "group": null
+   "group": null,
+   "exposed": 0.957,
+   "buried": false
   },
   {
    "index": 58,
@@ -704,9 +818,11 @@
    "color": "#15148c",
    "vertices": 1243,
    "name": "Superior and transverse occipital sulci",
-   "long": "Superior occipital sulcus and transverse occipital sulcus",
+   "long": "Superior occipital sulcus and transverse occipital sulcus",
    "short": "S_oc_sup_and_transversal",
-   "group": null
+   "group": null,
+   "exposed": 0.83,
+   "buried": false
   },
   {
    "index": 59,
@@ -716,9 +832,11 @@
    "color": "#3d14b4",
    "vertices": 818,
    "name": "Anterior occipital sulcus",
-   "long": "Anterior occipital sulcus and preoccipital notch (temporo-occipital incisure)",
+   "long": "Anterior occipital sulcus and preoccipital notch (temporo-occipital incisure)",
    "short": "S_occipital_ant",
-   "group": null
+   "group": null,
+   "exposed": 0.999,
+   "buried": false
   },
   {
    "index": 60,
@@ -730,7 +848,9 @@
    "name": "Lateral occipitotemporal sulcus",
    "long": "Lateral occipito-temporal sulcus",
    "short": "S_oc-temp_lat",
-   "group": null
+   "group": null,
+   "exposed": 0.834,
+   "buried": false
   },
   {
    "index": 61,
@@ -742,7 +862,9 @@
    "name": "Collateral and lingual sulci",
    "long": "Medial occipito-temporal sulcus (collateral sulcus) and lingual sulcus",
    "short": "S_oc-temp_med_and_Lingual",
-   "group": null
+   "group": null,
+   "exposed": 0.365,
+   "buried": true
   },
   {
    "index": 62,
@@ -754,7 +876,9 @@
    "name": "Lateral orbital sulcus",
    "long": "Lateral orbital sulcus",
    "short": "S_orbital_lateral",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 63,
@@ -766,7 +890,9 @@
    "name": "Olfactory sulcus",
    "long": "Medial orbital sulcus (olfactory sulcus)",
    "short": "S_orbital_med-olfact",
-   "group": null
+   "group": null,
+   "exposed": 0.8,
+   "buried": false
   },
   {
    "index": 64,
@@ -776,9 +902,11 @@
    "color": "#651414",
    "vertices": 1104,
    "name": "H-shaped orbital sulcus",
-   "long": "Orbital sulci (H-shaped sulci)",
+   "long": "Orbital sulci (H-shaped sulci)",
    "short": "S_orbital-H_Shaped",
-   "group": null
+   "group": null,
+   "exposed": 0.971,
+   "buried": false
   },
   {
    "index": 65,
@@ -788,9 +916,11 @@
    "color": "#6564b4",
    "vertices": 2220,
    "name": "Parieto-occipital sulcus",
-   "long": "Parieto-occipital sulcus (or fissure)",
+   "long": "Parieto-occipital sulcus (or fissure)",
    "short": "S_parieto_occipital",
-   "group": null
+   "group": null,
+   "exposed": 0.382,
+   "buried": true
   },
   {
    "index": 66,
@@ -802,7 +932,9 @@
    "name": "Callosal sulcus",
    "long": "Pericallosal sulcus (S of corpus callosum)",
    "short": "S_pericallosal",
-   "group": null
+   "group": null,
+   "exposed": 0.641,
+   "buried": false
   },
   {
    "index": 67,
@@ -814,7 +946,9 @@
    "name": "Postcentral sulcus",
    "long": "Postcentral sulcus",
    "short": "S_postcentral",
-   "group": null
+   "group": null,
+   "exposed": 0.765,
+   "buried": false
   },
   {
    "index": 68,
@@ -824,9 +958,11 @@
    "color": "#1514f0",
    "vertices": 1881,
    "name": "Inferior precentral sulcus",
-   "long": "Inferior part of the precentral sulcus",
+   "long": "Inferior part of the precentral sulcus",
    "short": "S_precentral-inf-part",
-   "group": null
+   "group": null,
+   "exposed": 0.818,
+   "buried": false
   },
   {
    "index": 69,
@@ -836,9 +972,11 @@
    "color": "#1514c8",
    "vertices": 1846,
    "name": "Superior precentral sulcus",
-   "long": "Superior part of the precentral sulcus",
+   "long": "Superior part of the precentral sulcus",
    "short": "S_precentral-sup-part",
-   "group": null
+   "group": null,
+   "exposed": 0.897,
+   "buried": false
   },
   {
    "index": 70,
@@ -850,7 +988,9 @@
    "name": "Suborbital sulcus",
    "long": "Suborbital sulcus (sulcus rostrales, supraorbital sulcus)",
    "short": "S_suborbital",
-   "group": null
+   "group": null,
+   "exposed": 0.912,
+   "buried": false
   },
   {
    "index": 71,
@@ -862,7 +1002,9 @@
    "name": "Subparietal sulcus",
    "long": "Subparietal sulcus",
    "short": "S_subparietal",
-   "group": null
+   "group": null,
+   "exposed": 0.958,
+   "buried": false
   },
   {
    "index": 72,
@@ -874,7 +1016,9 @@
    "name": "Inferior temporal sulcus",
    "long": "Inferior temporal sulcus",
    "short": "S_temporal_inf",
-   "group": null
+   "group": null,
+   "exposed": 0.972,
+   "buried": false
   },
   {
    "index": 73,
@@ -884,9 +1028,11 @@
    "color": "#dfdc3c",
    "vertices": 6591,
    "name": "Superior temporal sulcus",
-   "long": "Superior temporal sulcus (parallel sulcus)",
+   "long": "Superior temporal sulcus (parallel sulcus)",
    "short": "S_temporal_sup",
-   "group": null
+   "group": null,
+   "exposed": 0.622,
+   "buried": false
   },
   {
    "index": 74,
@@ -898,7 +1044,9 @@
    "name": "Transverse temporal sulcus",
    "long": "Transverse temporal sulcus",
    "short": "S_temporal_transverse",
-   "group": null
+   "group": null,
+   "exposed": 0.218,
+   "buried": true
   },
   {
    "index": 75,
@@ -910,7 +1058,9 @@
    "name": "Frontomarginal gyrus",
    "long": "Fronto-marginal gyrus (of Wernicke) and sulcus",
    "short": "G_and_S_frontomargin",
-   "group": null
+   "group": null,
+   "exposed": 0.971,
+   "buried": false
   },
   {
    "index": 76,
@@ -922,7 +1072,9 @@
    "name": "Inferior occipital gyrus",
    "long": "Inferior occipital gyrus and sulcus",
    "short": "G_and_S_occipital_inf",
-   "group": null
+   "group": null,
+   "exposed": 0.999,
+   "buried": false
   },
   {
    "index": 77,
@@ -934,7 +1086,9 @@
    "name": "Paracentral lobule",
    "long": "Paracentral lobule and sulcus",
    "short": "G_and_S_paracentral",
-   "group": null
+   "group": null,
+   "exposed": 0.925,
+   "buried": false
   },
   {
    "index": 78,
@@ -946,7 +1100,9 @@
    "name": "Subcentral gyrus",
    "long": "Subcentral gyrus (central operculum) and sulci",
    "short": "G_and_S_subcentral",
-   "group": null
+   "group": null,
+   "exposed": 0.482,
+   "buried": false
   },
   {
    "index": 79,
@@ -958,7 +1114,9 @@
    "name": "Transverse frontopolar gyri",
    "long": "Transverse frontopolar gyri and sulci",
    "short": "G_and_S_transv_frontopol",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 80,
@@ -968,9 +1126,11 @@
    "color": "#1a3c00",
    "vertices": 2834,
    "name": "Anterior cingulate",
-   "long": "Anterior part of the cingulate gyrus and sulcus (ACC)",
+   "long": "Anterior part of the cingulate gyrus and sulcus (ACC)",
    "short": "G_and_S_cingul-Ant",
-   "group": null
+   "group": null,
+   "exposed": 0.697,
+   "buried": false
   },
   {
    "index": 81,
@@ -980,9 +1140,11 @@
    "color": "#1a3c4b",
    "vertices": 2197,
    "name": "Anterior midcingulate",
-   "long": "Middle-anterior part of the cingulate gyrus and sulcus (aMCC)",
+   "long": "Middle-anterior part of the cingulate gyrus and sulcus (aMCC)",
    "short": "G_and_S_cingul-Mid-Ant",
-   "group": null
+   "group": null,
+   "exposed": 0.778,
+   "buried": false
   },
   {
    "index": 82,
@@ -992,9 +1154,11 @@
    "color": "#1a3c96",
    "vertices": 2352,
    "name": "Posterior midcingulate",
-   "long": "Middle-posterior part of the cingulate gyrus and sulcus (pMCC)",
+   "long": "Middle-posterior part of the cingulate gyrus and sulcus (pMCC)",
    "short": "G_and_S_cingul-Mid-Post",
-   "group": null
+   "group": null,
+   "exposed": 0.84,
+   "buried": false
   },
   {
    "index": 83,
@@ -1004,9 +1168,11 @@
    "color": "#193cfa",
    "vertices": 923,
    "name": "Dorsal posterior cingulate",
-   "long": "Posterior-dorsal part of the cingulate gyrus (dPCC)",
+   "long": "Posterior-dorsal part of the cingulate gyrus (dPCC)",
    "short": "G_cingul-Post-dorsal",
-   "group": null
+   "group": null,
+   "exposed": 0.964,
+   "buried": false
   },
   {
    "index": 84,
@@ -1016,9 +1182,11 @@
    "color": "#3c1919",
    "vertices": 616,
    "name": "Ventral posterior cingulate",
-   "long": "Posterior-ventral part of the cingulate gyrus (vPCC, isthmus of the cingulate gyrus)",
+   "long": "Posterior-ventral part of the cingulate gyrus (vPCC, isthmus of the cingulate gyrus)",
    "short": "G_cingul-Post-ventral",
-   "group": null
+   "group": null,
+   "exposed": 0.909,
+   "buried": false
   },
   {
    "index": 85,
@@ -1030,7 +1198,9 @@
    "name": "Cuneus",
    "long": "Cuneus",
    "short": "G_cuneus",
-   "group": null
+   "group": null,
+   "exposed": 0.88,
+   "buried": false
   },
   {
    "index": 86,
@@ -1042,7 +1212,9 @@
    "name": "Pars opercularis",
    "long": "Opercular part of the inferior frontal gyrus",
    "short": "G_front_inf-Opercular",
-   "group": null
+   "group": null,
+   "exposed": 0.649,
+   "buried": false
   },
   {
    "index": 87,
@@ -1054,7 +1226,9 @@
    "name": "Pars orbitalis",
    "long": "Orbital part of the inferior frontal gyrus",
    "short": "G_front_inf-Orbital",
-   "group": null
+   "group": null,
+   "exposed": 0.99,
+   "buried": false
   },
   {
    "index": 88,
@@ -1066,7 +1240,9 @@
    "name": "Pars triangularis",
    "long": "Triangular part of the inferior frontal gyrus",
    "short": "G_front_inf-Triangul",
-   "group": null
+   "group": null,
+   "exposed": 0.994,
+   "buried": false
   },
   {
    "index": 89,
@@ -1078,7 +1254,9 @@
    "name": "Middle frontal gyrus",
    "long": "Middle frontal gyrus",
    "short": "G_front_middle",
-   "group": null
+   "group": null,
+   "exposed": 0.996,
+   "buried": false
   },
   {
    "index": 90,
@@ -1090,7 +1268,9 @@
    "name": "Superior frontal gyrus",
    "long": "Superior frontal gyrus",
    "short": "G_front_sup",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 91,
@@ -1102,7 +1282,9 @@
    "name": "Long insular gyri",
    "long": "Long insular gyrus and central sulcus of the insula",
    "short": "G_Ins_lg_and_S_cent_ins",
-   "group": null
+   "group": null,
+   "exposed": 0.284,
+   "buried": true
   },
   {
    "index": 92,
@@ -1114,7 +1296,9 @@
    "name": "Short insular gyri",
    "long": "Short insular gyri",
    "short": "G_insular_short",
-   "group": null
+   "group": null,
+   "exposed": 0.674,
+   "buried": false
   },
   {
    "index": 93,
@@ -1126,7 +1310,9 @@
    "name": "Middle occipital gyrus",
    "long": "Middle occipital gyrus (lateral occipital gyrus)",
    "short": "G_occipital_middle",
-   "group": null
+   "group": null,
+   "exposed": 0.977,
+   "buried": false
   },
   {
    "index": 94,
@@ -1138,7 +1324,9 @@
    "name": "Superior occipital gyrus",
    "long": "Superior occipital gyrus",
    "short": "G_occipital_sup",
-   "group": null
+   "group": null,
+   "exposed": 0.993,
+   "buried": false
   },
   {
    "index": 95,
@@ -1148,9 +1336,11 @@
    "color": "#3c148c",
    "vertices": 1749,
    "name": "Fusiform gyrus",
-   "long": "Lateral occipito-temporal gyrus (fusiform gyrus)",
+   "long": "Lateral occipito-temporal gyrus (fusiform gyrus)",
    "short": "G_oc-temp_lat-fusifor",
-   "group": null
+   "group": null,
+   "exposed": 0.978,
+   "buried": false
   },
   {
    "index": 96,
@@ -1160,9 +1350,11 @@
    "color": "#dcb48c",
    "vertices": 2231,
    "name": "Lingual gyrus",
-   "long": "Lingual gyrus, ligual part of the medial occipito-temporal gyrus",
+   "long": "Lingual gyrus, lingual part of the medial occipito-temporal gyrus",
    "short": "G_oc-temp_med-Lingual",
-   "group": null
+   "group": null,
+   "exposed": 0.911,
+   "buried": false
   },
   {
    "index": 97,
@@ -1172,9 +1364,11 @@
    "color": "#416414",
    "vertices": 2236,
    "name": "Parahippocampal gyrus",
-   "long": "Parahippocampal gyrus, parahippocampal part of the medial occipito-temporal gyrus",
+   "long": "Parahippocampal gyrus, parahippocampal part of the medial occipito-temporal gyrus",
    "short": "G_oc-temp_med-Parahip",
-   "group": null
+   "group": null,
+   "exposed": 0.867,
+   "buried": false
   },
   {
    "index": 98,
@@ -1186,7 +1380,9 @@
    "name": "Orbital gyri",
    "long": "Orbital gyri",
    "short": "G_orbital",
-   "group": null
+   "group": null,
+   "exposed": 0.908,
+   "buried": false
   },
   {
    "index": 99,
@@ -1198,7 +1394,9 @@
    "name": "Angular gyrus",
    "long": "Angular gyrus",
    "short": "G_pariet_inf-Angular",
-   "group": null
+   "group": null,
+   "exposed": 0.989,
+   "buried": false
   },
   {
    "index": 100,
@@ -1210,7 +1408,9 @@
    "name": "Supramarginal gyrus",
    "long": "Supramarginal gyrus",
    "short": "G_pariet_inf-Supramar",
-   "group": null
+   "group": null,
+   "exposed": 0.837,
+   "buried": false
   },
   {
    "index": 101,
@@ -1220,9 +1420,11 @@
    "color": "#dcb4dc",
    "vertices": 3336,
    "name": "Superior parietal lobule",
-   "long": "Superior parietal lobule (lateral part of P1)",
+   "long": "Superior parietal lobule (lateral part of P1)",
    "short": "G_parietal_sup",
-   "group": null
+   "group": null,
+   "exposed": 0.976,
+   "buried": false
   },
   {
    "index": 102,
@@ -1234,7 +1436,9 @@
    "name": "Postcentral gyrus",
    "long": "Postcentral gyrus",
    "short": "G_postcentral",
-   "group": null
+   "group": null,
+   "exposed": 0.911,
+   "buried": false
   },
   {
    "index": 103,
@@ -1246,7 +1450,9 @@
    "name": "Precentral gyrus",
    "long": "Precentral gyrus",
    "short": "G_precentral",
-   "group": null
+   "group": null,
+   "exposed": 0.902,
+   "buried": false
   },
   {
    "index": 104,
@@ -1256,9 +1462,11 @@
    "color": "#19148c",
    "vertices": 3919,
    "name": "Precuneus",
-   "long": "Precuneus (medial part of P1)",
+   "long": "Precuneus (medial part of P1)",
    "short": "G_precuneus",
-   "group": null
+   "group": null,
+   "exposed": 0.962,
+   "buried": false
   },
   {
    "index": 105,
@@ -1270,7 +1478,9 @@
    "name": "Gyrus rectus",
    "long": "Straight gyrus, Gyrus rectus",
    "short": "G_rectus",
-   "group": null
+   "group": null,
+   "exposed": 0.992,
+   "buried": false
   },
   {
    "index": 106,
@@ -1282,7 +1492,9 @@
    "name": "Subcallosal gyrus",
    "long": "Subcallosal area, subcallosal gyrus",
    "short": "G_subcallosal",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 107,
@@ -1292,9 +1504,11 @@
    "color": "#3c3cdc",
    "vertices": 557,
    "name": "Heschl's gyrus",
-   "long": "Anterior transverse temporal gyrus (of Heschl)",
+   "long": "Anterior transverse temporal gyrus (of Heschl)",
    "short": "G_temp_sup-G_T_transv",
-   "group": null
+   "group": null,
+   "exposed": 0.242,
+   "buried": true
   },
   {
    "index": 108,
@@ -1304,9 +1518,11 @@
    "color": "#dc3cdc",
    "vertices": 2531,
    "name": "Lateral superior temporal gyrus",
-   "long": "Lateral aspect of the superior temporal gyrus",
+   "long": "Lateral aspect of the superior temporal gyrus",
    "short": "G_temp_sup-Lateral",
-   "group": null
+   "group": null,
+   "exposed": 0.95,
+   "buried": false
   },
   {
    "index": 109,
@@ -1316,9 +1532,11 @@
    "color": "#41dc3c",
    "vertices": 750,
    "name": "Planum polare",
-   "long": "Planum polare of the superior temporal gyrus",
+   "long": "Planum polare of the superior temporal gyrus",
    "short": "G_temp_sup-Plan_polar",
-   "group": null
+   "group": null,
+   "exposed": 0.331,
+   "buried": true
   },
   {
    "index": 110,
@@ -1328,9 +1546,11 @@
    "color": "#198c14",
    "vertices": 1022,
    "name": "Planum temporale",
-   "long": "Planum temporale or temporal plane of the superior temporal gyrus",
+   "long": "Planum temporale or temporal plane of the superior temporal gyrus",
    "short": "G_temp_sup-Plan_tempo",
-   "group": null
+   "group": null,
+   "exposed": 0.755,
+   "buried": false
   },
   {
    "index": 111,
@@ -1342,7 +1562,9 @@
    "name": "Inferior temporal gyrus",
    "long": "Inferior temporal gyrus",
    "short": "G_temporal_inf",
-   "group": null
+   "group": null,
+   "exposed": 0.993,
+   "buried": false
   },
   {
    "index": 112,
@@ -1354,7 +1576,9 @@
    "name": "Middle temporal gyrus",
    "long": "Middle temporal gyrus",
    "short": "G_temporal_middle",
-   "group": null
+   "group": null,
+   "exposed": 0.972,
+   "buried": false
   },
   {
    "index": 113,
@@ -1364,9 +1588,11 @@
    "color": "#3d14dc",
    "vertices": 476,
    "name": "Anterior horizontal ramus of the Sylvian fissure",
-   "long": "Horizontal ramus of the anterior segment of the lateral sulcus (or fissure)",
+   "long": "Horizontal ramus of the anterior segment of the lateral sulcus (or fissure)",
    "short": "Lat_Fis-ant-Horizont",
-   "group": null
+   "group": null,
+   "exposed": 0.479,
+   "buried": false
   },
   {
    "index": 114,
@@ -1376,9 +1602,11 @@
    "color": "#3d143c",
    "vertices": 295,
    "name": "Anterior ascending ramus of the Sylvian fissure",
-   "long": "Vertical ramus of the anterior segment of the lateral sulcus (or fissure)",
+   "long": "Vertical ramus of the anterior segment of the lateral sulcus (or fissure)",
    "short": "Lat_Fis-ant-Vertical",
-   "group": null
+   "group": null,
+   "exposed": 0.725,
+   "buried": false
   },
   {
    "index": 115,
@@ -1388,9 +1616,11 @@
    "color": "#3d3c64",
    "vertices": 2604,
    "name": "Posterior ramus of the Sylvian fissure",
-   "long": "Posterior ramus (or segment) of the lateral sulcus (or fissure)",
+   "long": "Posterior ramus (or segment) of the lateral sulcus (or fissure)",
    "short": "Lat_Fis-post",
-   "group": null
+   "group": null,
+   "exposed": 0.207,
+   "buried": true
   },
   {
    "index": 116,
@@ -1402,7 +1632,9 @@
    "name": "Occipital pole",
    "long": "Occipital pole",
    "short": "Pole_occipital",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 117,
@@ -1414,7 +1646,9 @@
    "name": "Temporal pole",
    "long": "Temporal pole",
    "short": "Pole_temporal",
-   "group": null
+   "group": null,
+   "exposed": 0.992,
+   "buried": false
   },
   {
    "index": 118,
@@ -1426,7 +1660,9 @@
    "name": "Calcarine sulcus",
    "long": "Calcarine sulcus",
    "short": "S_calcarine",
-   "group": null
+   "group": null,
+   "exposed": 0.127,
+   "buried": true
   },
   {
    "index": 119,
@@ -1436,9 +1672,11 @@
    "color": "#dd140a",
    "vertices": 4790,
    "name": "Central sulcus",
-   "long": "Central sulcus (Rolando's fissure)",
+   "long": "Central sulcus (Rolando's fissure)",
    "short": "S_central",
-   "group": null
+   "group": null,
+   "exposed": 0.115,
+   "buried": true
   },
   {
    "index": 120,
@@ -1448,9 +1686,11 @@
    "color": "#dd1464",
    "vertices": 2401,
    "name": "Marginal ramus of the cingulate sulcus",
-   "long": "Marginal branch (or part) of the cingulate sulcus",
+   "long": "Marginal branch (or part) of the cingulate sulcus",
    "short": "S_cingul-Marginalis",
-   "group": null
+   "group": null,
+   "exposed": 0.426,
+   "buried": true
   },
   {
    "index": 121,
@@ -1460,9 +1700,11 @@
    "color": "#dd3c8c",
    "vertices": 929,
    "name": "Anterior circular insular sulcus",
-   "long": "Anterior segment of the circular sulcus of the insula",
+   "long": "Anterior segment of the circular sulcus of the insula",
    "short": "S_circular_insula_ant",
-   "group": null
+   "group": null,
+   "exposed": 0.355,
+   "buried": true
   },
   {
    "index": 122,
@@ -1472,9 +1714,11 @@
    "color": "#dd14dc",
    "vertices": 2274,
    "name": "Inferior circular insular sulcus",
-   "long": "Inferior segment of the circular sulcus of the insula",
+   "long": "Inferior segment of the circular sulcus of the insula",
    "short": "S_circular_insula_inf",
-   "group": null
+   "group": null,
+   "exposed": 0.055,
+   "buried": true
   },
   {
    "index": 123,
@@ -1484,9 +1728,11 @@
    "color": "#3ddcdc",
    "vertices": 2443,
    "name": "Superior circular insular sulcus",
-   "long": "Superior segment of the circular sulcus of the insula",
+   "long": "Superior segment of the circular sulcus of the insula",
    "short": "S_circular_insula_sup",
-   "group": null
+   "group": null,
+   "exposed": 0.101,
+   "buried": true
   },
   {
    "index": 124,
@@ -1498,7 +1744,9 @@
    "name": "Anterior transverse collateral sulcus",
    "long": "Anterior transverse collateral sulcus",
    "short": "S_collat_transv_ant",
-   "group": null
+   "group": null,
+   "exposed": 0.775,
+   "buried": false
   },
   {
    "index": 125,
@@ -1510,7 +1758,9 @@
    "name": "Posterior transverse collateral sulcus",
    "long": "Posterior transverse collateral sulcus",
    "short": "S_collat_transv_post",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 126,
@@ -1522,7 +1772,9 @@
    "name": "Inferior frontal sulcus",
    "long": "Inferior frontal sulcus",
    "short": "S_front_inf",
-   "group": null
+   "group": null,
+   "exposed": 0.893,
+   "buried": false
   },
   {
    "index": 127,
@@ -1534,7 +1786,9 @@
    "name": "Middle frontal sulcus",
    "long": "Middle frontal sulcus",
    "short": "S_front_middle",
-   "group": null
+   "group": null,
+   "exposed": 0.96,
+   "buried": false
   },
   {
    "index": 128,
@@ -1546,7 +1800,9 @@
    "name": "Superior frontal sulcus",
    "long": "Superior frontal sulcus",
    "short": "S_front_sup",
-   "group": null
+   "group": null,
+   "exposed": 0.923,
+   "buried": false
   },
   {
    "index": 129,
@@ -1558,7 +1814,9 @@
    "name": "Intermediate sulcus of Jensen",
    "long": "Sulcus intermedius primus (of Jensen)",
    "short": "S_interm_prim-Jensen",
-   "group": null
+   "group": null,
+   "exposed": 0.916,
+   "buried": false
   },
   {
    "index": 130,
@@ -1568,9 +1826,11 @@
    "color": "#8f14dc",
    "vertices": 4277,
    "name": "Intraparietal and transverse parietal sulci",
-   "long": "Intraparietal sulcus (interparietal sulcus) and transverse parietal sulci",
+   "long": "Intraparietal sulcus (interparietal sulcus) and transverse parietal sulci",
    "short": "S_intrapariet_and_P_trans",
-   "group": null
+   "group": null,
+   "exposed": 0.877,
+   "buried": false
   },
   {
    "index": 131,
@@ -1582,7 +1842,9 @@
    "name": "Middle occipital and lunate sulci",
    "long": "Middle occipital sulcus and lunatus sulcus",
    "short": "S_oc_middle_and_Lunatus",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 132,
@@ -1592,9 +1854,11 @@
    "color": "#15148c",
    "vertices": 1482,
    "name": "Superior and transverse occipital sulci",
-   "long": "Superior occipital sulcus and transverse occipital sulcus",
+   "long": "Superior occipital sulcus and transverse occipital sulcus",
    "short": "S_oc_sup_and_transversal",
-   "group": null
+   "group": null,
+   "exposed": 0.685,
+   "buried": false
   },
   {
    "index": 133,
@@ -1604,9 +1868,11 @@
    "color": "#3d14b4",
    "vertices": 578,
    "name": "Anterior occipital sulcus",
-   "long": "Anterior occipital sulcus and preoccipital notch (temporo-occipital incisure)",
+   "long": "Anterior occipital sulcus and preoccipital notch (temporo-occipital incisure)",
    "short": "S_occipital_ant",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 134,
@@ -1618,7 +1884,9 @@
    "name": "Lateral occipitotemporal sulcus",
    "long": "Lateral occipito-temporal sulcus",
    "short": "S_oc-temp_lat",
-   "group": null
+   "group": null,
+   "exposed": 0.902,
+   "buried": false
   },
   {
    "index": 135,
@@ -1630,7 +1898,9 @@
    "name": "Collateral and lingual sulci",
    "long": "Medial occipito-temporal sulcus (collateral sulcus) and lingual sulcus",
    "short": "S_oc-temp_med_and_Lingual",
-   "group": null
+   "group": null,
+   "exposed": 0.399,
+   "buried": true
   },
   {
    "index": 136,
@@ -1642,7 +1912,9 @@
    "name": "Lateral orbital sulcus",
    "long": "Lateral orbital sulcus",
    "short": "S_orbital_lateral",
-   "group": null
+   "group": null,
+   "exposed": 0.991,
+   "buried": false
   },
   {
    "index": 137,
@@ -1654,7 +1926,9 @@
    "name": "Olfactory sulcus",
    "long": "Medial orbital sulcus (olfactory sulcus)",
    "short": "S_orbital_med-olfact",
-   "group": null
+   "group": null,
+   "exposed": 0.388,
+   "buried": false
   },
   {
    "index": 138,
@@ -1664,9 +1938,11 @@
    "color": "#651414",
    "vertices": 1241,
    "name": "H-shaped orbital sulcus",
-   "long": "Orbital sulci (H-shaped sulci)",
+   "long": "Orbital sulci (H-shaped sulci)",
    "short": "S_orbital-H_Shaped",
-   "group": null
+   "group": null,
+   "exposed": 0.839,
+   "buried": false
   },
   {
    "index": 139,
@@ -1676,9 +1952,11 @@
    "color": "#6564b4",
    "vertices": 2188,
    "name": "Parieto-occipital sulcus",
-   "long": "Parieto-occipital sulcus (or fissure)",
+   "long": "Parieto-occipital sulcus (or fissure)",
    "short": "S_parieto_occipital",
-   "group": null
+   "group": null,
+   "exposed": 0.303,
+   "buried": true
   },
   {
    "index": 140,
@@ -1690,7 +1968,9 @@
    "name": "Callosal sulcus",
    "long": "Pericallosal sulcus (S of corpus callosum)",
    "short": "S_pericallosal",
-   "group": null
+   "group": null,
+   "exposed": 0.482,
+   "buried": false
   },
   {
    "index": 141,
@@ -1702,7 +1982,9 @@
    "name": "Postcentral sulcus",
    "long": "Postcentral sulcus",
    "short": "S_postcentral",
-   "group": null
+   "group": null,
+   "exposed": 0.713,
+   "buried": false
   },
   {
    "index": 142,
@@ -1712,9 +1994,11 @@
    "color": "#1514f0",
    "vertices": 1867,
    "name": "Inferior precentral sulcus",
-   "long": "Inferior part of the precentral sulcus",
+   "long": "Inferior part of the precentral sulcus",
    "short": "S_precentral-inf-part",
-   "group": null
+   "group": null,
+   "exposed": 0.87,
+   "buried": false
   },
   {
    "index": 143,
@@ -1724,9 +2008,11 @@
    "color": "#1514c8",
    "vertices": 1920,
    "name": "Superior precentral sulcus",
-   "long": "Superior part of the precentral sulcus",
+   "long": "Superior part of the precentral sulcus",
    "short": "S_precentral-sup-part",
-   "group": null
+   "group": null,
+   "exposed": 0.902,
+   "buried": false
   },
   {
    "index": 144,
@@ -1738,7 +2024,9 @@
    "name": "Suborbital sulcus",
    "long": "Suborbital sulcus (sulcus rostrales, supraorbital sulcus)",
    "short": "S_suborbital",
-   "group": null
+   "group": null,
+   "exposed": 0.852,
+   "buried": false
   },
   {
    "index": 145,
@@ -1750,7 +2038,9 @@
    "name": "Subparietal sulcus",
    "long": "Subparietal sulcus",
    "short": "S_subparietal",
-   "group": null
+   "group": null,
+   "exposed": 0.893,
+   "buried": false
   },
   {
    "index": 146,
@@ -1762,7 +2052,9 @@
    "name": "Inferior temporal sulcus",
    "long": "Inferior temporal sulcus",
    "short": "S_temporal_inf",
-   "group": null
+   "group": null,
+   "exposed": 0.891,
+   "buried": false
   },
   {
    "index": 147,
@@ -1772,9 +2064,11 @@
    "color": "#dfdc3c",
    "vertices": 7803,
    "name": "Superior temporal sulcus",
-   "long": "Superior temporal sulcus (parallel sulcus)",
+   "long": "Superior temporal sulcus (parallel sulcus)",
    "short": "S_temporal_sup",
-   "group": null
+   "group": null,
+   "exposed": 0.586,
+   "buried": false
   },
   {
    "index": 148,
@@ -1786,7 +2080,9 @@
    "name": "Transverse temporal sulcus",
    "long": "Transverse temporal sulcus",
    "short": "S_temporal_transverse",
-   "group": null
+   "group": null,
+   "exposed": 0.278,
+   "buried": true
   }
  ]
 }

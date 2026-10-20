@@ -1,32 +1,20 @@
 # Data licence
 
-The SOFTWARE in this repository is licensed under BSD-3-Clause; see `LICENSE`.
-DATA is licensed separately, because code and data have different reuse needs.
+The software in this repository is under BSD-3-Clause (`LICENSE`). Data are licensed separately.
 
-## Creative Commons Attribution 4.0 International (CC BY 4.0)
-
-Applies to the synthetic release and derived, non-identifiable artifacts:
+## CC BY 4.0: the synthetic demonstration release
 
   * `app/public/data/`        the synthetic atlas tables
-  * `synthetic_data/`         the synthetic BIDS mock dataset
-  * `derivatives/`            derived measurement artifacts
-  * `docs/provenance/`        constant, unit and coordinate-frame registers
+  * `app/public/atlas/data/`  the synthetic area assignments
 
-Full text: https://creativecommons.org/licenses/by/4.0/legalcode
+They describe no real person. Full text: https://creativecommons.org/licenses/by/4.0/legalcode
+Cite with `CITATION.cff`.
 
-Attribution should cite the dataset descriptor and this repository; see `CITATION.cff`.
+## Not covered by this file
 
-## NOT covered by any licence here
-
-  * `app/public/data-real/`   the controlled, patient-derived release
-  * `lab_data/`               controlled extracts from the LBCN secure server
-
-These are human-subjects data collected under IRB Protocol 11354. They are **not** distributed
-with this repository, are excluded by `.gitignore`, and are not licensed for redistribution by
-this or any other document here. Access is governed by the IRB protocol and the data-use
-agreement, not by this file.
-
-## Third-party assets
-
-Anatomical templates and atlases under `app/public/brain/` (MNI152, ICBM152, Harvard-Oxford)
-carry their own upstream licences and are redistributed under those terms.
+  * `app/public/atlas/brain/`: surfaces and labels converted from FreeSurfer's fsaverage. They are
+    modified versions of FreeSurfer files and stay under the FreeSurfer Software License (`NOTICE`,
+    `app/licenses/freesurfer-LICENSE.txt`).
+  * Patient-derived data. They are not in this repository, are excluded by `.gitignore`, and are not
+    licensed by this or any other file here. They were collected under Stanford IRB protocol 11354,
+    which governs access to them.

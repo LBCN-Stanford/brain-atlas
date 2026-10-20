@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 # source files, relative to the repository root
 FILES = [
-    "LICENSE", "LICENSE-DATA",
+    "LICENSE",
     "app/index.html", "app/package-lock.json", "app/tsconfig.json", "app/tsconfig.app.json",
     "app/tsconfig.node.json", "app/vite.config.ts", "app/DEPLOY.md",
     "app/public/404.html", "app/public/robots.txt", "app/public/sitemap.xml", "app/public/og-image.png",
@@ -100,7 +100,10 @@ def main() -> int:
 
     write_public_files(out)
     scrub_subject_ids(out)
+    scrub_cohort_notes(out)
     drop_private_record_tests(out)
+    # HCP-MMP names: only the removed --glasser option read them, and HCP's terms are their own
+    (out / "scripts/v2/reference/HCP-MMP1_UniqueRegionList.csv").unlink(missing_ok=True)
 
     # ---- checks -------------------------------------------------------------------------------
     bad: list[str] = []
@@ -113,6 +116,8 @@ def main() -> int:
         if p.is_file() and p.suffix in {".ts", ".tsx", ".mjs", ".js", ".json", ".md", ".py", ".html", ".txt", ".cff", ".yml", ".css", ".csv"}:
             if has_initials(p.read_text(errors="ignore")):
                 bad.append(f"patient-initials token in {rel}")
+        if p.is_file() and p.suffix in {".ts", ".tsx", ".mjs", ".js", ".md", ".py", ".json", ".yml", ".txt", ".cff"} and REAL_COUNT.search(p.read_text(errors="ignore")):
+            bad.append(f"a real-release count is described in {rel}")
     if json.loads((out / "app/public/data/manifest.json").read_text()).get("synthetic") is not True:
         bad.append("app/public/data is not marked synthetic")
     if bad:
@@ -142,9 +147,46 @@ def scrub_subject_ids(out: Path) -> None:
             p.write_text(t2)
     note = out / "scripts/v2/README.md"
     if note.exists():
-        note.write_text("> In this public repository only `build_brain_assets.py` is included: it builds the brain and area\n"
-                        "> files from FreeSurfer's public fsaverage template. The other steps below read controlled\n"
-                        "> patient data on the lab machine and live in the lab's research repository.\n\n" + note.read_text())
+        note.write_text("> In this public repository only `build_brain_assets.py` (the brain and area files, from\n"
+                        "> FreeSurfer's public fsaverage template) and the area-name table (`area_names.py`,\n"
+                        "> `apply_area_names.py`) are included. The other steps below read controlled patient data on\n"
+                        "> the lab machine and live in the lab's research repository.\n\n" + note.read_text())
+
+
+# Comments in the research code keep the lab's internal record: counts measured on the real release
+# and notes on individual patients' scans. Not PHI, but unpublished results and internal notes, so
+# the public copy states the rule and drops the record (release audit M3). Each passage must be
+# found, so a change to the source stops the export instead of leaking past it.
+# The passages to cut live in a file of their own, beside this script and never exported: kept
+# here, they shipped verbatim in the public copy of this script (re-audit R3).
+COHORT_NOTES_FILE = ROOT / "scripts/export_cohort_notes.json"
+# a count measured on the real release: a number shortly before "on <release>", or right after it
+REAL_COUNT = re.compile(r"\d[\d,.%]*[^.\n]{0,40}\bon 3\.1-real|\bon 3\.1-real\s+\d")
+FRAME_NOTE = """/**
+ * The frame our stored `mni_midpoint_*` / `mni_*` columns are actually in: MNI305, the space of
+ * FreeSurfer's fsaverage (whose talairach.xfm is the identity). Declaring it, not MNI152, makes
+ * assertFrameCompatible fire wherever a query would mix the two frames. The evidence is in the
+ * dataset descriptor; native coordinates remain the primary anatomy.
+ */
+"""
+
+
+def scrub_cohort_notes(out: Path) -> None:
+    for rel, subs in json.loads(COHORT_NOTES_FILE.read_text()).items():
+        p = out / rel
+        t = p.read_text()
+        for a, b in subs:
+            if a not in t:
+                raise SystemExit(f"export: a cohort note in {rel} changed; update export_cohort_notes.json")
+            t = t.replace(a, b, 1)
+        p.write_text(t)
+    p = out / "app/src/lib/space/coordinateSpace.ts"
+    t = p.read_text()
+    a = t.find("/**\n * The frame our stored")
+    b = t.find("export const SITE_COORDINATE_FRAME")
+    if a < 0 or b < a:
+        raise SystemExit("export: the frame note in coordinateSpace.ts changed; update FRAME_NOTE")
+    p.write_text(t[:a] + FRAME_NOTE + t[b:])
 
 
 def drop_private_record_tests(out: Path) -> None:
@@ -181,7 +223,7 @@ import { execSync } from 'node:child_process'
 
 // the build's identity, shown in the atlas's About sheet
 try { process.env.VITE_BUILD_COMMIT ??= execSync('git rev-parse --short HEAD').toString().trim() } catch { /* not a git checkout */ }
-process.env.VITE_BUILD_DATE ??= new Date().toISOString().slice(0, 10)
+process.env.VITE_BUILD_DATE ??= new Date().toLocaleDateString('en-CA')
 
 export default defineConfig({
   // relative, so the build works under any path (SITE_BASE sets the 404 redirect and canonical URL)
@@ -245,7 +287,7 @@ and report on it is invented).
 | `app/` | the web app (Vite, React, three.js): `src/atlas/` the page, `src/lib/` the data loader and rules it uses |
 | `app/public/atlas/brain/` | FreeSurfer fsaverage surfaces and area labels, converted for the browser (see `app/licenses/` and the built `NOTICE.txt`) |
 | `app/public/data/`, `app/public/atlas/data/` | the synthetic demonstration release |
-| `scripts/v2/` | the builders of the brain assets and of each site's areas (they read controlled data on the lab machine only) |
+| `scripts/v2/` | the builder of the brain and area assets from FreeSurfer's fsaverage, and the area-name table |
 
 ## Run it
 
@@ -268,12 +310,65 @@ same schema, so everything here runs without them.
 
 ## Licence and citation
 
-Code: BSD-3-Clause (`LICENSE`). Synthetic and derived data: CC BY 4.0 (`LICENSE-DATA`).
-Third-party material (FreeSurfer, libraries, fonts): `app/licenses/` and the `NOTICE.txt` every
-build writes. Cite with `CITATION.cff`.
+Code: BSD-3-Clause (`LICENSE`), copyright The Board of Trustees of the Leland Stanford Junior
+University, for the Laboratory of Behavioral and Cognitive Neuroscience. Synthetic demonstration
+data: CC BY 4.0 (`LICENSE-DATA`). The fsaverage surfaces and labels under `app/public/atlas/brain/`
+are FreeSurfer's, under its licence (`NOTICE`). Libraries and fonts: the `NOTICE.txt` every build
+writes. Cite with `CITATION.cff`.
 
 The atlas was developed in the lab's research repository; this repository holds the atlas alone.
 """)
+
+    (out / "LICENSE-DATA").write_text("""# Data licence
+
+The software in this repository is under BSD-3-Clause (`LICENSE`). Data are licensed separately.
+
+## CC BY 4.0: the synthetic demonstration release
+
+  * `app/public/data/`        the synthetic atlas tables
+  * `app/public/atlas/data/`  the synthetic area assignments
+
+They describe no real person. Full text: https://creativecommons.org/licenses/by/4.0/legalcode
+Cite with `CITATION.cff`.
+
+## Not covered by this file
+
+  * `app/public/atlas/brain/`: surfaces and labels converted from FreeSurfer's fsaverage. They are
+    modified versions of FreeSurfer files and stay under the FreeSurfer Software License (`NOTICE`,
+    `app/licenses/freesurfer-LICENSE.txt`).
+  * Patient-derived data. They are not in this repository, are excluded by `.gitignore`, and are not
+    licensed by this or any other file here. They were collected under Stanford IRB protocol 11354,
+    which governs access to them.
+""")
+    (out / "NOTICE").write_text("""Third-party material in this repository
+
+app/public/atlas/brain/: the fsaverage surfaces, the deep-structure surfaces built from fsaverage's
+segmentation, and the Desikan-Killiany, Destrieux and Yeo 7-network labels, converted from
+FreeSurfer's files into binary arrays. They are therefore modified versions of the Software.
+
+All or portions of this licensed product (such portions are the "Software") have been obtained
+under license from The General Hospital Corporation "MGH" and are subject to the following terms
+and conditions: the FreeSurfer Software License, reproduced in full in
+app/licenses/freesurfer-LICENSE.txt (Part B applies).
+
+The libraries and fonts the built site ships are listed with their licences in the NOTICE.txt that
+every build writes (app/scripts/notices.mjs).
+""")
+    deploy = (ROOT / "app/DEPLOY.md").read_text()
+    other = deploy.find("## Any other host")
+    (out / "app/DEPLOY.md").write_text("""# Deploying the atlas
+
+## The public demonstration build (synthetic data)
+
+Live at https://lbcn-stanford.github.io/brain-atlas/. A push to `main` runs the `pages` workflow
+(`.github/workflows/pages.yml`): it refuses a non-synthetic release, builds, runs the browser
+check, and publishes `app/dist` to the `gh-pages` branch, which GitHub Pages serves.
+
+""" + deploy[other:].replace(
+        "What they are and who decides is written up in\n`../../deliverables/2026-10-16-v2-change-list-part2.md` (section I) in the stream folder, outside\nthis repository.",
+        "The lab handles them with Stanford."))
+    if "deliverables/" in (out / "app/DEPLOY.md").read_text():
+        raise SystemExit("export: DEPLOY.md still points outside the repository")
 
     wf = out / ".github/workflows"
     wf.mkdir(parents=True, exist_ok=True)
@@ -298,6 +393,28 @@ jobs:
           cache: npm
           cache-dependency-path: app/package-lock.json
       - run: npm ci
+      - name: synthetic data only
+        run: node -e "const m=require('./public/data/manifest.json'); if(m.synthetic!==true){console.error('public/data is not synthetic'); process.exit(1)}"
+      - name: no invented report over five words (none can share a six-word phrase with a real one)
+        run: |
+          node -e "
+          const r = require('./public/data/reports.json')
+          const long = r.map((x) => x.raw_report_redacted ?? '').filter((t) => (t.toLowerCase().match(/[a-z']+/g) ?? []).length > 5)
+          if (long.length) { console.error(long.length + ' reports over five words'); process.exit(1) }"
+      - name: no patient-initials token
+        working-directory: .
+        run: |
+          python3 - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, 'scripts')
+          from export_public_source import has_initials
+          bad = [str(p) for p in Path('.').rglob('*') if p.is_file() and '.git' not in p.parts and 'node_modules' not in p.parts
+                 and p.suffix in {'.ts', '.tsx', '.mjs', '.js', '.json', '.md', '.py', '.html', '.txt', '.cff', '.yml', '.css', '.csv'}
+                 and has_initials(p.read_text(errors='ignore'))]
+          if bad:
+              sys.exit('patient-initials token in: ' + ', '.join(bad))
+          PY
       - name: typecheck
         run: npx tsc -b
       - name: tests
@@ -359,7 +476,7 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           npm run test:e2e
-      - uses: peaceiris/actions-gh-pages@v4
+      - uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages

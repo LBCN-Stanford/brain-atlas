@@ -12,15 +12,16 @@ import { join } from 'node:path'
 import { buildDb, type EventRow } from '../src/lib/core/data.ts'
 import { isShamRow } from '../src/lib/core/query.ts'
 import { FREESURFER_MNI305_TO_MNI152, applyTransform } from '../src/lib/space/coordinateSpace.ts'
-import { indexSites, selectablesFor, type ParcelTable, type SiteParcelsFile } from '../src/atlas/model/parcels.ts'
-import { bedsideNote, countNotes, eventGroup, matchesQuery, patientLabel, selectRows } from '../src/atlas/model/selection.ts'
+import { areaParts, indexSites, selectablesFor, surfaceDots, type ContactParcels, type ParcelTable, type SiteParcelRecord, type SiteParcelsFile } from '../src/atlas/model/parcels.ts'
+import { allContactsInside, bedsideNote, countNotes, eventGroup, inPart, matchesQuery, narrowResult, patientLabel, selectRows, stimulatingSet } from '../src/atlas/model/selection.ts'
 import { sitePointMni305 } from '../src/atlas/model/space.ts'
 import { DOWNLOAD_COLUMNS, csvCell, downloadRows, readme, toCsv } from '../src/atlas/model/download.ts'
 import { crc32, zipStore } from '../src/atlas/model/zip.ts'
 import { MAX_AREAS, assignSlots, linkRelease, normaliseSelection, parseHash, parseLocation, toHash, toSearch } from '../src/atlas/model/urlState.ts'
 import { searchSelectables } from '../src/atlas/ui/SearchBox.tsx'
 import { inflateSync } from 'node:zlib'
-import { binsFor, colorFor } from '../src/atlas/model/colormap.ts'
+import { binsFor, colorFor, partShades } from '../src/atlas/model/colormap.ts'
+import { textMatches, wordMap, wordTerms } from '../src/atlas/model/wordMap.ts'
 import { giftiFunc, mapCsv, pngWithDpi, summariseAreas, vertexValues } from '../src/atlas/model/mapData.ts'
 
 const SYNTH = new URL('../public/data/', import.meta.url)
@@ -84,17 +85,17 @@ test('a selection never counts sham, and never counts a straddling stimulation t
   const sites = new Set([...byArea.get(best![0])!, ...byArea.get(best![1])!])
   const atSites = db.rows.filter((x) => sites.has(x.site.site_id))
   assert.equal(r.counts.stimulations, atSites.filter((x) => eventGroup(x) === 'stimulation').length)
-  assert.equal(r.counts.excluded, atSites.filter((x) => eventGroup(x) === 'excluded').length)
+  // excluded: the release's QC-excluded events, sham trials among them (they are in no list either)
+  assert.equal(r.counts.excluded, atSites.filter((x) => eventGroup(x) === 'excluded' || (eventGroup(x) === 'sham' && x.qc?.exclude_flag)).length)
   assert.ok(r.stimulations.every((x) => !x.row.qc.exclude_flag && x.row.event.current_mA !== 0))
+  assert.ok(r.sham.every((x) => !x.row.qc?.exclude_flag), 'a QC-excluded sham trial is listed')
 
-  // the strict pair rule: both contacts identified and inside the selection. It keeps exactly the
-  // stimulations the lenient count reports as "both inside", and a straddling pair across the two
-  // selected areas is inside the selection
+  // the strict pair rule, as the app runs it (model/selection.ts; the test kept its own copy until
+  // 17 Oct, which disagreed with the app's once a deep structure was selected): every contact of the
+  // stimulating set identified and inside the selection. It keeps exactly the stimulations the
+  // lenient count reports as "both inside", and a pair straddling the two selected areas is inside
   const chosen = new Set(best!)
-  const inside = (sid: string) => {
-    const rec = parcels.sites[sid]
-    return rec.c.length === 2 && rec.c.every((cid) => { const k = parcels.contacts[cid].dk; return !!k && chosen.has(`ctx:${k}`) })
-  }
+  const inside = (sid: string) => allContactsInside(parcels.sites[sid], db.siteById.get(sid)?.montage_type, parcels.contacts, 'dk', chosen)
   const lenient = selectRows(best!, byArea, eventsBySite, text, { bothInside: inside })
   const strict = selectRows(best!, byArea, eventsBySite, text, { bothInside: inside, strict: true })
   assert.equal(lenient.counts.stimulations, r.counts.stimulations)
@@ -102,6 +103,169 @@ test('a selection never counts sham, and never counts a straddling stimulation t
   assert.ok(strict.counts.stimulations < lenient.counts.stimulations, 'the synthetic build must exercise a pair that fails the strict rule')
   assert.ok(strict.stimulations.every((x) => x.both && inside(x.row.site.site_id)))
   assert.ok(strict.stimulations.some((x) => x.areas.length === 2), 'a pair straddling the two selected areas is inside the selection')
+})
+
+test('the strict rule judges the stimulating set: a monopolar site by its one contact, a pair with a contact missing never', () => {
+  const contact = (dk: string | null, deep: string | null = null): ContactParcels => ({ k: 's', h: 'lh', v: 1, held: false, dk, destrieux: null, yeo7: null, deep })
+  const contacts = { a: contact('lh.precentral'), b: contact('lh.postcentral'), h: contact(null, 'Left-Hippocampus'), w: contact(null) }
+  const rec = (c: string[]) => ({ c } as unknown as SiteParcelRecord)
+  const ids = new Set(['ctx:lh.precentral', 'deep:Left-Hippocampus'])
+  assert.deepEqual(stimulatingSet(rec(['a']), 'monopolar'), ['a'])
+  assert.equal(stimulatingSet(rec(['a']), 'bipolar'), null, 'a bipolar pair with one contact identified has no stimulating set')
+  assert.equal(stimulatingSet(rec([]), 'monopolar'), null)
+  assert.equal(allContactsInside(rec(['a']), 'monopolar', contacts, 'dk', ids), true, 'a monopolar site whose contact is inside meets the strict rule')
+  assert.equal(allContactsInside(rec(['a']), 'bipolar', contacts, 'dk', ids), false)
+  assert.equal(allContactsInside(rec(['a', 'h']), 'bipolar', contacts, 'dk', ids), true, 'a cortical and a deep contact both inside the selection')
+  assert.equal(allContactsInside(rec(['a', 'b']), 'bipolar', contacts, 'dk', ids), false)
+  assert.equal(allContactsInside(rec(['a', 'w']), 'bipolar', contacts, 'dk', ids), false, 'a contact in no area is not inside')
+  assert.equal(allContactsInside(rec(['a', 'x']), 'bipolar', contacts, 'dk', ids), false, 'an unknown contact id is not inside')
+  // on the synthetic build every site is a bipolar pair with both contacts: the rule there is the
+  // two-contact rule, and the montage never changes it
+  for (const [sid, r] of Object.entries(parcels.sites)) assert.equal(stimulatingSet(r, db.siteById.get(sid)?.montage_type)?.length, 2, sid)
+})
+
+test('a part of an area holds a stimulation only through a contact that lies in the area itself', () => {
+  const contact = (dk: string, destrieux: string): ContactParcels => ({ k: 's', h: 'lh', v: 1, held: false, dk, destrieux, yeo7: null, deep: null })
+  // a pair straddling precentral and postcentral: A in precentral (finer label K1), B in postcentral
+  // with a finer label K2 that is ALSO a listed part of precentral (the central sulcus is shared)
+  const contacts = { A: contact('lh.precentral', 'lh.G_precentral'), B: contact('lh.postcentral', 'lh.S_central') }
+  const rec = { c: ['A', 'B'] } as unknown as SiteParcelRecord
+  const area = { atlas: 'dk' as const, key: 'lh.precentral' }
+  assert.equal(inPart(rec, contacts, area, { atlas: 'destrieux', key: 'lh.G_precentral' }), true)
+  assert.equal(inPart(rec, contacts, area, { atlas: 'destrieux', key: 'lh.S_central' }), false, 'credited through the contact next door (H3)')
+  assert.equal(inPart(rec, contacts, { atlas: 'dk', key: 'lh.postcentral' }, { atlas: 'destrieux', key: 'lh.S_central' }), true)
+  // on the synthetic build, through the app's own pieces: every stimulation a part lists has a
+  // contact carrying both the area's and the part's label
+  const byArea = indexSites(parcels, 'dk')
+  const dkT = table('dk'), deT = table('destrieux')
+  const lab = (a: string, h: string) => new Uint16Array(readFileSync(new URL(`../public/atlas/brain/parc/${a}.${h}.u16`, import.meta.url)).buffer.slice(0))
+  let checked = 0
+  for (const l of dkT.labels.filter((x) => x.key && x.hemisphere === 'lh').slice(0, 12)) {
+    const { parts } = areaParts(lab('dk', 'lh'), lab('destrieux', 'lh'), l.index, deT.labels)
+    const r = selectRows([`ctx:${l.key}`], byArea, eventsBySite, text)
+    for (const part of parts) {
+      const rows = r.stimulations.filter((x) => inPart(parcels.sites[x.row.site.site_id], parcels.contacts, { atlas: 'dk', key: l.key! }, { atlas: 'destrieux', key: part.key }))
+      for (const x of rows) {
+        assert.ok(parcels.sites[x.row.site.site_id].c.some((cid) => parcels.contacts[cid].dk === l.key && parcels.contacts[cid].destrieux === part.key))
+        checked++
+      }
+    }
+  }
+  assert.ok(checked > 50, `the synthetic build exercised the part rule on only ${checked} rows`)
+})
+
+test('an area\'s parts are listed largest first, and the listed parts and the slivers cover it exactly', () => {
+  const dkT = table('dk'), deT = table('destrieux')
+  const lab = (a: string, h: string) => new Uint16Array(readFileSync(new URL(`../public/atlas/brain/parc/${a}.${h}.u16`, import.meta.url)).buffer.slice(0))
+  const coarse = lab('dk', 'lh'), fine = lab('destrieux', 'lh')
+  for (const l of dkT.labels.filter((x) => x.key && x.hemisphere === 'lh')) {
+    const { parts, sliverShare } = areaParts(coarse, fine, l.index, deT.labels)
+    const total = parts.reduce((a, x) => a + x.share, 0) + sliverShare
+    assert.ok(Math.abs(total - 1) < 1e-9, `${l.key}: parts and slivers cover ${total}`)
+    assert.ok(parts.every((x) => x.share >= 0.03), l.key!)
+    for (let i = 1; i < parts.length; i++) assert.ok(parts[i - 1].share >= parts[i].share, l.key!)
+    assert.ok(parts.every((x) => deT.labels[x.index].key === x.key && x.key.startsWith('lh.')), l.key!)
+  }
+  // part shades: distinct for any number of parts, and none is the area's own colour (L2, M1)
+  for (let n = 1; n <= 24; n++) {
+    const t = partShades(n)
+    assert.equal(t.length, n)
+    assert.equal(new Set(t.map((x) => x.toFixed(6))).size, n, `${n} parts: a shade repeats`)
+    assert.ok(t.every((x) => Math.abs(x) >= 0.12 - 1e-9 && x >= -0.55 - 1e-9 && x <= 0.7 + 1e-9), `${n} parts: ${t}`)
+  }
+})
+
+test('under the strict rule each compared area is judged on its own, as the hover card and the map judge it', () => {
+  const byArea = indexSites(parcels, 'dk')
+  const sid = (r: { row: EventRow }) => r.row.site.site_id
+  const strictIn = (ids: ReadonlySet<string>) => (s: string) => allContactsInside(parcels.sites[s], db.siteById.get(s)?.montage_type, parcels.contacts, 'dk', ids)
+  // the two areas sharing the most straddling pairs
+  const ids = [...byArea.keys()].filter((k) => k.startsWith('ctx:'))
+  let best: [string, string] = [ids[0], ids[1]]
+  let most = -1
+  for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+    const a = new Set(byArea.get(ids[i]))
+    const n = byArea.get(ids[j])!.filter((s) => a.has(s)).length
+    if (n > most) { most = n; best = [ids[i], ids[j]] }
+  }
+  const both = new Set(best)
+  const r = selectRows(best, byArea, eventsBySite, text, { bothInside: strictIn(both), insideArea: (s, a) => strictIn(new Set([a]))(s), strict: true })
+  for (const [i, id] of best.entries()) {
+    const alone = selectRows([id], byArea, eventsBySite, text, { bothInside: strictIn(new Set([id])), strict: true })
+    assert.equal(r.perArea[i].stimulations, alone.counts.stimulations, `${id}: the panel row and the area judged alone disagree (M6)`)
+    assert.equal(r.perArea[i].patients, alone.counts.patients, id)
+  }
+  const across = r.stimulations.filter((x) => x.areas.length === 2 && !x.inside?.length)
+  assert.ok(across.length > 0, 'the synthetic build must hold a pair with one contact in each area')
+  assert.equal(r.perArea[0].stimulations + r.perArea[1].stimulations + across.length, r.counts.stimulations + r.stimulations.filter((x) => (x.inside?.length ?? 0) === 2).length)
+  // narrowing recomputes every number, the per-area rows included (M2)
+  const person = r.stimulations[0].row.event.patient_id
+  const n = narrowResult(r, (x) => x.row.event.patient_id === person)
+  for (const [i, id] of best.entries()) {
+    const rows = n.stimulations.filter((x) => x.areas.includes(id) && (!x.inside || x.inside.includes(id)))
+    assert.equal(n.perArea[i].stimulations, rows.length, id)
+    assert.equal(n.perArea[i].sites, new Set(rows.map(sid)).size, id)
+    assert.ok(n.perArea[i].patients <= 1)
+  }
+})
+
+test('electrode dots are stimulated surface contacts at their registered vertex, never depth contacts', () => {
+  const stimulated = (s: string) => (eventsBySite.get(s) ?? []).some((r) => eventGroup(r) === 'stimulation')
+  const dots = surfaceDots(parcels, stimulated, 'dk', () => null)
+  const want = new Set<string>()
+  for (const [s, rec] of Object.entries(parcels.sites)) if (stimulated(s)) for (const cid of rec.c) {
+    const c = parcels.contacts[cid]
+    if (c.k === 's' && c.v != null && c.h && !c.held) want.add(cid)
+  }
+  assert.equal(dots.length, want.size)
+  assert.ok(dots.length > 0)
+  assert.ok(dots.every((d) => Number.isInteger(d.v) && (d.hemi === 'lh' || d.hemi === 'rh')))
+  assert.ok(dots.every((d) => !('p' in d)), 'no dot carries a template point (depth dots were removed, M3)')
+})
+
+test('experience search: a word map counts exactly the stimulations the panel would list with that word, and keeps sham apart', () => {
+  assert.deepEqual(wordTerms('  Tingling, ARM!! '), ['tingling', 'arm'])
+  assert.deepEqual(wordTerms('a'), [], 'single letters are not terms')
+  assert.equal(textMatches('my left arm is tingly', wordTerms('tingl arm')), true)
+  assert.equal(textMatches('my left arm is tingly', wordTerms('ingl')), false, 'terms match from the start of a word')
+  assert.equal(textMatches(null, ['x']), false)
+  // pick a word common in the synthetic STIMULATION reports (the most common words overall include
+  // ones that occur only in QC-excluded and sham text, which a stimulation map rightly never counts)
+  const counts = new Map<string, number>()
+  for (const r of db.rows) if (eventGroup(r) === 'stimulation') for (const w of new Set((text(r.event.event_id) ?? '').toLowerCase().split(/[^a-z'-]+/))) if (w.length > 4) counts.set(w, (counts.get(w) ?? 0) + 1)
+  const word = [...counts].sort((x, y) => y[1] - x[1])[3][0]
+  const terms = wordTerms(word)
+  const byArea = indexSites(parcels, 'dk')
+  const areasOfSite = (sid: string) => [...parcels.sites[sid].dk.p.map((k) => `ctx:${k}`), ...parcels.sites[sid].deep.p.map((k) => `deep:${k}`)]
+  const m = wordMap(db.rows, terms, text, areasOfSite, () => false)
+  let checked = 0
+  for (const [id, w] of m.perArea) {
+    if (!byArea.has(id)) continue
+    const sel = selectRows([id], byArea, eventsBySite, text)
+    const withText = sel.stimulations.filter((x) => x.text)
+    const said = withText.filter((x) => textMatches(x.text, terms))
+    assert.equal(w.reports, withText.length, `${id}: reports`)
+    assert.equal(w.saidReports, said.length, `${id}: matching reports`)
+    assert.equal(w.people, new Set(withText.map((x) => x.row.event.patient_id)).size, `${id}: people`)
+    assert.equal(w.saidPeople, new Set(said.map((x) => x.row.event.patient_id)).size, `${id}: people who said it`)
+    checked++
+  }
+  assert.ok(checked > 40, `only ${checked} areas compared`)
+  // sham is never in an area's count, only in its own release-wide line, over the same population
+  // as the stimulations (no QC-excluded trial)
+  const shamWithText = db.rows.filter((r) => eventGroup(r) === 'sham' && !r.qc?.exclude_flag && text(r.event.event_id))
+  assert.equal(m.sham.reports, shamWithText.length)
+  assert.equal(m.sham.saidReports, shamWithText.filter((r) => textMatches(text(r.event.event_id), terms)).length)
+  assert.ok(m.stimulation.saidReports > 0, 'the chosen word must occur under stimulation')
+  // a held person's stimulations leave every count
+  const heldPerson = db.rows.find((r) => eventGroup(r) === 'stimulation' && text(r.event.event_id))!.event.patient_id
+  const heldSites = new Set(db.rows.filter((r) => r.event.patient_id === heldPerson).map((r) => r.site.site_id))
+  const m2 = wordMap(db.rows, terms, text, areasOfSite, (sid) => heldSites.has(sid))
+  assert.equal(m2.stimulation.people, m.stimulation.people - 1)
+  // the query is in the link and survives a round trip; junk is refused
+  assert.equal(parseHash('#atlas=dk&say=pins and needles').say, 'pins and needles')
+  assert.equal(parseHash('#atlas=dk&say=<script>').say, null)
+  assert.equal(parseHash(toHash({ ...parseHash('#atlas=dk'), say: 'tingling' })).say, 'tingling')
 })
 
 test('an event recorded at 0 mA is listed apart and never counted; QC-excluded events are in no list', () => {
@@ -254,13 +418,20 @@ test('map downloads: every count has a colour, the table follows ENIGMA order, a
   const head = csv[0].split(',')
   const col = (line: string, name: string) => line.split(',')[head.indexOf(name)]
   assert.equal(csv.length, 1 + 82)
-  assert.equal(col(csv[1], 'enigma_name'), 'L_bankssts')
-  assert.equal(col(csv[34], 'enigma_name'), 'L_insula')
-  assert.equal(col(csv[35], 'enigma_name'), 'R_bankssts')
+  // the whole ENIGMA Toolbox order, written out (L13: the test checked 7 of the 82 rows): the 34
+  // Desikan-Killiany areas in FreeSurfer's colour-table order per side, then the seven subcortical
+  // structures per side, with FreeSurfer's aseg index
+  const DK = ['bankssts', 'caudalanteriorcingulate', 'caudalmiddlefrontal', 'cuneus', 'entorhinal', 'fusiform', 'inferiorparietal',
+    'inferiortemporal', 'isthmuscingulate', 'lateraloccipital', 'lateralorbitofrontal', 'lingual', 'medialorbitofrontal', 'middletemporal',
+    'parahippocampal', 'paracentral', 'parsopercularis', 'parsorbitalis', 'parstriangularis', 'pericalcarine', 'postcentral',
+    'posteriorcingulate', 'precentral', 'precuneus', 'rostralanteriorcingulate', 'rostralmiddlefrontal', 'superiorfrontal',
+    'superiorparietal', 'superiortemporal', 'supramarginal', 'frontalpole', 'temporalpole', 'transversetemporal', 'insula']
+  const SUB = ['accumb', 'amyg', 'caud', 'hippo', 'pal', 'put', 'thal']
+  const ASEG = { L: [26, 18, 11, 17, 13, 12, 10], R: [58, 54, 50, 53, 52, 51, 49] }
+  assert.deepEqual(csv.slice(1).map((l) => col(l, 'enigma_name')),
+    [...DK.map((n) => `L_${n}`), ...DK.map((n) => `R_${n}`), ...SUB.map((n) => `L${n}`), ...SUB.map((n) => `R${n}`)])
+  assert.deepEqual(csv.slice(69).map((l) => Number(col(l, 'aseg_index'))), [...ASEG.L, ...ASEG.R])
   assert.equal(col(csv[69], 'label'), 'Left-Accumbens-area')
-  assert.equal(col(csv[69], 'aseg_index'), '26')
-  assert.equal(col(csv[82], 'enigma_name'), 'Rthal')
-  assert.equal(col(csv[82], 'aseg_index'), '49')
 
   // GIFTI: the vertex values decode back exactly, NaN where there is no area
   const labels = new Uint16Array([0, 1, 1, 2, 3, 0])
@@ -312,7 +483,7 @@ test('the zip is a valid stored archive', () => {
 })
 
 test('view state round-trips through the URL, rejects junk, and colour slots stay put', () => {
-  const s = { atlas: 'dk' as const, sel: ['ctx:lh.insula', 'deep:Left-Hippocampus'], view: 'insideL' as const, smooth: true, dots: false, see: 0.5, pairs: 'both' as const, cov: true, multi: true, sub: 'lh.G_insular_short' }
+  const s = { atlas: 'dk' as const, sel: ['ctx:lh.insula', 'deep:Left-Hippocampus'], view: 'insideL' as const, smooth: true, dots: false, see: 0.5, pairs: 'both' as const, cov: true, multi: true, sub: 'lh.G_insular_short', say: null }
   assert.deepEqual(parseHash(toHash(s)), s)
   assert.equal(parseHash('#atlas=dk').cov, false, 'coverage is off unless the link asks for it')
   assert.equal(parseHash('#atlas=dk').multi, false, 'one area at a time unless the link asks to compare')
@@ -345,9 +516,25 @@ test('plain words: people, search synonyms, lexical filter', () => {
   assert.equal(patientLabel('SYNTH_PATIENT_002'), 'Person 2')
   assert.ok(matchesQuery('I felt Tingling', 'tingling'))
   assert.ok(!matchesQuery(null, 'x'))
-  const sel = selectablesFor(table('dk'), [])
-  const broca = searchSelectables(sel, 'broca').map((x) => x.key)
+  // the same word-start rule as the word map: 'thing' does not match inside 'nothing'
+  assert.ok(!matchesQuery('I felt nothing', 'thing'))
+  assert.ok(matchesQuery('A tingle in my hand', 'tingl hand'))
+  const deep = (JSON.parse(readFileSync(new URL('../public/atlas/brain/subcortical.json', import.meta.url), 'utf8')) as { structures: Parameters<typeof selectablesFor>[1] }).structures
+  const sel = selectablesFor(table('dk'), deep)
+  const keys = (q: string, from = sel) => searchSelectables(from, q, 40).map((x) => x.key)
+  const broca = keys('broca')
   assert.ok(broca.includes('lh.parsopercularis') && broca.includes('lh.parstriangularis'))
+  // aliases name areas by key, matched on word starts (L3)
+  assert.ok(!keys('angular').includes('lh.parstriangularis'), '"angular" must not offer pars triangularis')
+  assert.ok(keys('angular').includes('lh.inferiorparietal'))
+  assert.ok(!keys('cuneus').includes('lh.precuneus'), '"cuneus" must not offer precuneus')
+  assert.deepEqual(keys('left insula'), ['lh.insula'], 'a side word filters by hemisphere')
+  assert.ok(keys('basal ganglia').includes('Left-Putamen') && keys('pallidum').includes('Right-Pallidum'))
+  const destrieux = selectablesFor(table('destrieux'), deep)
+  assert.ok(keys('motor', destrieux).includes('lh.S_central'), 'Destrieux "motor" includes the central sulcus')
+  assert.ok(keys('broca', destrieux).includes('lh.G_front_inf-Triangul'))
+  // a name typed with ordinary spaces finds its area (M13: 60 Destrieux names carried U+00A0)
+  for (const x of destrieux.filter((d) => d.kind === 'cortex' && d.long)) assert.ok(searchSelectables(destrieux, x.long!, 200).some((y) => y.id === x.id), x.long!)
 })
 
 test('strip-controlled removes every controlled tree at any depth and keeps the synthetic ones', () => {

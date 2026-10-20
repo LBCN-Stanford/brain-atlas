@@ -22,7 +22,9 @@
    "name": "Banks of the posterior superior temporal sulcus",
    "long": "Banks of the superior temporal sulcus",
    "short": "bankssts",
-   "group": null
+   "group": null,
+   "exposed": 0.518,
+   "buried": false
   },
   {
    "index": 2,
@@ -34,7 +36,9 @@
    "name": "Caudal anterior cingulate",
    "long": "Caudal anterior cingulate",
    "short": "caudalanteriorcingulate",
-   "group": null
+   "group": null,
+   "exposed": 0.881,
+   "buried": false
   },
   {
    "index": 3,
@@ -46,7 +50,9 @@
    "name": "Caudal middle frontal gyrus",
    "long": "Caudal middle frontal",
    "short": "caudalmiddlefrontal",
-   "group": null
+   "group": null,
+   "exposed": 0.893,
+   "buried": false
   },
   {
    "index": 4,
@@ -58,7 +64,9 @@
    "name": "Cuneus",
    "long": "Cuneus",
    "short": "cuneus",
-   "group": null
+   "group": null,
+   "exposed": 0.726,
+   "buried": false
   },
   {
    "index": 5,
@@ -70,7 +78,9 @@
    "name": "Entorhinal cortex",
    "long": "Entorhinal",
    "short": "entorhinal",
-   "group": null
+   "group": null,
+   "exposed": 0.845,
+   "buried": false
   },
   {
    "index": 6,
@@ -82,7 +92,9 @@
    "name": "Fusiform gyrus",
    "long": "Fusiform",
    "short": "fusiform",
-   "group": null
+   "group": null,
+   "exposed": 0.789,
+   "buried": false
   },
   {
    "index": 7,
@@ -94,7 +106,9 @@
    "name": "Inferior parietal cortex (with angular gyrus)",
    "long": "Inferior parietal",
    "short": "inferiorparietal",
-   "group": null
+   "group": null,
+   "exposed": 0.893,
+   "buried": false
   },
   {
    "index": 8,
@@ -106,7 +120,9 @@
    "name": "Inferior temporal gyrus",
    "long": "Inferior temporal",
    "short": "inferiortemporal",
-   "group": null
+   "group": null,
+   "exposed": 0.968,
+   "buried": false
   },
   {
    "index": 9,
@@ -118,7 +134,9 @@
    "name": "Cingulate isthmus",
    "long": "Isthmus of the cingulate",
    "short": "isthmuscingulate",
-   "group": null
+   "group": null,
+   "exposed": 0.7,
+   "buried": false
   },
   {
    "index": 10,
@@ -130,7 +148,9 @@
    "name": "Lateral occipital cortex",
    "long": "Lateral occipital",
    "short": "lateraloccipital",
-   "group": null
+   "group": null,
+   "exposed": 0.991,
+   "buried": false
   },
   {
    "index": 11,
@@ -142,7 +162,9 @@
    "name": "Lateral orbitofrontal cortex",
    "long": "Lateral orbitofrontal",
    "short": "lateralorbitofrontal",
-   "group": null
+   "group": null,
+   "exposed": 0.777,
+   "buried": false
   },
   {
    "index": 12,
@@ -154,7 +176,9 @@
    "name": "Lingual gyrus",
    "long": "Lingual",
    "short": "lingual",
-   "group": null
+   "group": null,
+   "exposed": 0.706,
+   "buried": false
   },
   {
    "index": 13,
@@ -166,7 +190,9 @@
    "name": "Medial orbitofrontal cortex",
    "long": "Medial orbitofrontal",
    "short": "medialorbitofrontal",
-   "group": null
+   "group": null,
+   "exposed": 0.927,
+   "buried": false
   },
   {
    "index": 14,
@@ -178,7 +204,9 @@
    "name": "Middle temporal gyrus",
    "long": "Middle temporal",
    "short": "middletemporal",
-   "group": null
+   "group": null,
+   "exposed": 0.865,
+   "buried": false
   },
   {
    "index": 15,
@@ -190,7 +218,9 @@
    "name": "Parahippocampal gyrus",
    "long": "Parahippocampal",
    "short": "parahippocampal",
-   "group": null
+   "group": null,
+   "exposed": 0.705,
+   "buried": false
   },
   {
    "index": 16,
@@ -202,7 +232,9 @@
    "name": "Paracentral lobule",
    "long": "Paracentral",
    "short": "paracentral",
-   "group": null
+   "group": null,
+   "exposed": 0.705,
+   "buried": false
   },
   {
    "index": 17,
@@ -214,7 +246,9 @@
    "name": "Pars opercularis",
    "long": "Pars opercularis",
    "short": "parsopercularis",
-   "group": null
+   "group": null,
+   "exposed": 0.696,
+   "buried": false
   },
   {
    "index": 18,
@@ -226,7 +260,9 @@
    "name": "Pars orbitalis",
    "long": "Pars orbitalis",
    "short": "parsorbitalis",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 19,
@@ -238,7 +274,9 @@
    "name": "Pars triangularis",
    "long": "Pars triangularis",
    "short": "parstriangularis",
-   "group": null
+   "group": null,
+   "exposed": 0.725,
+   "buried": false
   },
   {
    "index": 20,
@@ -250,7 +288,9 @@
    "name": "Pericalcarine cortex",
    "long": "Pericalcarine",
    "short": "pericalcarine",
-   "group": null
+   "group": null,
+   "exposed": 0.427,
+   "buried": false
   },
   {
    "index": 21,
@@ -262,7 +302,9 @@
    "name": "Postcentral gyrus",
    "long": "Postcentral",
    "short": "postcentral",
-   "group": null
+   "group": null,
+   "exposed": 0.597,
+   "buried": false
   },
   {
    "index": 22,
@@ -274,7 +316,9 @@
    "name": "Posterior cingulate",
    "long": "Posterior cingulate",
    "short": "posteriorcingulate",
-   "group": null
+   "group": null,
+   "exposed": 0.634,
+   "buried": false
   },
   {
    "index": 23,
@@ -286,7 +330,9 @@
    "name": "Precentral gyrus",
    "long": "Precentral",
    "short": "precentral",
-   "group": null
+   "group": null,
+   "exposed": 0.623,
+   "buried": false
   },
   {
    "index": 24,
@@ -298,7 +344,9 @@
    "name": "Precuneus",
    "long": "Precuneus",
    "short": "precuneus",
-   "group": null
+   "group": null,
+   "exposed": 0.727,
+   "buried": false
   },
   {
    "index": 25,
@@ -310,7 +358,9 @@
    "name": "Rostral anterior cingulate",
    "long": "Rostral anterior cingulate",
    "short": "rostralanteriorcingulate",
-   "group": null
+   "group": null,
+   "exposed": 0.958,
+   "buried": false
   },
   {
    "index": 26,
@@ -322,7 +372,9 @@
    "name": "Rostral middle frontal gyrus",
    "long": "Rostral middle frontal",
    "short": "rostralmiddlefrontal",
-   "group": null
+   "group": null,
+   "exposed": 0.956,
+   "buried": false
   },
   {
    "index": 27,
@@ -334,7 +386,9 @@
    "name": "Superior frontal gyrus",
    "long": "Superior frontal",
    "short": "superiorfrontal",
-   "group": null
+   "group": null,
+   "exposed": 0.952,
+   "buried": false
   },
   {
    "index": 28,
@@ -346,7 +400,9 @@
    "name": "Superior parietal lobule",
    "long": "Superior parietal",
    "short": "superiorparietal",
-   "group": null
+   "group": null,
+   "exposed": 0.926,
+   "buried": false
   },
   {
    "index": 29,
@@ -358,7 +414,9 @@
    "name": "Superior temporal gyrus",
    "long": "Superior temporal",
    "short": "superiortemporal",
-   "group": null
+   "group": null,
+   "exposed": 0.539,
+   "buried": false
   },
   {
    "index": 30,
@@ -370,7 +428,9 @@
    "name": "Supramarginal gyrus",
    "long": "Supramarginal",
    "short": "supramarginal",
-   "group": null
+   "group": null,
+   "exposed": 0.749,
+   "buried": false
   },
   {
    "index": 31,
@@ -382,7 +442,9 @@
    "name": "Frontal pole",
    "long": "Frontal pole",
    "short": "frontalpole",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 32,
@@ -394,7 +456,9 @@
    "name": "Temporal pole",
    "long": "Temporal pole",
    "short": "temporalpole",
-   "group": null
+   "group": null,
+   "exposed": 0.841,
+   "buried": false
   },
   {
    "index": 33,
@@ -406,7 +470,9 @@
    "name": "Transverse temporal gyrus (Heschl's)",
    "long": "Transverse temporal",
    "short": "transversetemporal",
-   "group": null
+   "group": null,
+   "exposed": 0.178,
+   "buried": true
   },
   {
    "index": 34,
@@ -418,7 +484,9 @@
    "name": "Insula",
    "long": "Insula",
    "short": "insula",
-   "group": null
+   "group": null,
+   "exposed": 0.194,
+   "buried": true
   },
   {
    "index": 35,
@@ -430,7 +498,9 @@
    "name": "Banks of the posterior superior temporal sulcus",
    "long": "Banks of the superior temporal sulcus",
    "short": "bankssts",
-   "group": null
+   "group": null,
+   "exposed": 0.516,
+   "buried": false
   },
   {
    "index": 36,
@@ -442,7 +512,9 @@
    "name": "Caudal anterior cingulate",
    "long": "Caudal anterior cingulate",
    "short": "caudalanteriorcingulate",
-   "group": null
+   "group": null,
+   "exposed": 0.74,
+   "buried": false
   },
   {
    "index": 37,
@@ -454,7 +526,9 @@
    "name": "Caudal middle frontal gyrus",
    "long": "Caudal middle frontal",
    "short": "caudalmiddlefrontal",
-   "group": null
+   "group": null,
+   "exposed": 0.943,
+   "buried": false
   },
   {
    "index": 38,
@@ -466,7 +540,9 @@
    "name": "Cuneus",
    "long": "Cuneus",
    "short": "cuneus",
-   "group": null
+   "group": null,
+   "exposed": 0.754,
+   "buried": false
   },
   {
    "index": 39,
@@ -478,7 +554,9 @@
    "name": "Entorhinal cortex",
    "long": "Entorhinal",
    "short": "entorhinal",
-   "group": null
+   "group": null,
+   "exposed": 0.854,
+   "buried": false
   },
   {
    "index": 40,
@@ -490,7 +568,9 @@
    "name": "Fusiform gyrus",
    "long": "Fusiform",
    "short": "fusiform",
-   "group": null
+   "group": null,
+   "exposed": 0.803,
+   "buried": false
   },
   {
    "index": 41,
@@ -502,7 +582,9 @@
    "name": "Inferior parietal cortex (with angular gyrus)",
    "long": "Inferior parietal",
    "short": "inferiorparietal",
-   "group": null
+   "group": null,
+   "exposed": 0.907,
+   "buried": false
   },
   {
    "index": 42,
@@ -514,7 +596,9 @@
    "name": "Inferior temporal gyrus",
    "long": "Inferior temporal",
    "short": "inferiortemporal",
-   "group": null
+   "group": null,
+   "exposed": 0.966,
+   "buried": false
   },
   {
    "index": 43,
@@ -526,7 +610,9 @@
    "name": "Cingulate isthmus",
    "long": "Isthmus of the cingulate",
    "short": "isthmuscingulate",
-   "group": null
+   "group": null,
+   "exposed": 0.661,
+   "buried": false
   },
   {
    "index": 44,
@@ -538,7 +624,9 @@
    "name": "Lateral occipital cortex",
    "long": "Lateral occipital",
    "short": "lateraloccipital",
-   "group": null
+   "group": null,
+   "exposed": 0.995,
+   "buried": false
   },
   {
    "index": 45,
@@ -550,7 +638,9 @@
    "name": "Lateral orbitofrontal cortex",
    "long": "Lateral orbitofrontal",
    "short": "lateralorbitofrontal",
-   "group": null
+   "group": null,
+   "exposed": 0.719,
+   "buried": false
   },
   {
    "index": 46,
@@ -562,7 +652,9 @@
    "name": "Lingual gyrus",
    "long": "Lingual",
    "short": "lingual",
-   "group": null
+   "group": null,
+   "exposed": 0.684,
+   "buried": false
   },
   {
    "index": 47,
@@ -574,7 +666,9 @@
    "name": "Medial orbitofrontal cortex",
    "long": "Medial orbitofrontal",
    "short": "medialorbitofrontal",
-   "group": null
+   "group": null,
+   "exposed": 0.831,
+   "buried": false
   },
   {
    "index": 48,
@@ -586,7 +680,9 @@
    "name": "Middle temporal gyrus",
    "long": "Middle temporal",
    "short": "middletemporal",
-   "group": null
+   "group": null,
+   "exposed": 0.807,
+   "buried": false
   },
   {
    "index": 49,
@@ -598,7 +694,9 @@
    "name": "Parahippocampal gyrus",
    "long": "Parahippocampal",
    "short": "parahippocampal",
-   "group": null
+   "group": null,
+   "exposed": 0.706,
+   "buried": false
   },
   {
    "index": 50,
@@ -610,7 +708,9 @@
    "name": "Paracentral lobule",
    "long": "Paracentral",
    "short": "paracentral",
-   "group": null
+   "group": null,
+   "exposed": 0.774,
+   "buried": false
   },
   {
    "index": 51,
@@ -622,7 +722,9 @@
    "name": "Pars opercularis",
    "long": "Pars opercularis",
    "short": "parsopercularis",
-   "group": null
+   "group": null,
+   "exposed": 0.71,
+   "buried": false
   },
   {
    "index": 52,
@@ -634,7 +736,9 @@
    "name": "Pars orbitalis",
    "long": "Pars orbitalis",
    "short": "parsorbitalis",
-   "group": null
+   "group": null,
+   "exposed": 1.0,
+   "buried": false
   },
   {
    "index": 53,
@@ -646,7 +750,9 @@
    "name": "Pars triangularis",
    "long": "Pars triangularis",
    "short": "parstriangularis",
-   "group": null
+   "group": null,
+   "exposed": 0.792,
+   "buried": false
   },
   {
    "index": 54,
@@ -658,7 +764,9 @@
    "name": "Pericalcarine cortex",
    "long": "Pericalcarine",
    "short": "pericalcarine",
-   "group": null
+   "group": null,
+   "exposed": 0.459,
+   "buried": false
   },
   {
    "index": 55,
@@ -670,7 +778,9 @@
    "name": "Postcentral gyrus",
    "long": "Postcentral",
    "short": "postcentral",
-   "group": null
+   "group": null,
+   "exposed": 0.598,
+   "buried": false
   },
   {
    "index": 56,
@@ -682,7 +792,9 @@
    "name": "Posterior cingulate",
    "long": "Posterior cingulate",
    "short": "posteriorcingulate",
-   "group": null
+   "group": null,
+   "exposed": 0.587,
+   "buried": false
   },
   {
    "index": 57,
@@ -694,7 +806,9 @@
    "name": "Precentral gyrus",
    "long": "Precentral",
    "short": "precentral",
-   "group": null
+   "group": null,
+   "exposed": 0.636,
+   "buried": false
   },
   {
    "index": 58,
@@ -706,7 +820,9 @@
    "name": "Precuneus",
    "long": "Precuneus",
    "short": "precuneus",
-   "group": null
+   "group": null,
+   "exposed": 0.728,
+   "buried": false
   },
   {
    "index": 59,
@@ -718,7 +834,9 @@
    "name": "Rostral anterior cingulate",
    "long": "Rostral anterior cingulate",
    "short": "rostralanteriorcingulate",
-   "group": null
+   "group": null,
+   "exposed": 0.871,
+   "buried": false
   },
   {
    "index": 60,
@@ -730,7 +848,9 @@
    "name": "Rostral middle frontal gyrus",
    "long": "Rostral middle frontal",
    "short": "rostralmiddlefrontal",
-   "group": null
+   "group": null,
+   "exposed": 0.957,
+   "buried": false
   },
   {
    "index": 61,
@@ -742,7 +862,9 @@
    "name": "Superior frontal gyrus",
    "long": "Superior frontal",
    "short": "superiorfrontal",
-   "group": null
+   "group": null,
+   "exposed": 0.921,
+   "buried": false
   },
   {
    "index": 62,
@@ -754,7 +876,9 @@
    "name": "Superior parietal lobule",
    "long": "Superior parietal",
    "short": "superiorparietal",
-   "group": null
+   "group": null,
+   "exposed": 0.918,
+   "buried": false
   },
   {
    "index": 63,
@@ -766,7 +890,9 @@
    "name": "Superior temporal gyrus",
    "long": "Superior temporal",
    "short": "superiortemporal",
-   "group": null
+   "group": null,
+   "exposed": 0.512,
+   "buried": false
   },
   {
    "index": 64,
@@ -778,7 +904,9 @@
    "name": "Supramarginal gyrus",
    "long": "Supramarginal",
    "short": "supramarginal",
-   "group": null
+   "group": null,
+   "exposed": 0.705,
+   "buried": false
   },
   {
    "index": 65,
@@ -790,7 +918,9 @@
    "name": "Frontal pole",
    "long": "Frontal pole",
    "short": "frontalpole",
-   "group": null
+   "group": null,
+   "exposed": 0.997,
+   "buried": false
   },
   {
    "index": 66,
@@ -802,7 +932,9 @@
    "name": "Temporal pole",
    "long": "Temporal pole",
    "short": "temporalpole",
-   "group": null
+   "group": null,
+   "exposed": 0.759,
+   "buried": false
   },
   {
    "index": 67,
@@ -814,7 +946,9 @@
    "name": "Transverse temporal gyrus (Heschl's)",
    "long": "Transverse temporal",
    "short": "transversetemporal",
-   "group": null
+   "group": null,
+   "exposed": 0.268,
+   "buried": true
   },
   {
    "index": 68,
@@ -826,7 +960,9 @@
    "name": "Insula",
    "long": "Insula",
    "short": "insula",
-   "group": null
+   "group": null,
+   "exposed": 0.234,
+   "buried": true
   }
  ]
 }

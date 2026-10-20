@@ -1,6 +1,7 @@
-> In this public repository only `build_brain_assets.py` is included: it builds the brain and area
-> files from FreeSurfer's public fsaverage template. The other steps below read controlled
-> patient data on the lab machine and live in the lab's research repository.
+> In this public repository only `build_brain_assets.py` (the brain and area files, from
+> FreeSurfer's public fsaverage template) and the area-name table (`area_names.py`,
+> `apply_area_names.py`) are included. The other steps below read controlled patient data on
+> the lab machine and live in the lab's research repository.
 
 # The atlas: build scripts
 
@@ -22,7 +23,12 @@ Run order (all from the repo root):
 | lab | `native_glasser_lab_machine.py` | `build_staging/v2/native_glasser_contacts.csv`, kept for when Glasser returns (step 2 no longer reads it) | no |
 
 Step 1 fetches fsaverage through MNE (`~/mne_data`) if it is not there. `--check` rebuilds in memory
-and compares with the files on disk.
+and compares with the files on disk. `--fingerprint` writes `reference/fsaverage_fingerprint.json`,
+a small record of fsaverage read straight from FreeSurfer's files (centroids, per-area vertex counts
+and colours, deep-structure voxel centroids) that `test_v2_assets.py` checks the served assets
+against on CI, where fsaverage is absent. Step 1 also measures which areas the folded brain hides
+(`buried` in each `parc/*.json`, rule `BURIED` in the script): the app shows those on the smoothed
+surface when one is picked.
 
 Reference tables, pinned by hash in `build_brain_assets.py`:
 
@@ -30,22 +36,23 @@ Reference tables, pinned by hash in `build_brain_assets.py`:
   `--glasser` (U. Arizona neuroimaging core, bitbucket `dpat/tools`). Six areas are re-pinned to the
   section-membership lists of Glasser et al. 2016's supplement; see `SECTION_OVERRIDES`.
 - `reference/destrieux_labels_canlab.csv` — Destrieux et al. 2010 long names (CANlab
-  `Neuroimaging_Pattern_Masks`).
+  `Neuroimaging_Pattern_Masks`). It is a lightly edited copy of Table 1: it drops the gyral numbering
+  (F1-F3, T1-T3, O1-O3), separates many words with non-breaking spaces, and spells "lingual" as
+  "ligual" once. The builder collapses the spaces and corrects the spelling (`DESTRIEUX_FIXES`); the
+  pinned file is left as published.
 
 **The assignment rule** (details in `build_site_parcels.py`'s docstring and the notebook note):
 measured labels only. DK, Destrieux, Yeo-7 and deep structures come from each patient's own iELVis
 readout, and a contact with none is in no area. Surface contacts are drawn at the fsaverage vertex
 they were registered to; depth contacts are not drawn. A person is held (in no area, marked in the
 download) when anything on record questions where their electrodes are: the lab's own notes,
-conflicting localisation sheets, contact identity verified only as a set, or no native coordinate
-(20 people on 3.1-real; `HELD_BY_RECORD` and `held_reasons()`). The app refuses either v2 file if
+conflicting localisation sheets, contact identity verified only as a set, or no native coordinate. The app refuses either v2 file if
 it was built for a different release than the one loaded.
 
 To run the app: `cd app && npm run dev`, then open `http://localhost:5173/`. The data
 directory follows `VITE_DATA_DIR` exactly as v1 does (`data-real` locally, synthetic `data` otherwise);
 v2 reads `public/atlas/<the same name>/`, and a directory with no v2 build is an error.
-The optional AI overview needs a local Ollama server with `qwen2.5:7b-instruct`
-(`ollama pull qwen2.5:7b-instruct`); it never calls anything off the machine.
+(The optional AI overview of 10 Oct was removed on 16 Oct.)
 
 Tests: `app/scripts/atlas.test.ts` (in `npm test`), `app/scripts/atlas_e2e.mjs` (the built site in a browser; CI), `scripts/tests/test_v2_assets.py` (CI), and
-`scripts/tests/test_v2_native_glasser_lookup.py` (needs the fsaverage download; declared SKIP on CI).
+`scripts/tests/test_v2_native_glasser_lookup.py` and `scripts/tests/test_v2_assets_fresh.py` (both need the fsaverage download; declared SKIP on CI).

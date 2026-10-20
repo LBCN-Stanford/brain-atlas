@@ -14,7 +14,7 @@ and report on it is invented).
 | `app/` | the web app (Vite, React, three.js): `src/atlas/` the page, `src/lib/` the data loader and rules it uses |
 | `app/public/atlas/brain/` | FreeSurfer fsaverage surfaces and area labels, converted for the browser (see `app/licenses/` and the built `NOTICE.txt`) |
 | `app/public/data/`, `app/public/atlas/data/` | the synthetic demonstration release |
-| `scripts/v2/` | the builders of the brain assets and of each site's areas (they read controlled data on the lab machine only) |
+| `scripts/v2/` | the builder of the brain and area assets from FreeSurfer's fsaverage, and the area-name table |
 
 ## Run it
 
@@ -37,8 +37,10 @@ same schema, so everything here runs without them.
 
 ## Licence and citation
 
-Code: BSD-3-Clause (`LICENSE`). Synthetic and derived data: CC BY 4.0 (`LICENSE-DATA`).
-Third-party material (FreeSurfer, libraries, fonts): `app/licenses/` and the `NOTICE.txt` every
-build writes. Cite with `CITATION.cff`.
+Code: BSD-3-Clause (`LICENSE`), copyright The Board of Trustees of the Leland Stanford Junior
+University, for the Laboratory of Behavioral and Cognitive Neuroscience. Synthetic demonstration
+data: CC BY 4.0 (`LICENSE-DATA`). The fsaverage surfaces and labels under `app/public/atlas/brain/`
+are FreeSurfer's, under its licence (`NOTICE`). Libraries and fonts: the `NOTICE.txt` every build
+writes. Cite with `CITATION.cff`.
 
 The atlas was developed in the lab's research repository; this repository holds the atlas alone.

@@ -40,7 +40,8 @@ export interface Citation { text: string; bibtex: string; ris: string; cslJson: 
 /** How to cite the atlas at a release, and (optionally) the view the reader is looking at. */
 export function citation(release: string, url: string, accessed: Date): Citation {
   const year = accessed.getFullYear()
-  const day = accessed.toISOString().slice(0, 10)
+  // the reader's own date, as the year and the figure's date are (a UTC date named tomorrow after 17:00 Pacific)
+  const day = `${year}-${String(accessed.getMonth() + 1).padStart(2, '0')}-${String(accessed.getDate()).padStart(2, '0')}`
   const doi = SITE.datasetDoi
   const title = `${SITE.name}: subjective responses to electrical stimulation of the human brain, data release ${release}`
   const author = SITE.lab
@@ -84,7 +85,7 @@ export const REFERENCES = {
   fischl: 'Fischl B et al. (1999) High-resolution intersubject averaging and a coordinate system for the cortical surface. Hum Brain Mapp 8:272.',
   groppe: 'Groppe DM et al. (2017) iELVis: an open source MATLAB toolbox for localizing and visualizing human intracranial electrode data. J Neurosci Methods 281:40.',
   fox: 'Fox KCR et al. (2020) Intrinsic network architecture predicts the effects elicited by intracranial electrical stimulation of the human brain. Nat Hum Behav 4:1039.',
-  rangarajan: 'Rangarajan V et al. (2014) J Neurosci. doi:10.1523/JNEUROSCI.0527-14.2014.',
-  duong: 'Duong A et al. (2023) Brain Stimul. doi:10.1016/j.brs.2023.11.001.',
-  foster: 'Foster BL et al. (2017) Neurology. PMID 28100728.',
+  rangarajan: 'Rangarajan V et al. (2014) Electrical stimulation of the left and right human fusiform gyrus causes different effects in conscious face perception. J Neurosci 34:12828.',
+  duong: 'Duong A et al. (2023) Subjective states induced by intracranial electrical stimulation matches the cytoarchitectonic organization of the human insula. Brain Stimul 16:1653.',
+  foster: 'Foster BL, Parvizi J (2017) Direct cortical stimulation of human posteromedial cortex. Neurology 88:685. PMID 28100728.',
 } as const

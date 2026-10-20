@@ -22,6 +22,31 @@
   }
  },
  "inflated_display_gap_mm": 6.0,
+ "buried": {
+  "method": "a pial vertex is exposed when it is the nearest surface (within 1.0 mm) along at least one of 42 evenly spread view directions, one hemisphere at a time (orthographic z-buffer, 0.5 mm pixels); an area is buried when under 0.4 of its vertices are exposed, averaged over its two hemispheres",
+  "areas": {
+   "dk": [
+    "insula",
+    "transversetemporal"
+   ],
+   "destrieux": [
+    "G_Ins_lg_and_S_cent_ins",
+    "G_temp_sup-G_T_transv",
+    "G_temp_sup-Plan_polar",
+    "Lat_Fis-post",
+    "S_calcarine",
+    "S_central",
+    "S_cingul-Marginalis",
+    "S_circular_insula_ant",
+    "S_circular_insula_inf",
+    "S_circular_insula_sup",
+    "S_oc-temp_med_and_Lingual",
+    "S_parieto_occipital",
+    "S_temporal_transverse"
+   ],
+   "yeo7": []
+  }
+ },
  "parcellations": [
   {
    "id": "dk",

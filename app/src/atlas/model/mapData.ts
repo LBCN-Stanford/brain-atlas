@@ -1,8 +1,10 @@
 /* The map downloads: one row per area, the same numbers on fsaverage vertices, and a README.
 
    A map is a summary of the selection logic, never a second implementation of it: every number
-   here comes from selectRows() for that one area, so the panel, the hover card, the figure and
-   the files cannot disagree. Counts only. The atlas shows no rates (see selection.ts, bedsideNote),
+   here comes from selectRows() for that one area, judged alone, as the hover card and the Areas
+   list judge it. The panel's per-area rows judge each area alone too; the panel's TOTAL for a
+   comparison under the strict rule counts a pair with one contact in each selected area, which
+   no single area holds (M6: this comment used to say the numbers "cannot disagree"). Counts only. The atlas shows no rates (see selection.ts, bedsideNote),
    so no file here carries one.
 
    Surface files are GIFTI on fsaverage (163,842 vertices per hemisphere, the mesh the app draws),
@@ -218,8 +220,12 @@ export interface MapReadmeInput {
   citation: string
   /** "either contact of the pair lies in it" */
   rule: string
+  /** the map's population: stimulations in an area of this atlas or a deep structure */
   people: number
   stimulations: number
+  /** the release's counted stimulations in all, some of them in no area (no label, white matter) */
+  releasePeople?: number
+  releaseStimulations?: number
   areas: number
   gifti: string[]
   electrodes: number | null
@@ -249,7 +255,8 @@ export function mapReadme(r: MapReadmeInput): string {
       : '                The selected areas on fsaverage, 163,842 vertices per hemisphere, as a label file:\n                key = the area\'s number in the selection, 0 elsewhere. Deep structures are in areas.csv only.',
     '',
     'WHAT IS COUNTED',
-    `  Stimulations with current delivered: ${r.stimulations.toLocaleString('en-US')} stimulations in ${r.people} people in all.`,
+    `  Stimulations with current delivered in an area this map can show: ${r.stimulations.toLocaleString('en-US')} stimulations in ${r.people} people.`,
+    ...(r.releaseStimulations != null ? [`  The release counts ${r.releaseStimulations.toLocaleString('en-US')} stimulations in ${r.releasePeople} people; the rest lie in no area (no label in the`, r.rule.startsWith('both') ? '  person\'s own MRI, white matter or fluid, another structure, a label on the other side, contacts not' : '  person\'s own MRI, white matter or fluid, another structure, a label on the other side, or contacts', r.rule.startsWith('both') ? '  identified) or, under this rule, have their contacts in two areas.' : '  not identified).'] : []),
     '  Not counted: sham trials (the control), events recorded at 0 mA, events the release\'s own',
     '  quality check excludes, and people whose electrode positions have an open question on record.',
     `  A stimulation counts in an area when ${r.rule}. Each contact\'s area is its label in the`,
@@ -269,7 +276,8 @@ export function mapReadme(r: MapReadmeInput): string {
     '  display_name                 the name the atlas app shows',
     '  people_stimulated            people with at least one counted stimulation in the area',
     '  stimulations, sites          counted stimulations; stimulated contact pairs',
-    '  stimulations_both_contacts_inside   of those, pairs with both contacts inside the area',
+    '  stimulations_both_contacts_inside   of those stimulations, the ones whose stimulating contacts all',
+    '                               lie inside the area (both of a pair; a monopolar site\'s one contact)',
     '  entries_effect_noted, entries_none_noted, entries_blank',
     '                               the clinician\'s own bedside entry for each counted stimulation: an',
     '                               effect, "none", or nothing written. Writing "none" was routine through',
@@ -283,7 +291,8 @@ export function mapReadme(r: MapReadmeInput): string {
     'LOADING',
     '  pandas      pd.read_csv("areas.csv", keep_default_na=False)',
     '  ggseg (R)   join on `label`:  dplyr::left_join(ggseg::dk, read.csv("areas.csv"), by = "label")',
-    '  ENIGMA      the first 68 rows of a Desikan-Killiany map are in parcel_to_surface order',
+    '  ENIGMA      the first 68 rows of a Desikan-Killiany map are in parcel_to_surface order; the',
+    '              last 14 are its subcortical order: plot_subcortical(..., ventricles=False)',
     '  nibabel     nib.load("<file>.func.gii").darrays[0].data',
     '  nilearn     fs = datasets.fetch_surf_fsaverage("fsaverage")   # full resolution, 163,842 vertices',
     '              plotting.plot_surf_stat_map(fs.infl_left, data, hemi="left")',
