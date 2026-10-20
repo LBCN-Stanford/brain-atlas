@@ -1,0 +1,102 @@
+{
+ "builder": "scripts/v2/build_brain_assets.py",
+ "frame": "MNI305 = fsaverage surface RAS (fsaverage talairach.xfm is the identity; checked: T1 vox2ras == vox2ras-tkr)",
+ "template": "FreeSurfer fsaverage (as distributed by MNE-Python's fetch_fsaverage)",
+ "geometry": {
+  "method": "fsaverage pial and inflated as distributed: every vertex, every triangle, no decimation",
+  "surfaces": {
+   "lh": {
+    "vertices": 163842,
+    "faces": 327680,
+    "mean_edge_mm": 0.777,
+    "median_edge_mm": 0.758,
+    "max_edge_mm": 6.809
+   },
+   "rh": {
+    "vertices": 163842,
+    "faces": 327680,
+    "mean_edge_mm": 0.775,
+    "median_edge_mm": 0.751,
+    "max_edge_mm": 5.97
+   }
+  }
+ },
+ "inflated_display_gap_mm": 6.0,
+ "buried": {
+  "method": "a pial vertex is exposed when it is the nearest surface (within 1.0 mm) along at least one of 42 evenly spread view directions, one hemisphere at a time (orthographic z-buffer, 0.5 mm pixels); an area is buried when under 0.4 of its vertices are exposed, averaged over its two hemispheres",
+  "areas": {
+   "dk": [
+    "insula",
+    "transversetemporal"
+   ],
+   "destrieux": [
+    "G_Ins_lg_and_S_cent_ins",
+    "G_temp_sup-G_T_transv",
+    "G_temp_sup-Plan_polar",
+    "Lat_Fis-post",
+    "S_calcarine",
+    "S_central",
+    "S_cingul-Marginalis",
+    "S_circular_insula_ant",
+    "S_circular_insula_inf",
+    "S_circular_insula_sup",
+    "S_oc-temp_med_and_Lingual",
+    "S_parieto_occipital",
+    "S_temporal_transverse"
+   ],
+   "yeo7": []
+  }
+ },
+ "parcellations": [
+  {
+   "id": "dk",
+   "title": "Desikan-Killiany",
+   "citation": "68 regions; Desikan et al. 2006, NeuroImage",
+   "parcels": 68,
+   "min_vertices": 272
+  },
+  {
+   "id": "destrieux",
+   "title": "Destrieux",
+   "citation": "148 regions; Destrieux et al. 2010, NeuroImage",
+   "parcels": 148,
+   "min_vertices": 231
+  },
+  {
+   "id": "yeo7",
+   "title": "Yeo 7 networks",
+   "citation": "7 networks; Yeo et al. 2011, J Neurophysiol",
+   "parcels": 14,
+   "min_vertices": 11380
+  }
+ ],
+ "subcortical": {
+  "source": "fsaverage mri/aseg.mgz",
+  "method": "marching cubes at 0.5 on each binary mask, then Taubin smoothing (lambda 0.5, mu -0.53, 10 passes)",
+  "gates": {
+   "max_volume_error_fraction": 0.05,
+   "max_mean_distance_to_unsmoothed_mm": 0.5
+  },
+  "structures": 14
+ },
+ "licences": {
+  "fsaverage surfaces, aseg, aparc, aparc.a2009s, Yeo2011": "FreeSurfer distribution (FreeSurfer Software License); redistribution terms to be confirmed before any public release"
+ },
+ "redistributable": false,
+ "inputs": {
+  "fsaverage/surf/lh.pial": "9cb004f61a2eeb977b1b595ad6de6656afdfc1f37ade0c00a8dde91e990a0f29",
+  "fsaverage/surf/rh.pial": "4f752701f74c1626ee3b6239046b9aa793ca4e87c6ae9a6b74a233c04e651212",
+  "fsaverage/surf/lh.inflated": "ce534434e04bf5cc7de314cad411ea723a34a92c748d0397b08ffa2385d111b2",
+  "fsaverage/surf/rh.inflated": "63572d5f4ce9dec4466b38aa4ca40d0be1457a14584efdb76adcfb370fb24240",
+  "fsaverage/surf/lh.sulc": "6ebd903d42cd17b51d84229d641fe10a3b32d839c0a69266b089811df5874d91",
+  "fsaverage/surf/rh.sulc": "11db597df4edff92b1aa8e6d99bfb4728da4f8178a9984951df2e0572f040f4c",
+  "fsaverage/mri/aseg.mgz": "b55ef817e5e5bd1a3d76d4a2305283eef16fbff199ead3d840dd4b0fa8205e48",
+  "fsaverage/label/lh.aparc.annot": "39b1acde9a32b4227631eb51cbcd8dff84e2138c57bf9f96d74026f2c17f1480",
+  "fsaverage/label/rh.aparc.annot": "6a326aed325d313e6e0d10f67630efcd8d3b8343c50d3e108e005f626614badb",
+  "fsaverage/label/lh.aparc.a2009s.annot": "8ce931d3c87d9dfd369ac739fa32c04ab9b8335afab0e6d77f569b43d8c0b70e",
+  "fsaverage/label/rh.aparc.a2009s.annot": "f0de8093fc336ddea7fdefde91449f552accdb198dd51a559718262adf317aac",
+  "fsaverage/label/lh.Yeo2011_7Networks_N1000.annot": "d24288e4cc84961e249d3b042179823f6bcc4140fac5db942fecd02c31a8e124",
+  "fsaverage/label/rh.Yeo2011_7Networks_N1000.annot": "9b448942d147e3200d547abc32777ea27c0236efcf9fa2f5fa182b787362d176",
+  "scripts/v2/reference/destrieux_labels_canlab.csv": "39f9a2c62f19aa5b8faa7ad5109b71e2b8a8ff14b2dc39447c5a1099e5c2222a"
+ }
+}

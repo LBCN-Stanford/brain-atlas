@@ -1,0 +1,13 @@
+Data licence for this site
+
+The synthetic demonstration data this site serves, under data/ and atlas/data/, are licensed under
+Creative Commons Attribution 4.0 International (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/legalcode
+They describe no real person. To cite them, use "How to cite" on the site.
+
+Patient-derived data are not licensed by this file or by any other file on this site. Real data
+were collected under Stanford IRB Protocol 11354; access is governed by that protocol and the
+data-use agreement.
+
+The code is under LICENSE.txt. Third-party components, including the FreeSurfer fsaverage
+surfaces and labels, are under NOTICE.txt.
